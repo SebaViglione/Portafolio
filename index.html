@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sebastián Viglione | Desarrollador Web</title>
+    <meta name="description"
+        content="Desarrollador web especializado en automatización e IA local. HTML, CSS, JavaScript, PostgreSQL, n8n, Docker y más.">
+    <link rel="icon" type="image/x-icon" href="assets/icons/Favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="#inicio" class="brand">
+                <span class="brand-initials">SV</span>
+                <span class="brand-dot">.</span>
+            </a>
+            <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="site-nav">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="site-nav">
+                <a href="#sobre-mi" data-i18n="nav.about">Sobre mí</a>
+                <a href="#skills" data-i18n="nav.skills">Tecnologías</a>
+                <a href="#proyectos" data-i18n="nav.projects">Proyectos</a>
+                <a href="#contacto" data-i18n="nav.contact">Contacto</a>
+                <div class="nav-buttons">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
+                        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <button class="lang-toggle" id="lang-toggle" aria-label="Cambiar idioma">
+                        <span class="lang-option" data-lang="es">ES</span>
+                        <span class="lang-separator">/</span>
+                        <span class="lang-option" data-lang="en">EN</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+        <div class="container hero-inner">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span data-i18n="hero.badge">Disponible para proyectos</span>
+                </div>
+                <h1 class="hero-title">
+                    <span data-i18n="hero.greeting">Hola, soy</span> <br>
+                    <span class="gradient-text">Sebastián Viglione</span>
+                </h1>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">
+                    Desarrollador Web · Automatización e IA Local
+                </p>
+                <p class="hero-description" data-i18n="hero.description">
+                    Creo soluciones automatizadas y aplicaciones web utilizando tecnologías modernas.
+                    Especializado en integración de bases de datos, flujos de automatización y modelos de IA local.
+                </p>
+                <div class="hero-cta">
+                    <a class="btn btn-primary" href="#proyectos">
+                        <span data-i18n="hero.cta_projects">Ver proyectos</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4.16669 10H15.8334M15.8334 10L10 4.16669M15.8334 10L10 15.8334"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <a class="btn btn-secondary" href="assets/cv/CV_Sebastian_Viglione.pdf" download>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span data-i18n="hero.cta_cv">Descargar CV</span>
+                    </a>
+                    <a class="btn btn-secondary" href="#contacto" data-i18n="hero.cta_contact">Contacto</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="blob-container">
+                    <div class="blob blob-1"></div>
+                    <div class="blob blob-2"></div>
+                    <div class="blob blob-3"></div>
+                    <div class="profile-image">
+                        <img src="assets/img/Profile_Pic.png" alt="Sebastián Viglione">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="scroll-indicator">
+            <div class="scroll-mouse">
+                <div class="scroll-wheel"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOBRE MÍ -->
+    <section class="about section" id="sobre-mi">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag" data-i18n="about.tag">Conóceme</span>
+                <h2 class="section-title" data-i18n="about.title">Sobre mí</h2>
+            </div>
+
+            <div class="about-grid">
+                <article class="card about-card">
+                    <div class="card-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.card1_title">¿Quién soy?</h3>
+                    <p data-i18n="about.card1_p1">
+                        Tengo 18 años y soy de Montevideo, Uruguay. Estoy finalizando el Bachillerato en Informática en UTU ISBO y buscando ingresar a una universidad privada para profundizar en desarrollo de software.
+                    </p>
+                    <p data-i18n="about.card1_p2">
+                        Empecé a programar de forma autodidacta a los 12 años, cuando descubrí que la programación era la forma más accesible de canalizar mi creatividad y desarrollar soluciones reales a problemas concretos. Lo que comenzó como curiosidad se transformó en pasión por la automatización, el backend y la integración de IA en sistemas productivos.
+                    </p>
+                    <p data-i18n="about.card1_p3">
+                        Actualmente me especializo en automatización de procesos con n8n, integración de modelos de IA local (Ollama), desarrollo backend con PHP y gestión de bases de datos PostgreSQL. Mi proyecto más reciente, ARCE-LICITACIONES-IA, fue desarrollado para Grupo CPS (cliente del sector aluminio) y automatiza el monitoreo y análisis de licitaciones públicas.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- GITHUB ACTIVITY -->
+    <section class="github-activity section" id="github-activity">
+        <div class="container">
+            <div class="section-header centered">
+                <span class="section-tag" data-i18n="github.tag">Actividad</span>
+                <h2 class="section-title" data-i18n="github.title">GitHub Contributions</h2>
+                <p class="section-subtitle" data-i18n="github.subtitle">Mi actividad reciente en GitHub</p>
+            </div>
+
+            <div class="github-content">
+                <div class="github-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="total-repos">-</span>
+                            <span class="stat-label" data-i18n="github.stat_repos">Repositorios</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="recent-commits">-</span>
+                            <span class="stat-label" data-i18n="github.stat_commits">Commits (30d)</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="followers-count">-</span>
+                            <span class="stat-label" data-i18n="github.stat_followers">Seguidores</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="github-repos">
+                    <h3 data-i18n="github.recent_repos">Repositorios Recientes</h3>
+                    <div id="repos-list" class="repos-grid">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <p data-i18n="github.loading">Cargando repositorios...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS (INTERACTIVE) -->
+    <section class="skills section" id="skills">
+        <div class="container">
+            <div class="section-header centered">
+                <span class="section-tag" data-i18n="skills.tag">Mi toolkit</span>
+                <h2 class="section-title" data-i18n="skills.title">Tecnologías</h2>
+                <p class="section-subtitle" data-i18n="skills.subtitle">Herramientas y tecnologías con las que trabajo
+                </p>
+            </div>
+
+            <div class="skills-interactive-grid">
+                <!-- n8n - SKILL PRINCIPAL -->
+                <div class="skill-item"
+                    data-tooltip="n8n: 2 meses de experiencia en automatización de flujos de trabajo, integración de APIs, workflows complejos">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                            <span>n8n</span>
+                        </div>
+                        <span class="skill-level" data-level="basic" data-i18n="skills.level_basic">2 meses</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="40"></div>
+                    </div>
+                    <p class="skill-context" data-i18n="skills.context_n8n">Workflows de automatización, webhooks,
+                        integraciones API</p>
+                </div>
+
+                <!-- Ollama / IA Local - SKILL PRINCIPAL -->
+                <div class="skill-item"
+                    data-tooltip="Ollama & IA Local: 2 meses integrando modelos de lenguaje locales para procesamiento y análisis de texto">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <!-- Logo simplificado de Ollama (llama) -->
+                                <path d="M12 2C10.9 2 10 2.9 10 4V6C8.34 6 7 7.34 7 9V11C5.34 11 4 12.34 4 14V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V14C20 12.34 18.66 11 17 11V9C17 7.34 15.66 6 14 6V4C14 2.9 13.1 2 12 2M12 4C12.55 4 13 4.45 13 5V6H11V5C11 4.45 11.45 4 12 4M9 8H15C15.55 8 16 8.45 16 9V11H8V9C8 8.45 8.45 8 9 8M6 13H18C18.55 13 19 13.45 19 14V20H5V14C5 13.45 5.45 13 6 13Z"/>
+                            </svg>
+                            <span>Ollama / IA Local</span>
+                        </div>
+                        <span class="skill-level" data-level="basic" data-i18n="skills.level_basic">2 meses</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="40"></div>
+                    </div>
+                    <p class="skill-context" data-i18n="skills.context_ollama">Modelos locales, prompting, integración
+                        con workflows</p>
+                </div>
+
+                <!-- PHP - Backend -->
+                <div class="skill-item" data-tooltip="PHP: 3 meses de experiencia en backend con MVC, PDO, manejo de sesiones">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <!-- Logo oficial de PHP simplificado -->
+                                <ellipse cx="12" cy="12" rx="11" ry="6.5"/>
+                                <text x="12" y="15.5" font-size="7.5" text-anchor="middle" fill="var(--bg-card)" font-weight="bold">PHP</text>
+                            </svg>
+                            <span>PHP</span>
+                        </div>
+                        <span class="skill-level" data-level="basic" data-i18n="skills.level_basic">3 meses</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="45"></div>
+                    </div>
+                    <p class="skill-context" data-i18n="skills.context_php">MVC, PDO, sesiones, APIs REST básicas</p>
+                </div>
+
+                <!-- PostgreSQL - Bases de datos -->
+                <div class="skill-item"
+                    data-tooltip="PostgreSQL: 2 meses de experiencia en diseño de esquemas, consultas SQL, optimización básica">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                            </svg>
+                            <span>PostgreSQL</span>
+                        </div>
+                        <span class="skill-level" data-level="basic" data-i18n="skills.level_basic">2 meses</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="35"></div>
+                    </div>
+                    <p class="skill-context" data-i18n="skills.context_db">Diseño de esquemas, consultas, índices,
+                        relaciones</p>
+                </div>
+
+                <!-- Docker -->
+                <div class="skill-item"
+                    data-tooltip="Docker: 1 año de experiencia en contenedores, docker-compose, desarrollo con entornos aislados">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <span>Docker</span>
+                        </div>
+                        <span class="skill-level" data-level="intermediate" data-i18n="skills.level_intermediate">1 año</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="60"></div>
+                    </div>
+                    <p class="skill-context" data-i18n="skills.context_docker">Contenedores, docker-compose, Dockerfiles
+                        básicos</p>
+                </div>
+
+                <!-- Git/GitHub -->
+                <div class="skill-item" data-tooltip="Git & GitHub: 1.5 años de experiencia en control de versiones, ramas, merges, colaboración">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="18" cy="18" r="3"></circle>
+                                <circle cx="6" cy="6" r="3"></circle>
+                                <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
+                                <line x1="6" y1="9" x2="6" y2="21"></line>
+                            </svg>
+                            <span>Git / GitHub</span>
+                        </div>
+                        <span class="skill-level" data-level="intermediate" data-i18n="skills.level_intermediate">1.5 años</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="65"></div>
+                    </div>
+                    <p class="skill-context" data-i18n="skills.context_git">Commits, branches, pull requests, resolución
+                        de conflictos</p>
+                </div>
+
+                <!-- JavaScript -->
+                <div class="skill-item" data-tooltip="JavaScript: 1.5 años de experiencia con Vanilla JS, manipulación DOM, fetch API, ES6+">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <!-- Logo oficial de JavaScript (JS) -->
+                                <rect x="2" y="2" width="20" height="20" rx="2"/>
+                                <text x="12" y="16" font-size="12" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold">JS</text>
+                            </svg>
+                            <span>JavaScript</span>
+                        </div>
+                        <span class="skill-level" data-level="intermediate" data-i18n="skills.level_intermediate">1.5 años</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="65"></div>
+                    </div>
+                    <p class="skill-context" data-i18n="skills.context_js">DOM, eventos, fetch, async/await, módulos ES6
+                    </p>
+                </div>
+
+                <!-- HTML/CSS - AGRUPADO AL FINAL -->
+                <div class="skill-item"
+                    data-tooltip="Frontend: 2.5 años de experiencia creando interfaces responsivas y accesibles">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                            <span>HTML5 / CSS3</span>
+                        </div>
+                        <span class="skill-level" data-level="intermediate" data-i18n="skills.level_intermediate">2.5 años</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="70"></div>
+                    </div>
+                    <p class="skill-context" data-i18n="skills.context_htmlcss">Interfaces responsivas, CSS Grid,
+                        Flexbox, animaciones</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROYECTOS -->
+    <section class="projects section" id="proyectos">
+        <div class="container">
+            <div class="section-header centered">
+                <span class="section-tag" data-i18n="projects.tag">Portfolio</span>
+                <h2 class="section-title" data-i18n="projects.title">Proyectos destacados</h2>
+                <p class="section-subtitle" data-i18n="projects.subtitle">Soluciones reales para problemas reales</p>
+            </div>
+
+            <!-- Toggle de vistas -->
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="list" aria-label="Vista lista">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    <span data-i18n="projects.view_list">Lista</span>
+                </button>
+                <button class="view-btn" data-view="grid" aria-label="Vista grilla">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span data-i18n="projects.view_grid">Grilla</span>
+                </button>
+            </div>
+
+            <div id="projects-list" class="projects-grid"></div>
+        </div>
+    </section>
+
+    <!-- Modal de proyecto -->
+    <div class="project-modal" id="project-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Cerrar modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal-body" id="modal-body">
+                <!-- El contenido del proyecto se insertará aquí dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACTO -->
+    <section class="contact section" id="contacto">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-text">
+                    <span class="section-tag" data-i18n="contact.tag">Hablemos</span>
+                    <h2 class="section-title" data-i18n="contact.title">¿Tenés un proyecto en mente?</h2>
+                    <p class="contact-description" data-i18n="contact.description">
+                        Estoy disponible para colaborar en proyectos, desarrollar soluciones automatizadas
+                        o simplemente conversar sobre tecnología.
+                    </p>
+
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 data-i18n="contact.email_label">Email</h4>
+                                <a href="mailto:sebaviglione10@gmail.com">sebaviglione10@gmail.com</a>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 data-i18n="contact.whatsapp_label">WhatsApp</h4>
+                                <a href="https://wa.me/598092009897" target="_blank" rel="noopener">+598 092 009 897</a>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 data-i18n="contact.github_label">GitHub</h4>
+                                <a href="https://github.com/SebaViglione" target="_blank"
+                                    rel="noopener">@SebaViglione</a>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z">
+                                    </path>
+                                    <rect x="2" y="9" width="4" height="12"></rect>
+                                    <circle cx="4" cy="4" r="2"></circle>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 data-i18n="contact.linkedin_label">LinkedIn</h4>
+                                <a href="https://linkedin.com/in/sebaviglione" target="_blank"
+                                    rel="noopener">@sebaviglione</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-cta">
+                    <a href="mailto:sebaviglione10@gmail.com" class="btn btn-primary btn-large">
+                        <span data-i18n="contact.cta_button">Enviar un mensaje</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M4.16669 10H15.8334M15.8334 10L10 4.16669M15.8334 10L10 15.8334"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <a href="assets/cv/CV_Sebastian_Viglione.pdf" download class="btn btn-secondary btn-large">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span data-i18n="contact.cta_cv">Descargar CV</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="brand">
+                        <span class="brand-initials">SV</span>
+                        <span class="brand-dot">.</span>
+                    </div>
+                    <p data-i18n="footer.brand_tagline">Desarrollador Web & Automatización</p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4 data-i18n="footer.nav_title">Navegación</h4>
+                        <a href="#sobre-mi" data-i18n="nav.about">Sobre mí</a>
+                        <a href="#skills" data-i18n="nav.skills">Tecnologías</a>
+                        <a href="#proyectos" data-i18n="nav.projects">Proyectos</a>
+                        <a href="#contacto" data-i18n="nav.contact">Contacto</a>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4 data-i18n="footer.social_title">Redes</h4>
+                        <a href="https://github.com/SebaViglione" target="_blank" rel="noopener">GitHub</a>
+                        <a href="https://linkedin.com/in/sebaviglione" target="_blank" rel="noopener">LinkedIn</a>
+                        <a href="mailto:sebaviglione10@gmail.com">Email</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© <span id="year"></span> <span data-i18n="footer.copyright">Sebastián Viglione. Hecho con HTML, CSS
+                        y JavaScript.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
