@@ -207,51 +207,83 @@ function renderProjects(projects) {
   projects.forEach(project => {
     const projectCard = createProjectCard(project);
     projectsList.appendChild(projectCard);
-    setupGallery(projectCard);
+    // Solo inicializar galería si no es un video
+    if (!project.video) {
+      setupGallery(projectCard);
+    }
   });
+
+  // Agregar listeners de click a las tarjetas después de renderizarlas
+  setTimeout(() => {
+    if (typeof addCardListeners === 'function') {
+      addCardListeners();
+    }
+  }, 100);
 }
 
 function createProjectCard(project) {
   // Card principal
   const card = el('article', { class: 'project-card fade-in' });
 
-  // Media container con galería
+  // Media container con galería o video
   const media = el('div', { class: 'project-media' });
-  const gallery = el('div', { class: 'gallery', 'data-gallery-track': '' });
 
-  // Agregar imágenes a la galería
-  if (project.images && project.images.length > 0) {
-    project.images.forEach((imageSrc, index) => {
-      const img = el('img', {
-        src: imageSrc,
-        alt: `${project.title} - Captura ${index + 1}`,
-        loading: 'lazy'
-      });
-      gallery.appendChild(img);
+  // Si hay video, usar video en lugar de galería
+  if (project.video) {
+    const video = el('video', {
+      src: project.video,
+      controls: '',
+      loop: '',
+      muted: '',
+      playsinline: '',
+      loading: 'lazy',
+      style: 'width: 100%; height: 100%; object-fit: cover; aspect-ratio: 16/9;'
     });
+
+    // Agregar poster si existe la primera imagen
+    if (project.images && project.images.length > 0) {
+      video.setAttribute('poster', project.images[0]);
+    }
+
+    media.appendChild(video);
   } else {
-    // Imagen placeholder si no hay imágenes
-    const placeholder = el('div', {
-      class: 'gallery-placeholder',
-      style: 'aspect-ratio: 16/9; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; color: var(--text-muted);'
-    }, 'Sin imágenes disponibles');
-    gallery.appendChild(placeholder);
+    // Usar galería de imágenes
+    const gallery = el('div', { class: 'gallery', 'data-gallery-track': '' });
+
+    // Agregar imágenes a la galería
+    if (project.images && project.images.length > 0) {
+      project.images.forEach((imageSrc, index) => {
+        const img = el('img', {
+          src: imageSrc,
+          alt: `${project.title} - Captura ${index + 1}`,
+          loading: 'lazy'
+        });
+        gallery.appendChild(img);
+      });
+    } else {
+      // Imagen placeholder si no hay imágenes
+      const placeholder = el('div', {
+        class: 'gallery-placeholder',
+        style: 'aspect-ratio: 16/9; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; color: var(--text-muted);'
+      }, 'Sin imágenes disponibles');
+      gallery.appendChild(placeholder);
+    }
+
+    // Botones de navegación de galería
+    const prevBtn = el('button', {
+      class: 'gallery-btn prev',
+      'aria-label': 'Imagen anterior',
+      'data-prev': ''
+    }, '‹');
+
+    const nextBtn = el('button', {
+      class: 'gallery-btn next',
+      'aria-label': 'Siguiente imagen',
+      'data-next': ''
+    }, '›');
+
+    media.append(prevBtn, gallery, nextBtn);
   }
-
-  // Botones de navegación de galería
-  const prevBtn = el('button', {
-    class: 'gallery-btn prev',
-    'aria-label': 'Imagen anterior',
-    'data-prev': ''
-  }, '‹');
-
-  const nextBtn = el('button', {
-    class: 'gallery-btn next',
-    'aria-label': 'Siguiente imagen',
-    'data-next': ''
-  }, '›');
-
-  media.append(prevBtn, gallery, nextBtn);
 
   // Información del proyecto
   const info = el('div', { class: 'project-info' });
@@ -383,8 +415,14 @@ function setupGallery(card) {
   }
 
   // Event listeners para botones
-  prevBtn?.addEventListener('click', goToPrev);
-  nextBtn?.addEventListener('click', goToNext);
+  prevBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToPrev();
+  });
+  nextBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToNext();
+  });
 
   // Soporte táctil para mobile
   let touchStartX = 0;
@@ -788,6 +826,7 @@ async function loadTranslations() {
 
 // Aplicar traducciones
 function applyTranslations(lang) {
+  // Traducir textos
   document.querySelectorAll('[data-i18n]').forEach(element => {
     const key = element.getAttribute('data-i18n');
     const keys = key.split('.');
@@ -804,6 +843,26 @@ function applyTranslations(lang) {
 
     if (translation) {
       element.textContent = translation;
+    }
+  });
+
+  // Traducir placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+    const key = element.getAttribute('data-i18n-placeholder');
+    const keys = key.split('.');
+    let translation = translations[lang];
+
+    for (const k of keys) {
+      if (translation && translation[k]) {
+        translation = translation[k];
+      } else {
+        translation = null;
+        break;
+      }
+    }
+
+    if (translation) {
+      element.setAttribute('placeholder', translation);
     }
   });
 
@@ -826,6 +885,22 @@ function applyTranslations(lang) {
     en: 'Sebastián Viglione | Web Developer'
   };
   document.title = titles[lang];
+
+  // Actualizar enlaces de descarga de CV
+  updateCVLinks(lang);
+}
+
+// Actualizar enlaces de descarga de CV según idioma
+function updateCVLinks(lang) {
+  const cvLinks = document.querySelectorAll('a[href*="CV Sebastián Viglione Chiarlone"]');
+  const cvPaths = {
+    es: 'assets/cv/CV Sebastián Viglione Chiarlone ESPAÑOL.pdf',
+    en: 'assets/cv/CV Sebastián Viglione Chiarlone ENGLISH.pdf'
+  };
+
+  cvLinks.forEach(link => {
+    link.setAttribute('href', cvPaths[lang]);
+  });
 }
 
 // Actualizar botón de idioma
@@ -867,6 +942,68 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================
+// MODAL FUNCTIONS (GLOBAL)
+// =========================
+let modal, modalBody;
+
+// Función para agregar listeners a todas las tarjetas
+function addCardListeners() {
+  const cards = document.querySelectorAll('.project-card');
+  cards.forEach((card, index) => {
+    // Hacer que toda la tarjeta sea clickeable
+    card.style.cursor = 'pointer';
+
+    // Remover el atributo data-listener si existe para evitar duplicados
+    if (card.hasAttribute('data-has-listener')) {
+      return;
+    }
+
+    // Marcar que ya tiene listener
+    card.setAttribute('data-has-listener', 'true');
+
+    // Agregar listener
+    card.addEventListener('click', (e) => {
+      // Prevenir que se abra el modal si se hace click en los botones de la galería
+      if (e.target.closest('.gallery-btn')) {
+        e.stopPropagation();
+        return;
+      }
+      // Prevenir que se abra el modal si se hace click en los links
+      if (e.target.closest('.links a')) {
+        e.stopPropagation();
+        return;
+      }
+      openModal(index);
+    });
+  });
+}
+
+// Abrir modal
+function openModal(projectIndex) {
+  if (!modal || !modalBody) return;
+
+  const cards = document.querySelectorAll('.project-card');
+  if (cards[projectIndex]) {
+    const cardClone = cards[projectIndex].cloneNode(true);
+    modalBody.innerHTML = '';
+    modalBody.appendChild(cardClone);
+
+    // Re-inicializar galería en modal
+    setupGallery(cardClone);
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+// Cerrar modal
+function closeModal() {
+  if (!modal) return;
+  modal.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// =========================
 // INICIALIZACIÓN
 // =========================
 document.addEventListener('DOMContentLoaded', () => {
@@ -892,8 +1029,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================
   const viewButtons = document.querySelectorAll('.view-btn');
   const projectsList = document.getElementById('projects-list');
-  const modal = document.getElementById('project-modal');
-  const modalBody = document.getElementById('modal-body');
+  modal = document.getElementById('project-modal');
+  modalBody = document.getElementById('modal-body');
   const modalClose = document.querySelector('.modal-close');
   const modalOverlay = document.querySelector('.modal-overlay');
   const viewToggle = document.querySelector('.view-toggle');
@@ -956,53 +1093,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // Guardar preferencia
       localStorage.setItem('projectsView', view);
 
-      // En vista grid, agregar listeners de click a las cards
-      if (view === 'grid') {
-        addGridListeners();
-      } else {
-        removeGridListeners();
-      }
+      // Siempre agregar listeners de click a las cards
+      setTimeout(addCardListeners, 100);
     });
   });
-
-  // Función para agregar listeners en vista grid
-  function addGridListeners() {
-    const cards = document.querySelectorAll('.project-card');
-    cards.forEach((card, index) => {
-      card.addEventListener('click', () => openModal(index));
-    });
-  }
-
-  // Función para remover listeners
-  function removeGridListeners() {
-    const cards = document.querySelectorAll('.project-card');
-    cards.forEach(card => {
-      const newCard = card.cloneNode(true);
-      card.parentNode.replaceChild(newCard, card);
-    });
-  }
-
-  // Abrir modal
-  function openModal(projectIndex) {
-    const cards = document.querySelectorAll('.project-card');
-    if (cards[projectIndex]) {
-      const cardClone = cards[projectIndex].cloneNode(true);
-      modalBody.innerHTML = '';
-      modalBody.appendChild(cardClone);
-
-      // Re-inicializar galería en modal
-      setupGallery(cardClone);
-
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-  }
-
-  // Cerrar modal
-  function closeModal() {
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-  }
 
   modalClose?.addEventListener('click', closeModal);
   modalOverlay?.addEventListener('click', closeModal);
@@ -1014,9 +1108,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Agregar listeners si la vista inicial es grid
-  if (savedView === 'grid') {
-    setTimeout(addGridListeners, 500);
+  // Agregar listeners a todas las tarjetas siempre
+  setTimeout(addCardListeners, 500);
+
+  // =========================
+  // CONTACT FORM HANDLING
+  // =========================
+  const contactForm = document.getElementById('contact-form');
+  const formMessage = document.getElementById('form-message');
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = contactForm.querySelector('.btn-submit');
+      const formData = new FormData(contactForm);
+
+      // Deshabilitar botón durante el envío
+      submitBtn.disabled = true;
+      submitBtn.querySelector('span').textContent = currentLang === 'es' ? 'Enviando...' : 'Sending...';
+
+      try {
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        });
+
+        if (response.ok) {
+          // Mostrar mensaje de éxito
+          formMessage.textContent = translations[currentLang]?.contact?.form_success || '¡Mensaje enviado!';
+          formMessage.className = 'form-message success show';
+
+          // Limpiar formulario
+          contactForm.reset();
+
+          // Ocultar mensaje después de 5 segundos
+          setTimeout(() => {
+            formMessage.classList.remove('show');
+          }, 5000);
+        } else {
+          throw new Error('Form submission failed');
+        }
+      } catch (error) {
+        console.error('Error sending form:', error);
+
+        // Mostrar mensaje de error
+        formMessage.textContent = translations[currentLang]?.contact?.form_error || 'Hubo un error';
+        formMessage.className = 'form-message error show';
+
+        // Ocultar mensaje después de 5 segundos
+        setTimeout(() => {
+          formMessage.classList.remove('show');
+        }, 5000);
+      } finally {
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        submitBtn.querySelector('span').textContent = translations[currentLang]?.contact?.form_submit || 'Enviar mensaje';
+      }
+    });
   }
 
   // Log de bienvenida

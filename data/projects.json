@@ -97,5 +97,56 @@
                 "Optimized accessibility and UX"
             ]
         }
+    },
+    {
+        "slug": "grupo-cps-institucional",
+        "title": {
+            "es": "Grupo CPS - Sitio Web Institucional",
+            "en": "Grupo CPS - Corporate Website"
+        },
+        "description": {
+            "es": "Sitio web corporativo profesional para Grupo CPS, empresa líder en construcción, carpintería en aluminio y vidriería en Uruguay. Proyecto desarrollado para cliente real con diseño moderno, responsive y optimizado para ofrecer una experiencia premium que refleja la calidad de los servicios de la empresa.",
+            "en": "Professional corporate website for Grupo CPS, leading company in construction, aluminum carpentry and glass work in Uruguay. Project developed for real client with modern, responsive design optimized to offer a premium experience that reflects the quality of the company's services."
+        },
+        "video": "assets/img/grupocps_institucional/cps institucional.mp4",
+        "links": {
+            "demo": "https://grupocps.netlify.app/",
+            "code": "https://github.com/SebaViglione/GrupoCPS_institucional"
+        },
+        "stack": [
+            "HTML5",
+            "CSS3",
+            "JavaScript",
+            "PHP",
+            "PHPMailer",
+            "Docker",
+            "Git/GitHub"
+        ],
+        "features": {
+            "es": [
+                "Diseño responsive mobile-first",
+                "Animaciones suaves y profesionales con parallax",
+                "Hero section con video rotativo optimizado",
+                "Carrusel infinito de clientes con carga dinámica",
+                "Formulario de contacto funcional con backend PHP",
+                "Lazy loading de imágenes y videos",
+                "Performance optimizada (debounce, precarga, caché)",
+                "Navegación sticky con efecto blur",
+                "Contador animado de estadísticas",
+                "Proyecto profesional para cliente real"
+            ],
+            "en": [
+                "Mobile-first responsive design",
+                "Smooth professional animations with parallax",
+                "Hero section with optimized rotating video",
+                "Infinite client carousel with dynamic loading",
+                "Functional contact form with PHP backend",
+                "Lazy loading of images and videos",
+                "Optimized performance (debounce, preload, cache)",
+                "Sticky navigation with blur effect",
+                "Animated statistics counter",
+                "Professional project for real client"
+            ]
+        }
     }
 ]
