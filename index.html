@@ -534,15 +534,27 @@
                     </div>
                 </div>
 
-                <!-- Formulario de contacto con Netlify -->
+                <!-- Formulario de contacto con Netlify Forms -->
                 <div class="contact-form-container">
-                    <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="contact-form" id="contact-form">
-                        <!-- Campo oculto para Netlify -->
+                    <!-- Formulario 100% estático para detección de Netlify -->
+                    <form
+                        name="contact"
+                        method="POST"
+                        data-netlify="true"
+                        netlify-honeypot="bot-field"
+                        action="/gracias.html"
+                        class="contact-form"
+                        id="contact-form"
+                    >
+                        <!-- Campo oculto requerido por Netlify -->
                         <input type="hidden" name="form-name" value="contact" />
 
-                        <!-- Honeypot para prevenir spam -->
-                        <p class="hidden">
-                            <label>Don't fill this out: <input name="bot-field" /></label>
+                        <!-- Honeypot anti-spam (oculto para humanos) -->
+                        <p style="display: none;">
+                            <label>
+                                No llenes esto si eres humano:
+                                <input name="bot-field" />
+                            </label>
                         </p>
 
                         <div class="form-group">
@@ -601,7 +613,7 @@
                             </svg>
                         </button>
 
-                        <!-- Mensajes de estado -->
+                        <!-- Mensaje de estado (solo visible durante el envío) -->
                         <div class="form-message" id="form-message"></div>
                     </form>
 

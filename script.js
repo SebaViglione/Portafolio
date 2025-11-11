@@ -1112,60 +1112,24 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(addCardListeners, 500);
 
   // =========================
-  // CONTACT FORM HANDLING
+  // CONTACT FORM - NETLIFY NATIVE HANDLING
   // =========================
+  // El formulario se envía de forma nativa (sin AJAX) para que Netlify lo detecte correctamente.
+  // Solo agregamos feedback visual durante el envío.
+
   const contactForm = document.getElementById('contact-form');
-  const formMessage = document.getElementById('form-message');
 
   if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
+    contactForm.addEventListener('submit', () => {
+      // No prevenir el submit - dejar que el formulario se envíe nativamente a Netlify
       const submitBtn = contactForm.querySelector('.btn-submit');
-      const formData = new FormData(contactForm);
 
-      // Deshabilitar botón durante el envío
+      // Mostrar mensaje "Enviando..." solo visualmente
       submitBtn.disabled = true;
       submitBtn.querySelector('span').textContent = currentLang === 'es' ? 'Enviando...' : 'Sending...';
 
-      try {
-        const response = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(formData).toString()
-        });
-
-        if (response.ok) {
-          // Mostrar mensaje de éxito
-          formMessage.textContent = translations[currentLang]?.contact?.form_success || '¡Mensaje enviado!';
-          formMessage.className = 'form-message success show';
-
-          // Limpiar formulario
-          contactForm.reset();
-
-          // Ocultar mensaje después de 5 segundos
-          setTimeout(() => {
-            formMessage.classList.remove('show');
-          }, 5000);
-        } else {
-          throw new Error('Form submission failed');
-        }
-      } catch (error) {
-        console.error('Error sending form:', error);
-
-        // Mostrar mensaje de error
-        formMessage.textContent = translations[currentLang]?.contact?.form_error || 'Hubo un error';
-        formMessage.className = 'form-message error show';
-
-        // Ocultar mensaje después de 5 segundos
-        setTimeout(() => {
-          formMessage.classList.remove('show');
-        }, 5000);
-      } finally {
-        // Rehabilitar botón
-        submitBtn.disabled = false;
-        submitBtn.querySelector('span').textContent = translations[currentLang]?.contact?.form_submit || 'Enviar mensaje';
-      }
+      // Netlify procesará el formulario y redirigirá a /gracias.html
+      // No necesitamos manejar nada más aquí
     });
   }
 
