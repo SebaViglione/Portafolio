@@ -1,0 +1,229 @@
+[
+    {
+        "slug": "arce-licitaciones-ia",
+        "title": {
+            "es": "ARCE-LICITACIONES-IA",
+            "en": "ARCE-BIDS-AI"
+        },
+        "description": {
+            "es": "Proyecto personal autodidacta. Sistema de automatización que monitorea, filtra y analiza licitaciones públicas en tiempo real utilizando flujos de trabajo con n8n, almacenamiento estructurado en PostgreSQL y análisis inteligente con modelos de IA local (Ollama). Solución productiva que optimiza el proceso de identificación de oportunidades comerciales.",
+            "en": "Self-taught personal project. Automation system that monitors, filters and analyzes public tenders in real-time using n8n workflows, structured PostgreSQL storage and intelligent analysis with local AI models (Ollama). Production solution that optimizes the commercial opportunity identification process."
+        },
+        "video": "assets/img/arce/arce_dashboard_demo.mp4",
+        "images": [
+            "assets/img/arce/placeholder-1.png",
+            "assets/img/arce/placeholder-2.png"
+        ],
+        "links": {
+            "code": "https://github.com/SebaViglione/ARCE-LICITACIONES-IA"
+        },
+        "stack": [
+            "n8n",
+            "PostgreSQL",
+            "Docker",
+            "Ollama (IA local)",
+            "Python",
+            "Linux"
+        ],
+        "features": {
+            "es": [
+                "Automatización de scraping de licitaciones públicas",
+                "Filtrado inteligente por palabras clave del sector aluminio",
+                "Almacenamiento estructurado en PostgreSQL",
+                "Análisis con modelos de IA local (Ollama)",
+                "Notificaciones automáticas de nuevas licitaciones relevantes",
+                "Entorno completamente dockerizado",
+                "Proyecto personal autodidacta"
+            ],
+            "en": [
+                "Public tender scraping automation",
+                "Intelligent filtering by aluminum sector keywords",
+                "Structured storage in PostgreSQL",
+                "Analysis with local AI models (Ollama)",
+                "Automatic notifications for relevant new tenders",
+                "Fully dockerized environment",
+                "Self-taught personal project"
+            ]
+        }
+    },
+    {
+        "slug": "draftosaurus",
+        "title": {
+            "es": "Draftosaurus Digital - Sistema Integral de Gestión de Partidas (S.I.G.P.D)",
+            "en": "Draftosaurus Digital - Comprehensive Game Management System"
+        },
+        "description": {
+            "es": "Versión web completa del juego de mesa Draftosaurus. Proyecto final de Bachillerato en Tecnologías de la Información (UTU ISBO). Sistema fullstack con UI responsive, flujo completo de partida (login, lobby, tablero interactivo, resultados) y sistema de ranking persistente.",
+            "en": "Complete web version of Draftosaurus board game. Final project for Information Technology Bachelor (UTU ISBO). Fullstack system with responsive UI, complete game flow (login, lobby, interactive board, results) and persistent ranking system."
+        },
+        "images": [
+            "assets/img/Draftosaurus/Menu.png",
+            "assets/img/Draftosaurus/Local Game.png",
+            "assets/img/Draftosaurus/Follow-up Game.png",
+            "assets/img/Draftosaurus/Ranking.png",
+            "assets/img/Draftosaurus/Credits 1.png",
+            "assets/img/Draftosaurus/Credits 2.png"
+        ],
+        "links": {
+            "code": "https://github.com/Hackency/Draftosaurus"
+        },
+        "stack": [
+            "HTML5",
+            "CSS3",
+            "JavaScript",
+            "PHP",
+            "MariaDB",
+            "Docker",
+            "Git/GitHub"
+        ],
+        "features": {
+            "es": [
+                "Sistema de autenticación y sesiones",
+                "Flujo completo de partida multijugador local",
+                "Cálculo automático de puntajes según reglas del juego",
+                "Sistema de ranking con persistencia en base de datos",
+                "Arquitectura MVC (PHP + PDO)",
+                "Entorno dockerizado (Apache/PHP + MariaDB)",
+                "Diseño responsive mobile-first",
+                "Accesibilidad y UX optimizada"
+            ],
+            "en": [
+                "Authentication and session system",
+                "Complete local multiplayer game flow",
+                "Automatic score calculation based on game rules",
+                "Ranking system with database persistence",
+                "MVC Architecture (PHP + PDO)",
+                "Dockerized environment (Apache/PHP + MariaDB)",
+                "Mobile-first responsive design",
+                "Optimized accessibility and UX"
+            ]
+        }
+    },
+    {
+        "slug": "sitio-institucional",
+        "title": {
+            "es": "Sitio Web Institucional - Empresa de Construcción",
+            "en": "Corporate Website - Construction Company"
+        },
+        "description": {
+            "es": "Sitio web corporativo desarrollado durante mi práctica tecnológica en Grupo CPS. Enfocado en la optimización de performance, diseño responsive y arquitectura de la información, este proyecto aplica estándares profesionales para resolver las necesidades de comunicación digital.",
+            "en": "Corporate website developed during my technological practice at Grupo CPS. Focused on performance optimization, responsive design, and information architecture, this project applies professional standards to solve digital communication needs."
+        },
+        "video": "assets/img/grupocps_institucional/cps institucional.mp4",
+        "links": {
+            "demo": "https://grupocps.netlify.app/",
+            "code": "https://github.com/SebaViglione/GrupoCPS_institucional"
+        },
+        "stack": [
+            "HTML5",
+            "CSS3",
+            "JavaScript",
+            "PHP",
+            "PHPMailer",
+            "Docker",
+            "Git/GitHub"
+        ],
+        "features": {
+            "es": [
+                "Diseño responsive mobile-first",
+                "Animaciones suaves y profesionales con parallax",
+                "Hero section con video rotativo optimizado",
+                "Carrusel infinito de clientes con carga dinámica",
+                "Formulario de contacto funcional con backend PHP",
+                "Lazy loading de imágenes y videos",
+                "Performance optimizada (debounce, precarga, caché)",
+                "Navegación sticky con efecto blur",
+                "Contador animado de estadísticas",
+                "Proyecto profesional para cliente real"
+            ],
+            "en": [
+                "Mobile-first responsive design",
+                "Smooth professional animations with parallax",
+                "Hero section with optimized rotating video",
+                "Infinite client carousel with dynamic loading",
+                "Functional contact form with PHP backend",
+                "Lazy loading of images and videos",
+                "Optimized performance (debounce, preload, cache)",
+                "Sticky navigation with blur effect",
+                "Animated statistics counter",
+                "Professional project for real client"
+            ]
+        }
+    },
+    {
+        "slug": "draftosaurus-assistant",
+        "title": {
+            "es": "Asistente Draftosaurus - Chatbot IA",
+            "en": "Draftosaurus Assistant - AI Chatbot"
+        },
+        "description": {
+            "es": "Chatbot interactivo especializado en el juego de mesa Draftosaurus. Utiliza la API de OpenAI para responder dudas sobre reglas y estrategias. Diseño inmersivo con animaciones y efectos visuales.",
+            "en": "Interactive chatbot specialized in the Draftosaurus board game. Uses OpenAI API to answer questions about rules and strategies. Immersive design with animations and visual effects."
+        },
+        "video": "assets/img/draftosaurus_assistant/draftosaurus_assistant_demo.mp4",
+        "links": {
+            "demo": "https://draftosaurus-assistant.netlify.app/",
+            "code": "https://github.com/SebaViglione/draftosaurus-assistant"
+        },
+        "stack": [
+            "JavaScript",
+            "OpenAI API",
+            "HTML5",
+            "CSS3"
+        ],
+        "features": {
+            "es": [
+                "Integración con API de OpenAI",
+                "Diseño visual temático con animaciones",
+                "Efecto de escritura en tiempo real",
+                "Renderizado de Markdown",
+                "Interfaz responsive y moderna"
+            ],
+            "en": [
+                "OpenAI API Integration",
+                "Themed visual design with animations",
+                "Real-time typing effect",
+                "Markdown rendering",
+                "Modern responsive interface"
+            ]
+        }
+    },
+    {
+        "slug": "planet-threejs",
+        "title": {
+            "es": "Planeta 3D con Satélites",
+            "en": "3D Planet with Satellites"
+        },
+        "description": {
+            "es": "Simulación 3D interactiva de la Tierra creada con Three.js. Incluye texturas realistas, atmósfera, luces nocturnas y satélites en órbita. Permite explorar la escena con controles de cámara.",
+            "en": "Interactive 3D Earth simulation created with Three.js. Includes realistic textures, atmosphere, night lights, and orbiting satellites. Allows scene exploration with camera controls."
+        },
+        "video": "assets/img/planet_threejs/planet_threejs_demo.mp4",
+        "links": {
+            "demo": "https://sebaviglione-planet-threejs.netlify.app/",
+            "code": "https://github.com/SebaViglione/threejs-planet"
+        },
+        "stack": [
+            "Three.js",
+            "JavaScript",
+            "HTML5",
+            "CSS3"
+        ],
+        "features": {
+            "es": [
+                "Renderizado 3D con Three.js",
+                "Texturas realistas y mapas de relieve",
+                "Atmósfera con efecto glow",
+                "Satélites con órbitas animadas",
+                "Controles de cámara interactivos"
+            ],
+            "en": [
+                "3D Rendering with Three.js",
+                "Realistic textures and bump maps",
+                "Atmosphere with glow effect",
+                "Satellites with animated orbits",
+                "Interactive camera controls"
+            ]
+        }
+    }
+]
