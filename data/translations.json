@@ -1,0 +1,182 @@
+{
+  "es": {
+    "nav": {
+      "about": "Sobre mí",
+      "skills": "Tecnologías",
+      "projects": "Proyectos",
+      "contact": "Contacto"
+    },
+    "hero": {
+      "badge": "Disponible para proyectos",
+      "greeting": "Hola, soy",
+      "subtitle": "Desarrollador Web · Automatización e IA Local",
+      "description": "Desarrollo sistemas automatizados y aplicaciones web utilizando tecnologías modernas. Mi enfoque técnico integra bases de datos, flujos de automatización y modelos de IA local.",
+      "cta_projects": "Ver proyectos",
+      "cta_contact": "Contacto"
+    },
+    "about": {
+      "tag": "Conóceme",
+      "title": "Sobre mí",
+      "card1_title": "¿Quién soy?",
+      "card1_p1": "Tengo 18 años y soy de Montevideo, Uruguay. Finalicé el Bachillerato en Informática en UTU ISBO como alumno destacado y un promedio 10/10, con el objetivo firme de ingresar a la Universidad ORT para cursar la carrera de Ingeniería en Sistemas y llevar mi formación al siguiente nivel.",
+      "card1_p2": "Empecé a programar de forma autodidacta a los 12 años, cuando descubrí que la programación era la forma más accesible de canalizar mi creatividad y desarrollar soluciones reales a problemas concretos. Lo que comenzó como curiosidad se transformó en pasión por la automatización, el backend y la integración de IA en sistemas productivos.",
+      "card1_p3": "Actualmente me especializo en automatización de procesos con n8n, integración de modelos de IA local (Ollama), desarrollo backend con PHP y gestión de bases de datos PostgreSQL. Mi proyecto más reciente, ARCE-LICITACIONES-IA, es un proyecto personal autodidacta que automatiza el monitoreo y análisis de licitaciones públicas."
+    },
+    "github": {
+      "tag": "Actividad",
+      "title": "GitHub Contributions",
+      "subtitle": "Mi actividad reciente en GitHub",
+      "stat_repos": "Repositorios",
+      "stat_commits": "Commits (30d)",
+      "stat_followers": "Seguidores",
+      "recent_repos": "Repositorios Recientes",
+      "loading": "Cargando repositorios...",
+      "view_on_github": "Ver en GitHub"
+    },
+    "skills": {
+      "tag": "Mi toolkit",
+      "title": "Tecnologías",
+      "subtitle": "Herramientas y tecnologías con las que trabajo",
+      "level_basic": "Básico",
+      "level_intermediate": "Intermedio",
+      "level_advanced": "Avanzado",
+      "context_htmlcss": "Interfaces responsivas, CSS Grid, Flexbox, animaciones",
+      "context_js": "DOM, eventos, fetch, async/await, módulos ES6",
+      "context_php": "MVC, PDO, sesiones, APIs REST básicas",
+      "context_db": "Diseño de esquemas, consultas, índices, relaciones",
+      "context_docker": "Contenedores, docker-compose, Dockerfiles básicos",
+      "context_git": "Commits, branches, pull requests, resolución de conflictos",
+      "context_n8n": "Workflows de automatización, webhooks, integraciones API",
+      "context_ollama": "Modelos locales, prompting, integración con workflows"
+    },
+    "projects": {
+      "tag": "Portfolio",
+      "title": "Proyectos destacados",
+      "subtitle": "Soluciones reales para problemas reales",
+      "view_list": "Lista",
+      "view_grid": "Grilla",
+      "btn_demo": "Ver Demo",
+      "btn_code": "Ver Código",
+      "btn_code_back": "Código Backend",
+      "btn_doc": "Documentación",
+      "btn_video": "Ver Video"
+    },
+    "contact": {
+      "tag": "Hablemos",
+      "title": "¿Te interesa la tecnología y la innovación?",
+      "description": "Este portafolio documenta mi camino técnico. Si tenés alguna sugerencia, querés discutir sobre alguna de las tecnologías que uso o simplemente conectar, no dudes en escribirme.",
+      "email_label": "Email",
+      "whatsapp_label": "WhatsApp",
+      "github_label": "GitHub",
+      "linkedin_label": "LinkedIn",
+      "form_name_label": "Nombre",
+      "form_name_placeholder": "Tu nombre",
+      "form_email_label": "Email",
+      "form_email_placeholder": "tu@email.com",
+      "form_subject_label": "Asunto",
+      "form_subject_placeholder": "¿En qué puedo ayudarte?",
+      "form_message_label": "Mensaje",
+      "form_message_placeholder": "Contame sobre tu proyecto o idea...",
+      "form_submit": "Enviar mensaje",
+      "form_success": "¡Mensaje enviado! Te responderé pronto.",
+      "form_error": "Hubo un error. Intentá de nuevo.",
+      "cta_button": "Enviar un mensaje"
+    },
+    "footer": {
+      "brand_tagline": "Desarrollador Web & Automatización",
+      "nav_title": "Navegación",
+      "social_title": "Redes",
+      "copyright": "Sebastián Viglione."
+    }
+  },
+  "en": {
+    "nav": {
+      "about": "About",
+      "skills": "Technologies",
+      "projects": "Projects",
+      "contact": "Contact"
+    },
+    "hero": {
+      "badge": "Available for projects",
+      "greeting": "Hi, I'm",
+      "subtitle": "Web Developer · Automation & Local AI",
+      "description": "I develop automated systems and web applications using modern technologies. My technical approach integrates databases, automation workflows, and local AI models.",
+      "cta_projects": "View projects",
+      "cta_contact": "Contact"
+    },
+    "about": {
+      "tag": "Get to know me",
+      "title": "About me",
+      "card1_title": "Who am I?",
+      "card1_p1": "I'm 18 years old from Montevideo, Uruguay. I completed my IT High School degree at UTU ISBO as an outstanding student with a 10/10 average, with the firm goal of entering ORT University to pursue a degree in Systems Engineering and take my education to the next level.",
+      "card1_p2": "I started programming self-taught at age 12, when I discovered that coding was the most accessible way to channel my creativity and develop real solutions to concrete problems. What began as curiosity transformed into a passion for automation, backend development, and AI integration in production systems.",
+      "card1_p3": "Currently I specialize in process automation with n8n, local AI model integration (Ollama), PHP backend development, and PostgreSQL database management. My most recent project, ARCE-LICITACIONES-IA, is a self-taught personal project that automates public tender monitoring and analysis."
+    },
+    "github": {
+      "tag": "Activity",
+      "title": "GitHub Contributions",
+      "subtitle": "My recent GitHub activity",
+      "stat_repos": "Repositories",
+      "stat_commits": "Commits (30d)",
+      "stat_followers": "Followers",
+      "recent_repos": "Recent Repositories",
+      "loading": "Loading repositories...",
+      "view_on_github": "View on GitHub"
+    },
+    "skills": {
+      "tag": "My toolkit",
+      "title": "Technologies",
+      "subtitle": "Tools and technologies I work with",
+      "level_basic": "Basic",
+      "level_intermediate": "Intermediate",
+      "level_advanced": "Advanced",
+      "context_htmlcss": "Responsive interfaces, CSS Grid, Flexbox, animations",
+      "context_js": "DOM, events, fetch, async/await, ES6 modules",
+      "context_php": "MVC, PDO, sessions, basic REST APIs",
+      "context_db": "Schema design, queries, indexes, relationships",
+      "context_docker": "Containers, docker-compose, basic Dockerfiles",
+      "context_git": "Commits, branches, pull requests, conflict resolution",
+      "context_n8n": "Automation workflows, webhooks, API integrations",
+      "context_ollama": "Local models, prompting, workflow integration"
+    },
+    "projects": {
+      "tag": "Portfolio",
+      "title": "Featured Projects",
+      "subtitle": "Real solutions for real problems",
+      "view_list": "List",
+      "view_grid": "Grid",
+      "btn_demo": "View Demo",
+      "btn_code": "View Code",
+      "btn_code_back": "Backend Code",
+      "btn_doc": "Documentation",
+      "btn_video": "Watch Video"
+    },
+    "contact": {
+      "tag": "Let's talk",
+      "title": "Interested in technology and innovation?",
+      "description": "This portfolio documents my technical journey. If you have any suggestions, want to discuss the technologies I use, or simply connect, feel free to reach out.",
+      "email_label": "Email",
+      "whatsapp_label": "WhatsApp",
+      "github_label": "GitHub",
+      "linkedin_label": "LinkedIn",
+      "form_name_label": "Name",
+      "form_name_placeholder": "Your name",
+      "form_email_label": "Email",
+      "form_email_placeholder": "your@email.com",
+      "form_subject_label": "Subject",
+      "form_subject_placeholder": "How can I help you?",
+      "form_message_label": "Message",
+      "form_message_placeholder": "Tell me about your project or idea...",
+      "form_submit": "Send message",
+      "form_success": "Message sent! I'll respond soon.",
+      "form_error": "There was an error. Please try again.",
+      "cta_button": "Send a message"
+    },
+    "footer": {
+      "brand_tagline": "Web Developer & Automation",
+      "nav_title": "Navigation",
+      "social_title": "Social",
+      "copyright": "Sebastián Viglione."
+    }
+  }
+}
