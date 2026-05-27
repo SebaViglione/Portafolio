@@ -1,29 +1,36 @@
-# Portafolio – Sebastián Viglione
+# sebaviglione.com
 
 Código fuente de mi sitio personal [sebaviglione.com](https://sebaviglione.com).
-Es un portafolio web enfocado en:
 
-- Automatización de procesos (n8n)
-- Integración de IA local (Ollama)
-- Desarrollo backend con PHP
-- Bases de datos (PostgreSQL)
-- Frontend moderno con HTML, CSS y JavaScript
+Sitio de marca personal orientado a clientes: desarrollo web, software de gestión, automatización e IA aplicada para empresas.
+
+## Stack
+
+- Next.js App Router
+- React
+- Tailwind CSS
+- Framer Motion
+- GSAP + ScrollTrigger
+- Lenis
 
 ## Estructura del proyecto
 
 ```bash
 .
-├── index.html          # Página principal del portafolio
-├── style.css           # Estilos personalizados (dark/light mode, layout, animaciones)
-├── script.js           # Lógica de interacción (theme toggle, i18n, proyectos dinámicos, etc.)
-├── data/
-│   ├── projects.json   # Configuración de proyectos mostrados en la sección "Proyectos"
-│   └── translations.json # Textos en ES / EN para el sitio
-└── assets/
-    ├── img/            # Imágenes del perfil y capturas de proyectos
-    ├── icons/          # Favicon e íconos
+├── app/                # Rutas de Next
+├── components/         # Componentes React animados
+├── lib/site.ts         # Datos editables del sitio
+├── public/assets/      # Assets servidos por Next
+└── reforma.md          # Brief del rediseño
 ```
 
-## Enlace
+## Desarrollo
 
-> **https://sebaviglione.com**
+```bash
+npm install
+npm run dev
+```
+
+## Notas pendientes
+
+En `lib/site.ts` hay comentarios `TODO` para completar el WhatsApp, Instagram y TikTok reales.

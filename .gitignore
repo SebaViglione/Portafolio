@@ -1,2 +1,12 @@
 CLAUDE.md
 assets/cv/
+node_modules/
+.next/
+out/
+dist/
+.env*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
