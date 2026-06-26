@@ -6,9 +6,16 @@ import gsap from 'gsap';
 import { ArrowLeft, Check, Mail } from 'lucide-react';
 import { WhatsAppIcon } from '@/components/BrandIcons';
 import { contact } from '@/lib/site';
+import { getDictionary, type Locale } from '@/lib/content';
 
-export function ThanksPage() {
+export function ThanksPage({ locale }: { locale: Locale }) {
+  const dict = getDictionary(locale);
+  const home = locale === 'es' ? '/' : '/en';
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    document.documentElement.lang = dict.htmlLang;
+  }, [dict.htmlLang]);
 
   useEffect(() => {
     const canvasElement = canvasRef.current;
@@ -77,22 +84,22 @@ export function ThanksPage() {
         <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-accent/40 bg-accent/10 text-accent">
           <Check size={32} />
         </div>
-        <h1 className="mt-7 font-display text-4xl font-semibold tracking-normal text-text-primary">Mensaje enviado.</h1>
+        <h1 className="mt-7 font-display text-4xl font-semibold tracking-normal text-text-primary">{dict.thanks.title}</h1>
         <p className="mt-4 text-[17px] leading-[1.7] text-text-secondary">
-          Gracias por escribirme. Recibí tu mensaje y te voy a responder apenas pueda.
+          {dict.thanks.text}
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Link href="/" className="btn-secondary justify-center">
+          <Link href={home} className="btn-secondary justify-center">
             <ArrowLeft size={18} />
-            Volver al inicio
+            {dict.thanks.home}
           </Link>
-          <Link href={contact.whatsapp} className="btn-primary justify-center" target="_blank" rel="noopener noreferrer">
+          <Link href={dict.whatsapp} className="btn-primary justify-center" target="_blank" rel="noopener noreferrer">
             <WhatsAppIcon size={18} />
-            WhatsApp
+            {dict.thanks.whatsapp}
           </Link>
           <Link href={`mailto:${contact.email}`} className="btn-secondary justify-center">
             <Mail size={18} />
-            Mail
+            {dict.thanks.mail}
           </Link>
         </div>
       </section>

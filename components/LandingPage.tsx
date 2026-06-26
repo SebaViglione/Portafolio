@@ -12,14 +12,17 @@ import {
   ArrowDown,
   ArrowLeftRight,
   ArrowRight,
+  Download,
   ExternalLink,
+  Languages,
   Mail,
   Send,
 } from 'lucide-react';
-import { LinkedInIcon, WhatsAppIcon } from '@/components/BrandIcons';
+import { GitHubIcon, LinkedInIcon, WhatsAppIcon } from '@/components/BrandIcons';
 import { BackgroundGrid } from '@/components/BackgroundGrid';
 import { CustomCursor } from '@/components/CustomCursor';
-import { contact, navItems, projects, reasons, services, type Project } from '@/lib/site';
+import { contact } from '@/lib/site';
+import { getDictionary, localizedHref, type Locale, type Project } from '@/lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -54,26 +57,26 @@ function splitWords(text: string, className = '') {
   ));
 }
 
-function HeroTitle() {
+function HeroTitle({ title }: { title: ReturnType<typeof getDictionary>['hero']['title'] }) {
   return (
     <h1 className="hero-title font-display text-[2.62rem] font-bold leading-[0.96] tracking-normal text-text-primary sm:text-[3.65rem] md:text-[4.35rem] xl:text-[5.15rem]">
-      <span className="sr-only">Hago software que ordena tu operación.</span>
-      <span className="hero-title-line block">{splitWords('Hago software')}</span>
-      <span className="hero-title-line block">{splitWords('que ordena')}</span>
+      <span className="sr-only">{title.sr}</span>
+      <span className="hero-title-line block">{splitWords(title.l1)}</span>
+      <span className="hero-title-line block">{splitWords(title.l2)}</span>
       <span className="block">
-        {splitWords('tu')}{' '}
-        <span className="highlight-word">{splitWords('operación.', 'highlight-word-text')}</span>
+        {splitWords(title.l3pre)}{' '}
+        <span className="highlight-word">{splitWords(title.highlight, 'highlight-word-text')}</span>
       </span>
     </h1>
   );
 }
 
-function ContactTitle() {
+function ContactTitle({ title }: { title: ReturnType<typeof getDictionary>['contact']['title'] }) {
   return (
     <h2 className="contact-title font-display text-[2.7rem] font-bold leading-[0.98] tracking-normal text-text-primary sm:text-[3.45rem] md:text-[4.6rem] xl:text-[5.8rem]">
-      <span className="sr-only">¿Tenés un proyecto en mente?</span>
-      <span className="block">{splitWords('¿Tenés un proyecto')}</span>
-      <span className="block">{splitWords('en mente?')}</span>
+      <span className="sr-only">{title.sr}</span>
+      <span className="block">{splitWords(title.l1)}</span>
+      <span className="block">{splitWords(title.l2)}</span>
     </h2>
   );
 }
@@ -126,20 +129,20 @@ function ProjectVisual({ project, priority = false }: { project: Project; priori
     <div className="project-media relative aspect-[16/10] overflow-hidden bg-bg-secondary">
       {project.video ? (
         <video
-          className="h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
           autoPlay
           loop
           muted
           playsInline
           preload="metadata"
-          aria-label={`Video de ${project.name}`}
+          aria-label={project.name}
         >
           <source src={project.video} type="video/webm" />
         </video>
       ) : project.image ? (
         <Image
           src={project.image}
-          alt={`Captura de ${project.name}`}
+          alt={project.name}
           fill
           priority={priority}
           sizes="(min-width: 1024px) 58vw, 92vw"
@@ -161,7 +164,12 @@ function ProjectVisual({ project, priority = false }: { project: Project; priori
   );
 }
 
-export function LandingPage() {
+export function LandingPage({ locale }: { locale: Locale }) {
+  const dict = getDictionary(locale);
+  const tools = dict.work.tools;
+  const sites = dict.work.sites;
+  const switchHref = locale === 'es' ? '/en' : '/';
+
   const rootRef = useRef<HTMLElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
   const menuIconRef = useRef<HTMLButtonElement>(null);
@@ -170,6 +178,10 @@ export function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [projectCarouselPaused, setProjectCarouselPaused] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.lang = dict.htmlLang;
+  }, [dict.htmlLang]);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -240,11 +252,15 @@ export function LandingPage() {
 
   useGSAP(
     () => {
+      const reduceMotion =
+        typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) return;
+
       const heroWords = gsap.utils.toArray<HTMLElement>('.hero-title .word');
       const contactWords = gsap.utils.toArray<HTMLElement>('.contact-title .word');
 
       gsap.set(heroWords, { yPercent: -90, opacity: 0, rotateX: -28 });
-      gsap.set(contactWords, { yPercent: -70, opacity: 0, rotateX: -24 });
+      gsap.set(contactWords, { yPercent: 60, opacity: 0, rotateX: -24 });
       gsap.set('.hero-copy, .hero-actions, .scroll-cue, .hero-portrait, .hero-portrait-mobile', { y: 22, opacity: 0 });
 
       const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
@@ -268,6 +284,30 @@ export function LandingPage() {
             start: 'top 78%',
           },
         });
+      });
+
+      gsap.from('.about-block', {
+        y: 28,
+        opacity: 0,
+        duration: 0.72,
+        stagger: 0.12,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#sobre-mi',
+          start: 'top 64%',
+        },
+      });
+
+      gsap.from('.stack-group', {
+        y: 22,
+        opacity: 0,
+        duration: 0.58,
+        stagger: 0.08,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.stack-grid',
+          start: 'top 82%',
+        },
       });
 
       gsap.from('.service-card', {
@@ -296,6 +336,18 @@ export function LandingPage() {
         });
       });
 
+      gsap.from('.tool-card', {
+        y: 28,
+        opacity: 0,
+        duration: 0.65,
+        stagger: 0.12,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#trabajos',
+          start: 'top 62%',
+        },
+      });
+
       gsap.from('.project-carousel-card', {
         y: 24,
         opacity: 0,
@@ -304,8 +356,8 @@ export function LandingPage() {
         clearProps: 'transform,opacity',
         ease: 'power3.out',
         scrollTrigger: {
-          trigger: '#trabajos',
-          start: 'top 58%',
+          trigger: '.project-carousel',
+          start: 'top 78%',
         },
       });
 
@@ -374,7 +426,7 @@ export function LandingPage() {
         },
       });
     },
-    { scope: rootRef },
+    { scope: rootRef, dependencies: [locale] },
   );
 
   const closeMenu = () => setMenuOpen(false);
@@ -395,20 +447,28 @@ export function LandingPage() {
           </Link>
 
           <nav className="hidden items-center gap-8 lg:flex">
-            {navItems.map((item) => (
+            {dict.nav.items.map((item) => (
               <Link className="nav-link text-sm font-medium text-text-secondary" href={item.href} key={item.href}>
                 {item.label}
               </Link>
             ))}
+            <Link
+              href={switchHref}
+              className="nav-link inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary"
+              aria-label={dict.nav.switchAria}
+            >
+              <Languages size={16} />
+              {dict.nav.switchLabel}
+            </Link>
             <Link href="#contacto" className="nav-cta text-sm font-semibold">
-              Hablemos
+              {dict.nav.cta}
             </Link>
           </nav>
 
           <button
             ref={menuIconRef}
             className="relative z-50 grid h-11 w-11 place-items-center rounded-md border border-border bg-bg-card text-text-primary lg:hidden"
-            aria-label={menuOpen ? 'Cerrar menu' : 'Abrir menu'}
+            aria-label={menuOpen ? dict.nav.menuClose : dict.nav.menuOpen}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((value) => !value)}
           >
@@ -429,7 +489,7 @@ export function LandingPage() {
               transition={{ duration: 0.22 }}
             >
               <div className="flex flex-col gap-4">
-                {navItems.map((item) => (
+                {dict.nav.items.map((item) => (
                   <Link
                     className="border-b border-border py-5 font-display text-4xl font-semibold text-text-primary"
                     href={item.href}
@@ -439,8 +499,17 @@ export function LandingPage() {
                     {item.label}
                   </Link>
                 ))}
+                <Link
+                  href={switchHref}
+                  className="inline-flex items-center gap-2 border-b border-border py-5 font-display text-4xl font-semibold text-text-primary"
+                  onClick={closeMenu}
+                  aria-label={dict.nav.switchAria}
+                >
+                  <Languages size={28} />
+                  {dict.nav.switchLabel}
+                </Link>
                 <Link href="#contacto" className="btn-primary mt-4 justify-center" onClick={closeMenu}>
-                  Hablemos
+                  {dict.nav.cta}
                 </Link>
               </div>
             </motion.div>
@@ -456,30 +525,34 @@ export function LandingPage() {
           <div className="max-w-[800px]">
             <div className="hero-kicker mb-7 inline-flex items-center gap-3 rounded-full border border-border bg-bg-secondary/80 px-4 py-2 text-xs font-medium uppercase tracking-[0.04em] text-text-secondary">
               <span className="pulse-dot" />
-              disponible para proyectos
+              {dict.hero.kicker}
             </div>
 
-            <HeroTitle />
+            <HeroTitle title={dict.hero.title} />
 
             <p className="hero-copy mt-7 max-w-2xl text-lg leading-[1.7] text-text-secondary md:text-xl">
-              Desde el sitio web hasta el sistema interno que te ahorra horas de trabajo manual. Sin equipos grandes, sin procesos eternos.
+              {dict.hero.copy}
+            </p>
+
+            <p className="hero-copy mt-4 text-sm font-medium text-text-muted">
+              {dict.hero.credential}
             </p>
 
             <div className="hero-actions mt-9 flex flex-col gap-3 sm:flex-row sm:justify-center min-[1050px]:justify-start">
-              <Link href={contact.whatsapp} className="btn-primary" target="_blank" rel="noopener noreferrer">
+              <Link href={dict.whatsapp} className="btn-primary" target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon size={19} />
-                Hablemos por WhatsApp
+                {dict.hero.ctaWhatsapp}
               </Link>
               <Link href="#trabajos" className="btn-secondary">
-                Ver trabajos
+                {dict.hero.ctaWork}
                 <ArrowDown size={18} />
               </Link>
             </div>
 
             <div className="hero-portrait-mobile portrait-shell relative mx-auto mt-8 h-[340px] max-w-[340px] overflow-hidden sm:h-[420px] sm:max-w-[420px] md:h-[500px] md:max-w-[500px] min-[1050px]:hidden">
               <Image
-                src="/assets/img/profile_pic_transparent.png"
-                alt="Sebastián Viglione"
+                src="/assets/img/profile.webp"
+                alt={dict.hero.portraitAlt}
                 fill
                 priority
                 sizes="(min-width: 768px) 500px, (min-width: 640px) 420px, 340px"
@@ -491,8 +564,8 @@ export function LandingPage() {
           <div className="hero-portrait pointer-events-none relative hidden min-h-[720px] min-[1050px]:block">
             <div className="portrait-shell absolute -inset-x-12 bottom-0 h-[720px] overflow-hidden xl:-inset-x-16 xl:h-[760px]">
               <Image
-                src="/assets/img/profile_pic_transparent.png"
-                alt="Sebastián Viglione"
+                src="/assets/img/profile.webp"
+                alt={dict.hero.portraitAlt}
                 fill
                 priority
                 sizes="620px"
@@ -501,28 +574,101 @@ export function LandingPage() {
             </div>
             <div className="absolute bottom-8 right-6 rounded-md border border-border bg-bg-secondary/80 px-4 py-3 text-sm text-text-secondary backdrop-blur">
               <span className="block font-display text-xl font-semibold text-text-primary">Sebastián Viglione</span>
-              Software a medida para empresas
+              {dict.hero.portraitCaption}
             </div>
           </div>
         </div>
 
         <div className="scroll-cue absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 text-xs uppercase tracking-[0.04em] text-text-muted md:flex">
-          <span>scroll</span>
+          <span>{dict.hero.scroll}</span>
           <span className="scroll-line" />
+        </div>
+      </section>
+
+      <section id="sobre-mi" className="bg-bg-primary py-24 md:py-32">
+        <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
+          <div className="section-heading max-w-3xl">
+            <p className="section-label">{dict.about.label}</p>
+            <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
+              {dict.about.heading}
+            </h2>
+          </div>
+
+          <div className="mt-14 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+            <div className="about-block">
+              <p className="max-w-2xl text-[17px] leading-[1.75] text-text-secondary md:text-lg">{dict.about.intro}</p>
+              <p className="mt-5 max-w-2xl text-[17px] leading-[1.75] text-text-secondary md:text-lg">{dict.about.body}</p>
+
+              <ul className="mt-9 grid gap-3">
+                {dict.about.facts.map((fact) => {
+                  const Icon = fact.icon;
+                  return (
+                    <li className="about-fact" key={fact.label}>
+                      <span className="about-fact-icon">
+                        <Icon size={18} />
+                      </span>
+                      {fact.label}
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <div className="mt-9 flex flex-wrap gap-3">
+                <Link
+                  href={contact.cv}
+                  className="btn-primary"
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Download size={18} />
+                  {dict.about.cvButton}
+                </Link>
+                <Link href={contact.linkedin} className="btn-secondary" target="_blank" rel="noopener noreferrer">
+                  <LinkedInIcon size={18} />
+                  LinkedIn
+                </Link>
+                <Link href={contact.github} className="btn-secondary" target="_blank" rel="noopener noreferrer">
+                  <GitHubIcon size={18} />
+                  GitHub
+                </Link>
+              </div>
+            </div>
+
+            <div className="about-block">
+              <p className="section-label">{dict.about.stackLabel}</p>
+              <div className="stack-grid mt-5 grid gap-3 sm:grid-cols-2">
+                {dict.stackGroups.map((group) => (
+                  <div className="stack-group" key={group.title}>
+                    <h3 className="font-display text-sm font-semibold uppercase tracking-[0.04em] text-text-primary">
+                      {group.title}
+                    </h3>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {group.items.map((item) => (
+                        <span className="stack-chip" key={item}>
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       <section id="servicios" className="bg-bg-secondary py-24 md:py-32">
         <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="section-heading max-w-3xl">
-            <p className="section-label">que puedo hacer por tu empresa</p>
+            <p className="section-label">{dict.services.label}</p>
             <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              Soluciones a medida, sin vueltas.
+              {dict.services.heading}
             </h2>
           </div>
 
           <div className="mt-14 grid gap-4 md:grid-cols-2">
-            {services.map((service) => {
+            {dict.services.items.map((service) => {
               const Icon = service.icon;
               return (
                 <motion.article
@@ -541,7 +687,7 @@ export function LandingPage() {
                   <h3 className="font-display text-2xl font-semibold text-text-primary">{service.title}</h3>
                   <p className="mt-4 max-w-xl text-[17px] leading-[1.7] text-text-secondary">{service.text}</p>
                   <Link href="#contacto" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-accent">
-                    Más info <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={17} />
+                    {dict.services.more} <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={17} />
                   </Link>
                 </motion.article>
               );
@@ -553,75 +699,118 @@ export function LandingPage() {
       <section id="trabajos" className="bg-bg-primary py-24 md:py-32">
         <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="section-heading max-w-3xl">
-            <p className="section-label">trabajos recientes</p>
+            <p className="section-label">{dict.work.label}</p>
             <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              Cosas que hice que ya están funcionando.
+              {dict.work.heading}
             </h2>
           </div>
 
-          <div className="mt-8 flex items-center justify-between gap-4 text-sm text-text-muted">
-            <span className="inline-flex items-center gap-2">
-              <ArrowLeftRight size={17} />
-              Deslizá para ver más trabajos
-            </span>
-            <span className="project-scroll-meter" aria-hidden="true" />
-          </div>
-
-          <div className="project-carousel -mx-5 mt-5 overflow-hidden px-5 md:-mx-8 md:px-8" aria-label="Trabajos recientes">
-            <div ref={projectCarouselRef} className="project-carousel-track flex gap-4 pb-4 pt-2">
-              {projects.map((project, index) => (
+          <p className="section-label mt-12">{dict.work.toolsLabel}</p>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {tools.map((tool, index) => {
+              const href = localizedHref(locale, tool.url);
+              return (
                 <article
-                  className="project-carousel-card group relative overflow-hidden rounded-md border border-border bg-bg-card"
-                  key={project.name}
+                  className="tool-card group relative overflow-hidden rounded-md border border-border bg-bg-card"
+                  key={tool.name}
                   data-cursor="VER"
-                  onMouseEnter={() => setProjectCarouselPaused(true)}
-                  onMouseLeave={() => setProjectCarouselPaused(false)}
-                  onFocus={() => setProjectCarouselPaused(true)}
-                  onBlur={() => setProjectCarouselPaused(false)}
                 >
-                  <Link
-                    className="block h-full"
-                    href={project.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ProjectVisual project={project} priority={index === 0} />
-
-                    <div className="flex min-h-[300px] flex-col p-5 md:p-6">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <span className="text-xs font-medium uppercase tracking-[0.04em] text-text-muted">
-                            {project.domain}
-                          </span>
-                          <h3 className="mt-3 font-display text-2xl font-semibold leading-tight text-text-primary">
-                            {project.name}
-                          </h3>
-                        </div>
-                        <span className="rounded-full border border-border px-2.5 py-1 text-xs font-semibold text-accent">
-                          {String((index % projects.length) + 1).padStart(2, '0')}
-                        </span>
-                      </div>
-
-                      <p className="mt-4 text-[15px] leading-[1.65] text-text-secondary">
-                        {project.description}
-                      </p>
-
+                  <Link className="flex h-full flex-col" href={href}>
+                    <ProjectVisual project={tool} priority={index === 0} />
+                    <div className="flex flex-1 flex-col p-5 md:p-6">
+                      <span className="text-xs font-medium uppercase tracking-[0.04em] text-text-muted">
+                        {tool.domain}
+                      </span>
+                      <h3 className="mt-2 font-display text-2xl font-semibold leading-tight text-text-primary">
+                        {tool.name}
+                      </h3>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.04em] text-accent">{tool.kind}</p>
+                      <p className="mt-4 text-[15px] leading-[1.65] text-text-secondary">{tool.description}</p>
                       <div className="mt-5 flex flex-wrap gap-2">
-                        {project.tags.map((tag) => (
+                        {tool.tags.map((tag) => (
                           <span className="project-tag" key={tag}>
                             {tag}
                           </span>
                         ))}
                       </div>
-
-                      <span className="mt-auto inline-flex items-center gap-2 pt-7 text-sm font-semibold text-accent">
-                        {project.cta}
-                        <ExternalLink className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" size={17} />
+                      <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-accent">
+                        {tool.cta}
+                        <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={17} />
                       </span>
                     </div>
                   </Link>
                 </article>
-              ))}
+              );
+            })}
+          </div>
+
+          <p className="section-label mt-16">{dict.work.sitesLabel}</p>
+          <div className="mt-6 flex items-center justify-between gap-4 text-sm text-text-muted">
+            <span className="inline-flex items-center gap-2">
+              <ArrowLeftRight size={17} />
+              {dict.work.swipe}
+            </span>
+            <span className="project-scroll-meter" aria-hidden="true" />
+          </div>
+
+          <div className="project-carousel -mx-5 mt-5 overflow-hidden px-5 md:-mx-8 md:px-8" aria-label={dict.work.sitesLabel}>
+            <div ref={projectCarouselRef} className="project-carousel-track flex gap-4 pb-4 pt-2">
+              {sites.map((project, index) => {
+                const internal = project.url.startsWith('/');
+                const href = internal ? localizedHref(locale, project.url) : project.url;
+                return (
+                  <article
+                    className="project-carousel-card group relative overflow-hidden rounded-md border border-border bg-bg-card"
+                    key={project.name}
+                    data-cursor="VER"
+                    onMouseEnter={() => setProjectCarouselPaused(true)}
+                    onMouseLeave={() => setProjectCarouselPaused(false)}
+                    onFocus={() => setProjectCarouselPaused(true)}
+                    onBlur={() => setProjectCarouselPaused(false)}
+                  >
+                    <Link
+                      className="block h-full"
+                      href={href}
+                      {...(internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+                    >
+                      <ProjectVisual project={project} priority={index === 0} />
+
+                      <div className="flex min-h-[300px] flex-col p-5 md:p-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <span className="text-xs font-medium uppercase tracking-[0.04em] text-text-muted">
+                              {project.domain}
+                            </span>
+                            <h3 className="mt-3 font-display text-2xl font-semibold leading-tight text-text-primary">
+                              {project.name}
+                            </h3>
+                          </div>
+                          <span className="rounded-full border border-border px-2.5 py-1 text-xs font-semibold text-accent">
+                            {String((index % sites.length) + 1).padStart(2, '0')}
+                          </span>
+                        </div>
+
+                        <p className="mt-4 text-[15px] leading-[1.65] text-text-secondary">
+                          {project.description}
+                        </p>
+
+                        <div className="mt-5 flex flex-wrap gap-2">
+                          {project.tags.map((tag) => (
+                            <span className="project-tag" key={tag}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        <span className="mt-auto inline-flex items-center gap-2 pt-7 text-sm font-semibold text-accent">
+                          {project.cta}
+                          <ExternalLink className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" size={17} />
+                        </span>
+                      </div>
+                    </Link>
+                  </article>
+                );
+              })}
               <article
                 className="project-carousel-card project-more-card relative overflow-hidden rounded-md border border-border bg-bg-card"
                 onMouseEnter={() => setProjectCarouselPaused(true)}
@@ -630,17 +819,17 @@ export function LandingPage() {
                 onBlur={() => setProjectCarouselPaused(false)}
               >
                 <div className="flex h-full min-h-[568px] flex-col justify-between p-6 md:p-7">
-                  <span className="text-xs font-medium uppercase tracking-[0.04em] text-text-muted">próximamente</span>
+                  <span className="text-xs font-medium uppercase tracking-[0.04em] text-text-muted">{dict.work.moreKicker}</span>
                   <div>
                     <p className="font-display text-5xl font-semibold leading-none text-text-primary md:text-6xl">
-                      y más...
+                      {dict.work.moreTitle}
                     </p>
                     <p className="mt-5 max-w-[18rem] text-[15px] leading-[1.7] text-text-secondary">
-                      Hay más trabajos y sistemas que puedo mostrarte según lo que necesites resolver.
+                      {dict.work.moreText}
                     </p>
                   </div>
                   <Link href="#contacto" className="inline-flex items-center gap-2 text-sm font-semibold text-accent">
-                    Hablemos
+                    {dict.work.moreCta}
                     <ArrowRight size={17} />
                   </Link>
                 </div>
@@ -656,14 +845,14 @@ export function LandingPage() {
         </div>
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="section-heading max-w-3xl">
-            <p className="section-label">como trabajo</p>
+            <p className="section-label">{dict.reasons.label}</p>
             <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              Sin agencias en el medio. Hablás directo conmigo.
+              {dict.reasons.heading}
             </h2>
           </div>
 
           <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {reasons.map((reason) => {
+            {dict.reasons.items.map((reason) => {
               const Icon = reason.icon;
               return (
                 <div className="reason-item" key={reason.title}>
@@ -685,34 +874,37 @@ export function LandingPage() {
       <section id="contacto" className="bg-bg-primary py-24 md:py-32">
         <div className="mx-auto grid w-full max-w-7xl gap-12 px-5 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.72fr)] lg:gap-16">
           <div className="contact-block">
-            <p className="section-label">contacto</p>
+            <p className="section-label">{dict.contact.label}</p>
             <div className="mt-5">
-              <ContactTitle />
+              <ContactTitle title={dict.contact.title} />
             </div>
             <p className="mt-7 max-w-2xl text-lg leading-[1.7] text-text-secondary md:text-xl">
-              Contame qué necesitás. Sin compromisos, sin tecnicismos. Si puedo ayudarte, te lo digo. Si no, también.
+              {dict.contact.copy}
             </p>
 
             <div className="mt-9 grid gap-3 sm:grid-cols-2">
-              <Link className="direct-action" href={contact.whatsapp} target="_blank" rel="noopener noreferrer">
+              <Link className="direct-action" href={dict.whatsapp} target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon size={20} />
-                WhatsApp
+                {dict.contact.whatsapp}
                 <ExternalLink size={16} />
               </Link>
               <Link className="direct-action" href={`mailto:${contact.email}`}>
                 <Mail size={20} />
-                Mail
+                {dict.contact.mail}
                 <ExternalLink size={16} />
               </Link>
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-3 text-sm text-text-muted">
-              <span>También en redes:</span>
-              <Link className="social-link" href={contact.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+              <span>{dict.contact.social}</span>
+              <Link className="social-link" href={dict.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
                 <WhatsAppIcon size={19} />
               </Link>
               <Link className="social-link" href={contact.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                 <LinkedInIcon size={19} />
+              </Link>
+              <Link className="social-link" href={contact.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <GitHubIcon size={19} />
               </Link>
             </div>
           </div>
@@ -722,7 +914,7 @@ export function LandingPage() {
             method="POST"
             data-netlify="true"
             netlify-honeypot="bot-field"
-            action="/gracias"
+            action={localizedHref(locale, '/gracias')}
             className="contact-block contact-form rounded-md border border-border bg-bg-card p-5 md:p-7"
             onSubmit={() => setIsSubmitting(true)}
           >
@@ -736,36 +928,36 @@ export function LandingPage() {
 
             <div className="floating-field">
               <input id="name" name="name" type="text" placeholder=" " required />
-              <label htmlFor="name">Tu nombre</label>
+              <label htmlFor="name">{dict.contact.formName}</label>
             </div>
 
             <div className="floating-field">
               <input id="email" name="email" type="email" placeholder=" " required />
-              <label htmlFor="email">Tu email</label>
+              <label htmlFor="email">{dict.contact.formEmail}</label>
             </div>
 
             <div className="floating-field">
               <textarea id="message" name="message" rows={6} placeholder=" " required />
-              <label htmlFor="message">¿En qué puedo ayudarte?</label>
+              <label htmlFor="message">{dict.contact.formMessage}</label>
             </div>
 
             <button className="btn-primary w-full justify-center" type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
-                <span className="loading-dots" aria-label="Enviando">
+                <span className="loading-dots" aria-label={dict.contact.formSending}>
                   <span />
                   <span />
                   <span />
                 </span>
               ) : (
                 <>
-                  Mandar mensaje
+                  {dict.contact.formSubmit}
                   <Send size={18} />
                 </>
               )}
             </button>
 
             <p className="mt-4 text-sm leading-relaxed text-text-muted">
-              Si preferís ir directo, escribime a{' '}
+              {dict.contact.formDirectPre}{' '}
               <Link className="text-accent hover:text-accent-soft" href={`mailto:${contact.email}`}>
                 {contact.email}
               </Link>
@@ -779,7 +971,7 @@ export function LandingPage() {
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-5 text-sm text-text-muted md:flex-row md:items-center md:px-8">
           <span>sebaviglione.com · {new Date().getFullYear()}</span>
           <span className="hidden h-px flex-1 bg-border md:block" />
-          <span className="typewriter">hecho por mí, obviamente.</span>
+          <span className="typewriter">{dict.footer.tagline}</span>
         </div>
       </footer>
     </main>
