@@ -433,11 +433,23 @@ button {
   scroll-behavior: smooth;
   scroll-padding-left: 0;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: #B8FF2C #2B3038;
+  cursor: grab;
 }
 
 .project-carousel-track::-webkit-scrollbar {
-  display: none;
+  height: 3px;
+}
+
+.project-carousel-track::-webkit-scrollbar-track {
+  background: #2B3038;
+  border-radius: 2px;
+}
+
+.project-carousel-track::-webkit-scrollbar-thumb {
+  background: #B8FF2C;
+  border-radius: 2px;
 }
 
 .project-carousel-card {

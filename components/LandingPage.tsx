@@ -250,6 +250,62 @@ export function LandingPage({ locale }: { locale: Locale }) {
     return () => window.clearInterval(interval);
   }, [projectCarouselPaused, scrollProjectCarousel]);
 
+  useEffect(() => {
+    const carousel = projectCarouselRef.current;
+    if (!carousel) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let startScroll = 0;
+    let didDrag = false;
+
+    const onMouseDown = (e: MouseEvent) => {
+      isDragging = true;
+      didDrag = false;
+      startX = e.clientX;
+      startScroll = carousel.scrollLeft;
+      carousel.style.cursor = 'grabbing';
+      carousel.style.userSelect = 'none';
+      setProjectCarouselPaused(true);
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) didDrag = true;
+      carousel.scrollLeft = startScroll - dx;
+    };
+
+    const onMouseUp = () => {
+      isDragging = false;
+      carousel.style.cursor = '';
+      carousel.style.userSelect = '';
+      setProjectCarouselPaused(false);
+    };
+
+    const onClickCapture = (e: MouseEvent) => {
+      if (didDrag) {
+        e.preventDefault();
+        e.stopPropagation();
+        didDrag = false;
+      }
+    };
+
+    carousel.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    carousel.addEventListener('mouseleave', onMouseUp);
+    carousel.addEventListener('click', onClickCapture, true);
+
+    return () => {
+      carousel.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      carousel.removeEventListener('mouseleave', onMouseUp);
+      carousel.removeEventListener('click', onClickCapture, true);
+    };
+  }, []);
+
   useGSAP(
     () => {
       const reduceMotion =
