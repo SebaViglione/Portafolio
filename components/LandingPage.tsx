@@ -316,7 +316,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
       const contactWords = gsap.utils.toArray<HTMLElement>('.contact-title .word');
 
       gsap.set(heroWords, { yPercent: -90, opacity: 0, rotateX: -28 });
-      gsap.set(contactWords, { yPercent: 60, opacity: 0, rotateX: -24 });
+      gsap.set(contactWords, { yPercent: -70, opacity: 0, rotateX: -24 });
       gsap.set('.hero-copy, .hero-actions, .scroll-cue, .hero-portrait, .hero-portrait-mobile', { y: 22, opacity: 0 });
 
       const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
@@ -671,7 +671,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
 
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link
-                  href={contact.cv}
+                  href={contact.cv[locale]}
                   className="btn-primary"
                   download
                   target="_blank"

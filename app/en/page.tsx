@@ -22,7 +22,7 @@ export const metadata: Metadata = {
         url: '/assets/og/home.png',
         width: 1200,
         height: 630,
-        alt: 'Sebastián Viglione — Software developer',
+        alt: 'Sebastián Viglione, software developer',
       },
     ],
   },

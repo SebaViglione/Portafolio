@@ -10,15 +10,16 @@ import Lenis from 'lenis';
 import { ArrowLeft, ArrowRight, Languages, MoveRight } from 'lucide-react';
 import { BackgroundGrid } from '@/components/BackgroundGrid';
 import { CustomCursor } from '@/components/CustomCursor';
-import { getDictionary, type Locale } from '@/lib/content';
+import { getDictionary, type CaseStudy, type CaseStudySlug, type Locale } from '@/lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-export function CotizadorPage({ locale }: { locale: Locale }) {
+export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStudySlug }) {
   const dict = getDictionary(locale);
-  const c = dict.cotizador;
+  const c: CaseStudy = dict[slug];
   const home = locale === 'es' ? '/' : '/en';
-  const switchHref = locale === 'es' ? '/en/cotizador' : '/cotizador';
+  const switchHref = locale === 'es' ? `/en/${slug}` : `/${slug}`;
+  const hasBeforeAfter = c.beforeLabel && c.beforeValue && c.afterLabel && c.afterValue;
 
   const rootRef = useRef<HTMLElement>(null);
 
@@ -75,16 +76,18 @@ export function CotizadorPage({ locale }: { locale: Locale }) {
         scrollTrigger: { trigger: '.arch-flow', start: 'top 74%' },
       });
 
-      gsap.from('.decision-card', {
-        y: 24,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: '.decision-grid', start: 'top 78%' },
+      gsap.utils.toArray<HTMLElement>('.decision-grid').forEach((grid) => {
+        gsap.from(grid.querySelectorAll('.decision-card'), {
+          y: 24,
+          opacity: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: grid, start: 'top 78%' },
+        });
       });
     },
-    { scope: rootRef, dependencies: [locale] },
+    { scope: rootRef, dependencies: [locale, slug] },
   );
 
   return (
@@ -194,18 +197,24 @@ export function CotizadorPage({ locale }: { locale: Locale }) {
             ))}
           </div>
 
-          <div className="beforeafter mt-10 max-w-3xl">
-            <div className="beforeafter-box">
-              <span className="text-xs uppercase tracking-[0.04em] text-text-muted">{c.beforeLabel}</span>
-              <span className="mt-2 font-display text-3xl font-bold text-text-secondary md:text-4xl">{c.beforeValue}</span>
-            </div>
-            <MoveRight className="beforeafter-arrow text-accent" size={26} />
-            <div className="beforeafter-box is-after">
-              <span className="text-xs uppercase tracking-[0.04em] text-text-muted">{c.afterLabel}</span>
-              <span className="mt-2 font-display text-3xl font-bold text-accent md:text-4xl">{c.afterValue}</span>
-            </div>
-          </div>
-          <p className="mt-5 max-w-3xl text-[15px] leading-[1.7] text-text-muted">{c.beforeAfterText}</p>
+          {hasBeforeAfter ? (
+            <>
+              <div className="beforeafter mt-10 max-w-3xl">
+                <div className="beforeafter-box">
+                  <span className="text-xs uppercase tracking-[0.04em] text-text-muted">{c.beforeLabel}</span>
+                  <span className="mt-2 font-display text-3xl font-bold text-text-secondary md:text-4xl">{c.beforeValue}</span>
+                </div>
+                <MoveRight className="beforeafter-arrow text-accent" size={26} />
+                <div className="beforeafter-box is-after">
+                  <span className="text-xs uppercase tracking-[0.04em] text-text-muted">{c.afterLabel}</span>
+                  <span className="mt-2 font-display text-3xl font-bold text-accent md:text-4xl">{c.afterValue}</span>
+                </div>
+              </div>
+              {c.beforeAfterText ? (
+                <p className="mt-5 max-w-3xl text-[15px] leading-[1.7] text-text-muted">{c.beforeAfterText}</p>
+              ) : null}
+            </>
+          ) : null}
         </section>
 
         <section className="case-block mt-20">
@@ -226,10 +235,36 @@ export function CotizadorPage({ locale }: { locale: Locale }) {
               </li>
             ))}
           </ol>
-          <p className="mt-7 max-w-3xl rounded-md border border-border bg-bg-card p-5 text-[15px] leading-[1.7] text-text-secondary">
-            {c.solutionNote}
-          </p>
+          {c.solutionNote ? (
+            <p className="mt-7 max-w-3xl rounded-md border border-border bg-bg-card p-5 text-[15px] leading-[1.7] text-text-secondary">
+              {c.solutionNote}
+            </p>
+          ) : null}
         </section>
+
+        {c.admin && c.adminLabel && c.adminHeading ? (
+          <section className="case-block mt-20">
+            <div className="section-heading max-w-3xl">
+              <p className="section-label">{c.adminLabel}</p>
+              <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">
+                {c.adminHeading}
+              </h2>
+            </div>
+            <div className="decision-grid mt-12 grid gap-4 md:grid-cols-2">
+              {c.admin.map((item) => (
+                <article className="decision-card" key={item.title}>
+                  <h3 className="font-display text-xl font-semibold text-text-primary">{item.title}</h3>
+                  <p className="mt-3 text-[15px] leading-[1.7] text-text-secondary">{item.text}</p>
+                </article>
+              ))}
+            </div>
+            {c.adminNote ? (
+              <p className="mt-7 max-w-3xl rounded-md border border-border bg-bg-card p-5 text-[15px] leading-[1.7] text-text-secondary">
+                {c.adminNote}
+              </p>
+            ) : null}
+          </section>
+        ) : null}
 
         <section className="case-block mt-20">
           <div className="section-heading max-w-3xl">
@@ -249,7 +284,9 @@ export function CotizadorPage({ locale }: { locale: Locale }) {
               </div>
             ))}
           </div>
-          <p className="mt-8 max-w-3xl text-[15px] leading-[1.7] text-text-muted">{c.archNote}</p>
+          {c.archNote ? (
+            <p className="mt-8 max-w-3xl text-[15px] leading-[1.7] text-text-muted">{c.archNote}</p>
+          ) : null}
         </section>
 
         <section className="case-block mt-20">
@@ -284,9 +321,11 @@ export function CotizadorPage({ locale }: { locale: Locale }) {
               </div>
             ))}
           </dl>
-          <p className="mt-7 max-w-3xl rounded-md border border-border bg-bg-card p-5 text-[15px] leading-[1.7] text-text-secondary">
-            {c.qualityNote}
-          </p>
+          {c.qualityNote ? (
+            <p className="mt-7 max-w-3xl rounded-md border border-border bg-bg-card p-5 text-[15px] leading-[1.7] text-text-secondary">
+              {c.qualityNote}
+            </p>
+          ) : null}
         </section>
 
         <section className="case-block mt-20">

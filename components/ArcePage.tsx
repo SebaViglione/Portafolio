@@ -127,10 +127,14 @@ export function ArcePage({ locale }: { locale: Locale }) {
           </h1>
           <p className="mt-5 max-w-2xl text-xl leading-[1.55] text-text-secondary md:text-2xl">{arce.tagline}</p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-text-muted">
-            <span>
+          <div className="mt-8 flex flex-wrap items-start gap-x-8 gap-y-3 text-sm text-text-muted">
+            <span className="max-w-xs">
               <span className="block text-xs uppercase tracking-[0.04em] text-text-muted/70">{arce.roleLabel}</span>
               <span className="text-text-secondary">{arce.role}</span>
+            </span>
+            <span className="max-w-xs">
+              <span className="block text-xs uppercase tracking-[0.04em] text-text-muted/70">{arce.clientLabel}</span>
+              <span className="text-text-secondary">{arce.client}</span>
             </span>
             <span>
               <span className="block text-xs uppercase tracking-[0.04em] text-text-muted/70">{arce.yearLabel}</span>
