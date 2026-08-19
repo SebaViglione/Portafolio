@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ArrowLeft, Check, Mail } from 'lucide-react';
-import { WhatsAppIcon } from '@/components/BrandIcons';
 import { contact } from '@/lib/site';
 import { getDictionary, type Locale } from '@/lib/content';
 
@@ -93,11 +92,7 @@ export function ThanksPage({ locale }: { locale: Locale }) {
             <ArrowLeft size={18} />
             {dict.thanks.home}
           </Link>
-          <Link href={dict.whatsapp} className="btn-primary justify-center" target="_blank" rel="noopener noreferrer">
-            <WhatsAppIcon size={18} />
-            {dict.thanks.whatsapp}
-          </Link>
-          <Link href={`mailto:${contact.email}`} className="btn-secondary justify-center">
+          <Link href={`mailto:${contact.email}`} className="btn-primary justify-center">
             <Mail size={18} />
             {dict.thanks.mail}
           </Link>

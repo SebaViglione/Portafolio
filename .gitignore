@@ -15,3 +15,6 @@ tsconfig.tsbuildinfo
 *.md
 !README.md
 !docs/*.md
+
+# CVs personales (contienen teléfono) — nunca versionar
+all resumes/

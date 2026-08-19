@@ -25,6 +25,7 @@ export type Project = {
   label: string;
   kind: string;
   cta: string;
+  year?: string;
   image?: string;
   video?: string;
   tags: string[];
@@ -106,24 +107,26 @@ export type CaseStudySlug = 'cotizador' | 'stock';
 
 const es = {
   htmlLang: 'es',
-  whatsapp: 'https://wa.me/59892009897?text=Hola%20Seba%2C%20quiero%20hablar%20sobre%20un%20proyecto.',
 
   nav: {
     items: [
-      { label: 'Sobre mí', href: '#sobre-mi' },
       { label: 'Trabajos', href: '#trabajos' },
       { label: 'Servicios', href: '#servicios' },
+      { label: 'Sobre mí', href: '#sobre-mi' },
       { label: 'Contacto', href: '#contacto' },
     ],
     cta: 'Hablemos',
-    menuOpen: 'Abrir menu',
-    menuClose: 'Cerrar menu',
+    status: 'disponible',
+    timeSr: 'hora local en Montevideo, Uruguay',
+    menuOpen: 'Abrir menú',
+    menuClose: 'Cerrar menú',
     switchLabel: 'EN',
     switchAria: 'Ver el sitio en inglés',
   },
 
   hero: {
     kicker: 'disponible para proyectos',
+    status: 'disponible para proyectos · montevideo, uy',
     title: {
       sr: 'Hago software que ordena tu operación.',
       l1: 'Hago software',
@@ -133,11 +136,33 @@ const es = {
     },
     copy: 'Desde el sitio web hasta el sistema interno que te ahorra horas de trabajo manual. Sin equipos grandes, sin procesos eternos.',
     credential: 'Developer & Systems Technician en Grupo CPS · Estudiante de Ingeniería en Sistemas · Inglés C1',
-    ctaWhatsapp: 'Hablemos por WhatsApp',
+    ctaContact: 'Hablemos',
     ctaWork: 'Ver trabajos',
+    ctaCv: 'Descargar CV',
     portraitCaption: 'Software a medida para empresas',
     scroll: 'scroll',
     portraitAlt: 'Sebastián Viglione',
+  },
+
+  bento: {
+    estadoLabel: 'estado',
+    estado: [
+      { label: 'disponibilidad', value: 'abierta', live: true },
+      { label: 'base', value: 'Montevideo, UY', live: false },
+      { label: 'idiomas', value: 'español · inglés C1', live: false },
+      { label: 'formación', value: 'Ing. en Sistemas · UM', live: false },
+    ],
+    stackLabel: 'stack principal',
+    stack: ['typescript', 'react / next.js', 'python', 'postgresql', 'supabase', 'n8n', 'docker / linux', 'ia local / ollama'],
+    terminalTitle: 'cómo trabajo',
+    values: [
+      { title: 'Trato directo', text: 'hablás conmigo, no con una agencia.' },
+      { title: 'Lenguaje claro', text: 'me contás el problema en tus palabras, yo lo traduzco a software.' },
+      { title: 'Sin vueltas', text: 'si algo no funciona, se corrige rápido.' },
+    ],
+    serviciosLabel: 'qué puedo hacer por tu empresa',
+    portraitName: 'Sebastián Viglione',
+    portraitRole: 'developer · grupo cps',
   },
 
   about: {
@@ -167,7 +192,7 @@ const es = {
   ],
 
   services: {
-    label: 'que puedo hacer por tu empresa',
+    label: 'qué puedo hacer por tu empresa',
     heading: 'Soluciones a medida, sin vueltas.',
     more: 'Más info',
     items: [
@@ -204,6 +229,10 @@ const es = {
     moreCta: 'Hablemos',
     toolsLabel: 'Herramientas & sistemas',
     sitesLabel: 'Sitios web',
+    monoLabel: '[ trabajos ] — en producción ahora',
+    statusChip: 'todo operativo',
+    sitesRowLabel: '[ sitios web ] — {n} en línea',
+    cursorLabel: 'VER',
     tools: [
       {
         name: 'Cotizador de Aberturas',
@@ -212,6 +241,7 @@ const es = {
         description: 'Web B2B donde el cliente arma su pedido de aberturas y recibe un precio creíble. El núcleo es un motor de cálculo calibrado con reverse engineering sobre 2.641 recetas reales de fábrica.',
         label: 'COTIZADOR',
         kind: 'Herramienta comercial · Full-stack',
+        year: '2026',
         cta: 'Ver case study',
         image: '/assets/projects/cotizador/imagen_hero.png',
         tags: ['Next.js', 'TypeScript', 'Three.js', 'Supabase', 'Pricing engine'],
@@ -223,6 +253,7 @@ const es = {
         description: 'Sistema interno de stock para depósitos y obras: compras, transferencias, vales y herramientas por número de serie sobre un kardex inmutable, con costeo promedio ponderado y alertas.',
         label: 'STOCK',
         kind: 'Herramienta interna · Grupo CPS',
+        year: '2026',
         cta: 'Ver case study',
         image: '/assets/projects/depositos_cps/dashboard_inicial.png',
         tags: ['Next.js', 'Supabase', 'PostgreSQL', 'RLS'],
@@ -234,6 +265,7 @@ const es = {
         description: 'Automatización que monitorea, filtra y analiza licitaciones públicas con n8n, PostgreSQL y modelos de IA local para detectar oportunidades.',
         label: 'ARCE',
         kind: 'Automatización & IA · Grupo CPS',
+        year: '2025',
         cta: 'Ver case study',
         video: '/assets/projects/arce_dashboard_demo.webm',
         tags: ['n8n', 'PostgreSQL', 'IA local'],
@@ -288,7 +320,7 @@ const es = {
   },
 
   reasons: {
-    label: 'como trabajo',
+    label: 'cómo trabajo',
     heading: 'Sin agencias en el medio. Hablás directo conmigo.',
     items: [
       {
@@ -326,7 +358,6 @@ const es = {
       l2: 'en mente?',
     },
     copy: 'Contame qué necesitás. Sin compromisos, sin tecnicismos. Si puedo ayudarte, te lo digo. Si no, también.',
-    whatsapp: 'WhatsApp',
     mail: 'Mail',
     social: 'También en redes:',
     formName: 'Tu nombre',
@@ -642,23 +673,23 @@ const es = {
     title: 'Mensaje enviado.',
     text: 'Gracias por escribirme. Recibí tu mensaje y te voy a responder apenas pueda.',
     home: 'Volver al inicio',
-    whatsapp: 'WhatsApp',
     mail: 'Mail',
   },
 };
 
 const en: typeof es = {
   htmlLang: 'en',
-  whatsapp: 'https://wa.me/59892009897?text=Hi%20Seba%2C%20I%27d%20like%20to%20talk%20about%20a%20project.',
 
   nav: {
     items: [
-      { label: 'About', href: '#sobre-mi' },
       { label: 'Work', href: '#trabajos' },
       { label: 'Services', href: '#servicios' },
+      { label: 'About', href: '#sobre-mi' },
       { label: 'Contact', href: '#contacto' },
     ],
     cta: "Let's talk",
+    status: 'available',
+    timeSr: 'local time in Montevideo, Uruguay',
     menuOpen: 'Open menu',
     menuClose: 'Close menu',
     switchLabel: 'ES',
@@ -667,6 +698,7 @@ const en: typeof es = {
 
   hero: {
     kicker: 'available for projects',
+    status: 'available for projects · montevideo, uy',
     title: {
       sr: 'I build software that organizes your operation.',
       l1: 'I build software',
@@ -676,11 +708,33 @@ const en: typeof es = {
     },
     copy: 'From the website to the internal system that saves you hours of manual work. No big teams, no endless processes.',
     credential: 'Developer & Systems Technician at Grupo CPS · Systems Engineering student · C1 English',
-    ctaWhatsapp: "Let's talk on WhatsApp",
+    ctaContact: "Let's talk",
     ctaWork: 'See work',
+    ctaCv: 'Download CV',
     portraitCaption: 'Custom software for companies',
     scroll: 'scroll',
     portraitAlt: 'Sebastián Viglione',
+  },
+
+  bento: {
+    estadoLabel: 'status',
+    estado: [
+      { label: 'availability', value: 'open', live: true },
+      { label: 'based in', value: 'Montevideo, UY', live: false },
+      { label: 'languages', value: 'Spanish · English C1', live: false },
+      { label: 'education', value: 'Systems Eng. · UM', live: false },
+    ],
+    stackLabel: 'core stack',
+    stack: ['typescript', 'react / next.js', 'python', 'postgresql', 'supabase', 'n8n', 'docker / linux', 'local ai / ollama'],
+    terminalTitle: 'how I work',
+    values: [
+      { title: 'Direct contact', text: 'you talk to me, not an agency.' },
+      { title: 'Clear language', text: 'you tell me the problem in your words, I translate it into software.' },
+      { title: 'No runaround', text: "if something doesn't work, it gets fixed fast." },
+    ],
+    serviciosLabel: 'what I can do for your company',
+    portraitName: 'Sebastián Viglione',
+    portraitRole: 'developer · grupo cps',
   },
 
   about: {
@@ -747,6 +801,10 @@ const en: typeof es = {
     moreCta: "Let's talk",
     toolsLabel: 'Tools & systems',
     sitesLabel: 'Websites',
+    monoLabel: '[ work ] — in production now',
+    statusChip: 'all systems running',
+    sitesRowLabel: '[ websites ] — {n} live',
+    cursorLabel: 'VIEW',
     tools: [
       {
         name: 'Aluminum Joinery Quoter',
@@ -755,6 +813,7 @@ const en: typeof es = {
         description: 'A B2B web app where the client builds their order of aluminum-and-glass joinery and gets a credible price. The core is a pricing engine calibrated by reverse engineering 2,641 real factory recipes.',
         label: 'COTIZADOR',
         kind: 'Commercial tool · Full-stack',
+        year: '2026',
         cta: 'View case study',
         image: '/assets/projects/cotizador/imagen_hero.png',
         tags: ['Next.js', 'TypeScript', 'Three.js', 'Supabase', 'Pricing engine'],
@@ -766,6 +825,7 @@ const en: typeof es = {
         description: 'Internal stock system for warehouses and construction sites: purchases, transfers, consumption vouchers and serial-numbered tools on an immutable ledger, with weighted-average costing and alerts.',
         label: 'STOCK',
         kind: 'Internal tool · Grupo CPS',
+        year: '2026',
         cta: 'View case study',
         image: '/assets/projects/depositos_cps/dashboard_inicial.png',
         tags: ['Next.js', 'Supabase', 'PostgreSQL', 'RLS'],
@@ -777,6 +837,7 @@ const en: typeof es = {
         description: 'Automation that monitors, filters and analyzes public tenders with n8n, PostgreSQL and local AI models to surface opportunities.',
         label: 'ARCE',
         kind: 'Automation & AI · Grupo CPS',
+        year: '2025',
         cta: 'View case study',
         video: '/assets/projects/arce_dashboard_demo.webm',
         tags: ['n8n', 'PostgreSQL', 'Local AI'],
@@ -869,7 +930,6 @@ const en: typeof es = {
       l2: 'in mind?',
     },
     copy: "Tell me what you need. No commitments, no jargon. If I can help, I'll tell you. If I can't, I'll tell you that too.",
-    whatsapp: 'WhatsApp',
     mail: 'Mail',
     social: 'Also on:',
     formName: 'Your name',
@@ -1185,7 +1245,6 @@ const en: typeof es = {
     title: 'Message sent.',
     text: 'Thanks for reaching out. I got your message and I will get back to you as soon as I can.',
     home: 'Back to home',
-    whatsapp: 'WhatsApp',
     mail: 'Mail',
   },
 };
