@@ -40,6 +40,8 @@ export const diagramUi: Record<Locale, SystemDiagramUi> = {
     sheetExpand: 'Mostrar el panel',
     sheetCollapse: 'Ocultar el panel',
     stepShort: '{i}/{n}',
+    tourStartShort: 'Explicar',
+    touchHint: 'Tocá una caja para ver qué es y con quién se conecta. Movete con un dedo y pellizcá para acercar; «Reordenar» vuelve al orden original.',
   },
   en: {
     hint: 'Drag the boxes to arrange them (every view opens tidy). Click a box to see its details. Ctrl + wheel or the buttons to zoom; drag the background to pan. Esc clears, F fits.',
@@ -78,5 +80,7 @@ export const diagramUi: Record<Locale, SystemDiagramUi> = {
     sheetExpand: 'Show the panel',
     sheetCollapse: 'Hide the panel',
     stepShort: '{i}/{n}',
+    tourStartShort: 'Explain',
+    touchHint: 'Tap a box to see what it is and what it connects to. Drag with one finger and pinch to zoom; “Rearrange” restores the original layout.',
   },
 };

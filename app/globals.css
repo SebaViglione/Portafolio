@@ -2070,8 +2070,10 @@ button {
     font-size: 15px;
   }
 
-  /* En el recorrido la fila de mando ya tiene los botones: en el cuerpo sobra la botonera */
-  .dg-shell.is-compact .dg-tourbox .dg-nav {
+  /* La fila de mando ya tiene «Explicar» y los botones del recorrido: en el cuerpo sobran */
+  .dg-shell.is-compact .dg-tourbox .dg-nav,
+  .dg-shell.is-compact .dg-tourstart,
+  .dg-shell.is-compact .dg-tourhint {
     display: none;
   }
 }

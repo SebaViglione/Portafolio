@@ -1094,7 +1094,7 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
                 <span className="dg-sheet-view">{view.name}</span>
                 <button type="button" className="dg-btn is-primary" onClick={() => goTour(0)}>
                   <Play size={14} />
-                  {ui.tourStart}
+                  {ui.tourStartShort}
                 </button>
               </>
             )}
@@ -1125,7 +1125,7 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
                 </button>
               </div>
             </div>
-            <p className="dg-muted">{ui.tourHint}</p>
+            <p className="dg-muted dg-tourhint">{ui.tourHint}</p>
           </>
         ) : selected ? (
           <>
@@ -1175,7 +1175,7 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
               <h2 className="dg-title">{view.name}</h2>
             </div>
             <p className="dg-text">{view.intro}</p>
-            <div>
+            <div className="dg-tourstart">
               <button type="button" className="dg-btn is-primary" onClick={() => goTour(0)}>
                 <Play size={14} />
                 {ui.tourStart}
@@ -1191,7 +1191,7 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
                 </ol>
               </>
             ) : null}
-            <p className="dg-muted">{ui.clickHint}</p>
+            <p className="dg-muted">{compact ? ui.touchHint : ui.clickHint}</p>
           </>
         )}
         </div>

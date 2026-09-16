@@ -98,6 +98,8 @@ export type SystemDiagramUi = {
   sheetExpand: string;
   sheetCollapse: string;
   stepShort: string;
+  tourStartShort: string;
+  touchHint: string;
 };
 
 /** Cabecera de la página, propia de cada proyecto. */
