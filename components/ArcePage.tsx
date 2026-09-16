@@ -12,7 +12,7 @@ import { GitHubIcon } from '@/components/BrandIcons';
 import { BackgroundGrid } from '@/components/BackgroundGrid';
 import { CustomCursor } from '@/components/CustomCursor';
 import { arceMedia, contact } from '@/lib/site';
-import { getDictionary, type Locale } from '@/lib/content';
+import { getDictionary, localizedHref, type Locale } from '@/lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -21,6 +21,7 @@ export function ArcePage({ locale }: { locale: Locale }) {
   const arce = dict.arce;
   const home = locale === 'es' ? '/' : '/en';
   const switchHref = locale === 'es' ? '/en/arce' : '/arce';
+  const diagramHref = localizedHref(locale, '/arce/diagrama');
 
   const rootRef = useRef<HTMLElement>(null);
 
@@ -151,6 +152,10 @@ export function ArcePage({ locale }: { locale: Locale }) {
               {arce.demoBtn}
               <ArrowRight size={18} />
             </Link>
+            <Link href={diagramHref} className="btn-secondary">
+              <Workflow size={18} />
+              {arce.diagram.cta}
+            </Link>
           </div>
 
           <div className="mt-9 flex flex-wrap gap-2">
@@ -213,6 +218,29 @@ export function ArcePage({ locale }: { locale: Locale }) {
           <div className="mt-8 flex max-w-3xl items-start gap-3 rounded-md border border-border bg-bg-card p-5 text-[15px] leading-[1.65] text-text-secondary">
             <Workflow className="mt-0.5 flex-none text-accent" size={20} />
             <span>{arce.orchestration}</span>
+          </div>
+        </section>
+
+        <section className="case-block diagram-teaser mt-20">
+          <div className="diagram-teaser-body">
+            <p className="section-label">{arce.diagram.label}</p>
+            <h2 className="mt-4 font-display text-2xl font-semibold leading-tight text-text-primary md:text-3xl">{arce.diagram.heading}</h2>
+            <p className="mt-4 max-w-2xl text-[15px] leading-[1.7] text-text-secondary">{arce.diagram.text}</p>
+            <div className="mt-7">
+              <Link href={diagramHref} className="btn-secondary">
+                <Workflow size={18} />
+                {arce.diagram.cta}
+              </Link>
+            </div>
+          </div>
+          <div className="diagram-teaser-art" aria-hidden="true">
+            <span className="diagram-teaser-node is-a" />
+            <span className="diagram-teaser-node is-b" />
+            <span className="diagram-teaser-node is-c" />
+            <span className="diagram-teaser-node is-d" />
+            <span className="diagram-teaser-link is-ab" />
+            <span className="diagram-teaser-link is-bc" />
+            <span className="diagram-teaser-link is-bd" />
           </div>
         </section>
 

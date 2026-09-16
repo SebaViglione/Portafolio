@@ -1,119 +1,6 @@
-import type { Locale } from '@/lib/content';
+import { e, n, type DiagramProjectData, type ProjectText, type ViewLayout } from './types';
 
-// Diagrama interactivo del cotizador (/cotizador/diagrama).
-// La DISPOSICIÓN (nodos, posiciones, flechas, grupos y pasos del recorrido) se
-// define una sola vez; los TEXTOS van por idioma. `getSystemDiagram(locale)`
-// junta las dos partes. Así ES y EN no pueden desincronizarse en la estructura.
-
-export type DiagramNodeType =
-  | 'persona'
-  | 'web'
-  | 'servidor'
-  | 'datos'
-  | 'panel'
-  | 'fabrica'
-  | 'paso'
-  | 'calc'
-  | 'total'
-  | 'entrada'
-  | 'gate'
-  | 'config'
-  | 'estado'
-  | 'ok'
-  | 'bad';
-
-export type DiagramNode = {
-  id: string;
-  type: DiagramNodeType;
-  x: number;
-  y: number;
-  w: number;
-  label: string;
-  sub?: string;
-  desc?: string;
-  bullets?: string[];
-};
-
-export type DiagramEdge = {
-  from: string;
-  to: string;
-  label?: string;
-  dashed?: boolean;
-  bidir?: boolean;
-};
-
-export type DiagramGroup = { id: string; label: string; nodes: string[] };
-
-/** `edges` usa la clave "from>to". */
-export type DiagramTourStep = { nodes: string[]; edges: string[]; text: string };
-
-export type DiagramView = {
-  id: string;
-  name: string;
-  intro: string;
-  script?: string[];
-  nodes: DiagramNode[];
-  groups: DiagramGroup[];
-  edges: DiagramEdge[];
-  tour: DiagramTourStep[];
-};
-
-export type SystemDiagramUi = {
-  kicker: string;
-  title: string;
-  intro: string;
-  hint: string;
-  tabsAria: string;
-  tourStart: string;
-  tourExit: string;
-  fit: string;
-  fitTitle: string;
-  reset: string;
-  resetTitle: string;
-  exportSvg: string;
-  exportTitle: string;
-  zoomIn: string;
-  zoomOut: string;
-  cursorDrag: string;
-  legendTitle: string;
-  viewOf: string;
-  stepOf: string;
-  prev: string;
-  next: string;
-  finish: string;
-  exit: string;
-  tourHint: string;
-  clickHint: string;
-  connections: string;
-  backToView: string;
-  scriptTitle: string;
-  svgAria: string;
-  back: string;
-  backFull: string;
-  switchLabel: string;
-  switchAria: string;
-  backCase: string;
-  ctaTalk: string;
-  footNote: string;
-};
-
-export type SystemDiagramDictionary = {
-  ui: SystemDiagramUi;
-  typeNames: Record<DiagramNodeType, string>;
-  legend: DiagramNodeType[];
-  views: DiagramView[];
-};
-
-/* ───────────────────────── Disposición (compartida) ───────────────────────── */
-
-type NodeLayout = { id: string; type: DiagramNodeType; x: number; y: number; w: number };
-type EdgeLayout = { from: string; to: string; dashed?: boolean; bidir?: boolean };
-type GroupLayout = { id: string; nodes: string[] };
-type TourLayout = { nodes: string[]; edges: string[] };
-type ViewLayout = { id: string; nodes: NodeLayout[]; edges: EdgeLayout[]; groups: GroupLayout[]; tour: TourLayout[] };
-
-const n = (id: string, type: DiagramNodeType, x: number, y: number, w: number): NodeLayout => ({ id, type, x, y, w });
-const e = (from: string, to: string, opts?: { dashed?: boolean; bidir?: boolean }): EdgeLayout => ({ from, to, ...opts });
+// Cotizador de aberturas (Grupo CPS): cinco vistas.
 
 const layout: ViewLayout[] = [
   {
@@ -353,63 +240,12 @@ const layout: ViewLayout[] = [
 
 /* ───────────────────────────── Textos por idioma ──────────────────────────── */
 
-type NodeText = { label: string; sub?: string; desc?: string; bullets?: string[] };
-type ViewText = {
-  name: string;
-  intro: string;
-  script?: string[];
-  nodes: Record<string, NodeText>;
-  edges: Record<string, string>;
-  groups: Record<string, string>;
-  tour: string[];
-};
-type DiagramText = {
-  ui: SystemDiagramUi;
-  typeNames: Record<DiagramNodeType, string>;
-  views: Record<string, ViewText>;
-};
-
-const esText: DiagramText = {
-  ui: {
+const es: ProjectText = {
+  header: {
     kicker: 'case study · cotizador de aberturas',
     title: 'El sistema, en un diagrama que se puede tocar.',
-    intro:
-      'Cinco vistas del cotizador: el circuito completo, lo que hace el cliente, cómo se calcula el precio, lo que carga el técnico y cómo llega el pedido a la fábrica. Cada caja se puede mover; cada vista tiene un recorrido explicado paso a paso.',
-    hint: 'Arrastrá las cajas para acomodarlas (cada vista abre ordenada). Clic en una caja para ver el detalle. Ctrl + rueda o los botones para acercar; fondo para desplazar. Esc limpia, F ajusta.',
-    tabsAria: 'Vistas del diagrama',
-    tourStart: 'Explicar paso a paso',
-    tourExit: 'Salir de la explicación',
-    fit: 'Ajustar',
-    fitTitle: 'Encuadrar el diagrama en la pantalla (F)',
-    reset: 'Reordenar',
-    resetTitle: 'Volver a la disposición original de esta vista',
-    exportSvg: 'Exportar SVG',
-    exportTitle: 'Descargar la vista actual como archivo SVG',
-    zoomIn: 'Acercar',
-    zoomOut: 'Alejar',
-    cursorDrag: 'mover',
-    legendTitle: 'Referencias',
-    viewOf: 'Vista {i} de {n}',
-    stepOf: 'Paso {i} de {n}',
-    prev: 'Anterior',
-    next: 'Siguiente',
-    finish: 'Terminar',
-    exit: 'Salir',
-    tourHint: 'Podés seguir moviendo cajas mientras explicás. Las flechas del teclado cambian de paso.',
-    clickHint:
-      'Hacé clic en una caja para ver qué es y con quién se conecta. Arrastrá para acomodar; «Reordenar» vuelve al orden original.',
-    connections: 'Conexiones',
-    backToView: 'Volver a la vista',
-    scriptTitle: 'Guion de dos minutos',
-    svgAria: 'Diagrama interactivo del cotizador de aberturas',
-    back: 'Volver',
-    backFull: 'Volver al case study',
-    switchLabel: 'EN',
-    switchAria: 'Ver el diagrama en inglés',
-    backCase: 'Volver al case study',
-    ctaTalk: 'Hablemos del proyecto',
-    footNote:
-      'El diagrama describe el mecanismo del sistema, no datos de clientes ni precios. El código del proyecto es privado.',
+    intro: 'Cinco vistas del cotizador: el circuito completo, lo que hace el cliente, cómo se calcula el precio, lo que carga el técnico y cómo llega el pedido a la fábrica. Cada caja se puede mover; cada vista tiene un recorrido explicado paso a paso.',
+    footNote: 'El diagrama describe el mecanismo del sistema, no datos de clientes ni precios. El código del proyecto es privado.',
   },
   typeNames: {
     persona: 'persona',
@@ -431,7 +267,7 @@ const esText: DiagramText = {
   views: {
     mapa: {
       name: 'Mapa general',
-      intro:
+    intro:
         'Dos flujos que se cruzan en la base de datos: el del cliente, que entra por la web y termina en la fábrica, y el del técnico, que carga recetas y precios para que el motor pueda calcular.',
       script: [
         'Es un cotizador web de aberturas de aluminio y vidrio para Grupo CPS. El cliente entra, arma la ventana y recibe un precio; no hace falta que lo atienda nadie.',
@@ -530,7 +366,7 @@ const esText: DiagramText = {
     },
     cliente: {
       name: 'El cliente',
-      intro:
+    intro:
         'Cinco pasos con validación en el camino y dos salidas: agregar al carrito para seguir sumando, o enviar directo. Las dos terminan en un Pedido WEB con número.',
       nodes: {
         p1: {
@@ -613,7 +449,7 @@ const esText: DiagramText = {
     },
     precio: {
       name: 'El precio',
-      intro:
+    intro:
         'Cuatro entradas, cinco bloques de costo y una cadena de totales. La clave es la receta: el motor no estima por metro cuadrado, despieza la ventana con los mismos perfiles y cortes que usa la fábrica.',
       nodes: {
         in1: {
@@ -713,7 +549,7 @@ const esText: DiagramText = {
     },
     tecnico: {
       name: 'El técnico',
-      intro:
+    intro:
         'Todo el panel gira alrededor de la receta. Los catálogos de la izquierda la alimentan, la configuración de la derecha define qué combos existen, y el semáforo decide qué llega a la web.',
       nodes: {
         c1: {
@@ -769,7 +605,7 @@ const esText: DiagramText = {
     },
     fabrica: {
       name: 'La fábrica',
-      intro:
+    intro:
         'El pedido no se retipea. Desde el panel se baja un archivo .PTO que WinMaker abre como si el pedido se hubiera cargado ahí, con el producto real de la fábrica, no un dibujo genérico.',
       nodes: {
         f1: { label: 'Pedido WEB', sub: 'el cliente confirmó · número de pedido', desc: 'El pedido guardado con cliente, obra, aberturas y despiece.' },
@@ -826,44 +662,11 @@ const esText: DiagramText = {
   },
 };
 
-const enText: DiagramText = {
-  ui: {
+const en: ProjectText = {
+  header: {
     kicker: 'case study · aluminum joinery quoter',
     title: 'The system, in a diagram you can move around.',
-    intro:
-      'Five views of the quoter: the full circuit, what the client does, how the price is calculated, what the technician loads and how the order reaches the factory. Every box can be dragged; every view has a step-by-step walkthrough.',
-    hint: 'Drag the boxes to arrange them (every view opens tidy). Click a box to see its details. Ctrl + wheel or the buttons to zoom; drag the background to pan. Esc clears, F fits.',
-    tabsAria: 'Diagram views',
-    tourStart: 'Explain step by step',
-    tourExit: 'Exit the walkthrough',
-    fit: 'Fit',
-    fitTitle: 'Fit the diagram to the screen (F)',
-    reset: 'Rearrange',
-    resetTitle: 'Restore the original layout of this view',
-    exportSvg: 'Export SVG',
-    exportTitle: 'Download the current view as an SVG file',
-    zoomIn: 'Zoom in',
-    zoomOut: 'Zoom out',
-    cursorDrag: 'drag',
-    legendTitle: 'Legend',
-    viewOf: 'View {i} of {n}',
-    stepOf: 'Step {i} of {n}',
-    prev: 'Previous',
-    next: 'Next',
-    finish: 'Finish',
-    exit: 'Exit',
-    tourHint: 'You can keep moving boxes while you explain. The arrow keys change step.',
-    clickHint: 'Click a box to see what it is and what it connects to. Drag to arrange; “Rearrange” restores the original layout.',
-    connections: 'Connections',
-    backToView: 'Back to the view',
-    scriptTitle: 'Two-minute script',
-    svgAria: 'Interactive diagram of the aluminum joinery quoter',
-    back: 'Back',
-    backFull: 'Back to the case study',
-    switchLabel: 'ES',
-    switchAria: 'View the diagram in Spanish',
-    backCase: 'Back to the case study',
-    ctaTalk: "Let's talk about the project",
+    intro: 'Five views of the quoter: the full circuit, what the client does, how the price is calculated, what the technician loads and how the order reaches the factory. Every box can be dragged; every view has a step-by-step walkthrough.',
     footNote: 'The diagram describes how the system works, not client data or prices. The project’s code is private.',
   },
   typeNames: {
@@ -886,7 +689,7 @@ const enText: DiagramText = {
   views: {
     mapa: {
       name: 'Overview',
-      intro:
+    intro:
         'Two flows that meet at the database: the client’s, which enters through the web and ends at the factory, and the technician’s, who loads recipes and prices so the engine can calculate.',
       script: [
         'It is a web quoter for aluminum-and-glass joinery, built for Grupo CPS. The client comes in, builds the window and gets a price; nobody has to attend them.',
@@ -982,7 +785,7 @@ const enText: DiagramText = {
     },
     cliente: {
       name: 'The client',
-      intro:
+    intro:
         'Five steps with validation along the way and two exits: add to the cart to keep adding, or submit directly. Both end in a numbered WEB Order.',
       nodes: {
         p1: {
@@ -1065,7 +868,7 @@ const enText: DiagramText = {
     },
     precio: {
       name: 'The price',
-      intro:
+    intro:
         'Four inputs, five cost blocks and a chain of totals. The key is the recipe: the engine does not estimate per square meter, it breaks the window down with the same profiles and cuts the factory uses.',
       nodes: {
         in1: {
@@ -1165,7 +968,7 @@ const enText: DiagramText = {
     },
     tecnico: {
       name: 'The technician',
-      intro:
+    intro:
         'The whole panel revolves around the recipe. The catalogs on the left feed it, the configuration on the right defines which combos exist, and the traffic light decides what reaches the web.',
       nodes: {
         c1: {
@@ -1221,7 +1024,7 @@ const enText: DiagramText = {
     },
     fabrica: {
       name: 'The factory',
-      intro:
+    intro:
         'The order is not retyped. From the panel you download a .PTO file that WinMaker opens as if the order had been entered there, with the factory’s real product, not a generic drawing.',
       nodes: {
         f1: { label: 'WEB Order', sub: 'the client confirmed · order number', desc: 'The saved order with client, site, windows and breakdown.' },
@@ -1278,26 +1081,4 @@ const enText: DiagramText = {
   },
 };
 
-const texts: Record<Locale, DiagramText> = { es: esText, en: enText };
-
-const LEGEND: DiagramNodeType[] = ['persona', 'web', 'servidor', 'datos', 'panel', 'fabrica', 'calc', 'gate'];
-
-export function getSystemDiagram(locale: Locale): SystemDiagramDictionary {
-  const t = texts[locale];
-  const views: DiagramView[] = layout.map((view) => {
-    const vt = t.views[view.id];
-    return {
-      id: view.id,
-      name: vt.name,
-      intro: vt.intro,
-      script: vt.script,
-      nodes: view.nodes.map((node) => ({ ...node, ...(vt.nodes[node.id] ?? { label: node.id }) })),
-      groups: view.groups.map((group) => ({ ...group, label: vt.groups[group.id] ?? group.id })),
-      edges: view.edges.map((edge) => ({ ...edge, label: vt.edges[`${edge.from}>${edge.to}`] })),
-      tour: view.tour.map((step, index) => ({ ...step, text: vt.tour[index] ?? '' })),
-    };
-  });
-  return { ui: t.ui, typeNames: t.typeNames, legend: LEGEND, views };
-}
-
-export const systemDiagramViewIds = layout.map((view) => view.id);
+export const cotizador: DiagramProjectData = { id: 'cotizador', slug: '/cotizador', layout, texts: { es, en } };

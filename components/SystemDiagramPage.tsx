@@ -8,16 +8,18 @@ import { ArrowLeft, ArrowRight, Languages } from 'lucide-react';
 import { CustomCursor } from '@/components/CustomCursor';
 import { SystemDiagram } from '@/components/SystemDiagram';
 import { getDictionary, localizedHref, type Locale } from '@/lib/content';
-import { getSystemDiagram } from '@/lib/systemDiagram';
+import { diagramSlug, getSystemDiagram, type DiagramProject } from '@/lib/diagrams';
 
 gsap.registerPlugin(useGSAP);
 
-export function SystemDiagramPage({ locale }: { locale: Locale }) {
+export function SystemDiagramPage({ locale, project }: { locale: Locale; project: DiagramProject }) {
   const dict = getDictionary(locale);
-  const { ui } = getSystemDiagram(locale);
+  const diagram = getSystemDiagram(project, locale);
+  const { ui, header } = diagram;
   const home = locale === 'es' ? '/' : '/en';
-  const caseHref = localizedHref(locale, '/cotizador');
-  const switchHref = locale === 'es' ? '/en/cotizador/diagrama' : '/cotizador/diagrama';
+  const slug = diagramSlug(project);
+  const caseHref = localizedHref(locale, slug);
+  const switchHref = localizedHref(locale === 'es' ? 'en' : 'es', `${slug}/diagrama`);
   const rootRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export function SystemDiagramPage({ locale }: { locale: Locale }) {
         .from('.dg-head > *', { y: 18, opacity: 0, duration: 0.55, stagger: 0.07 }, '-=0.2')
         .from('.dg-frame', { y: 16, opacity: 0, duration: 0.6 }, '-=0.3');
     },
-    { scope: rootRef, dependencies: [locale] },
+    { scope: rootRef, dependencies: [locale, project] },
   );
 
   return (
@@ -67,18 +69,18 @@ export function SystemDiagramPage({ locale }: { locale: Locale }) {
           es corta y el marco crece hasta llenar lo que queda del viewport. */}
       <div className="flex min-h-[100dvh] flex-col pt-16">
         <section className="dg-head w-full px-5 pt-6 pb-4 md:px-8">
-          <p className="section-label">{ui.kicker}</p>
-          <h1 className="mt-2 font-display text-2xl font-bold leading-[1.05] text-text-primary md:text-3xl">{ui.title}</h1>
-          <p className="mt-2 max-w-3xl text-[14px] leading-[1.55] text-text-secondary">{ui.intro}</p>
+          <p className="section-label">{header.kicker}</p>
+          <h1 className="mt-2 font-display text-2xl font-bold leading-[1.05] text-text-primary md:text-3xl">{header.title}</h1>
+          <p className="mt-2 max-w-3xl text-[14px] leading-[1.55] text-text-secondary">{header.intro}</p>
         </section>
 
         <div className="dg-frame">
-          <SystemDiagram locale={locale} />
+          <SystemDiagram diagram={diagram} />
         </div>
       </div>
 
       <footer className="w-full px-5 pt-8 pb-14 md:px-8">
-        <p className="max-w-2xl text-[13px] leading-[1.6] text-text-muted">{ui.footNote}</p>
+        <p className="max-w-2xl text-[13px] leading-[1.6] text-text-muted">{header.footNote}</p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href={caseHref} className="direct-action">
             <ArrowLeft size={18} />

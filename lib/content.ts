@@ -414,6 +414,12 @@ const es = {
     ],
     orchestration:
       'Todo el flujo está orquestado en n8n: ajustar fuentes, reglas o frecuencia se hace sobre el workflow, sin reescribir el sistema.',
+    diagram: {
+      cta: 'Ver el diagrama interactivo',
+      label: 'el sistema, en un diagrama',
+      heading: 'Cómo encaja todo, en un diagrama que se puede tocar.',
+      text: 'Cuatro vistas con cajas que se pueden mover y un recorrido explicado paso a paso: el circuito completo del portal al dashboard, el workflow real de n8n nodo por nodo, cómo se analiza cada pliego con IA local y cómo el equipo usa el dashboard y corrige a la IA.',
+    },
     decisionsLabel: 'decisiones técnicas',
     decisionsHeading: 'Por qué está construido así.',
     decisions: [
@@ -627,6 +633,12 @@ const es = {
     ],
     solutionNote:
       'El sistema también resuelve lo aburrido pero crítico: kardex por depósito u obra en cualquier período, consulta de un artículo en todos los depósitos a la vez, compras en pesos o dólares con su moneda registrada, y órdenes de compra en PDF con lugar para firmas, porque el circuito físico con el proveedor también es parte del sistema.',
+    diagram: {
+      cta: 'Ver el diagrama interactivo',
+      label: 'el sistema, en un diagrama',
+      heading: 'Cómo encaja todo, en un diagrama que se puede tocar.',
+      text: 'Cinco vistas con cajas que se pueden mover y un recorrido explicado paso a paso: quién usa el sistema y qué hay detrás, el circuito del material del pedido a la obra, cómo se asienta y se valoriza cada movimiento, la vida de una herramienta con número de serie y cómo está construido.',
+    },
     archLabel: 'arquitectura',
     archHeading: 'La lógica de negocio vive en la base de datos, no en la interfaz.',
     architecture: [
@@ -992,6 +1004,12 @@ const en: typeof es = {
     ],
     orchestration:
       'The whole flow is orchestrated in n8n: adjusting sources, rules or frequency is done on the workflow, without rewriting the system.',
+    diagram: {
+      cta: 'Open the interactive diagram',
+      label: 'the system, in a diagram',
+      heading: 'How it all fits together, in a diagram you can move around.',
+      text: 'Four views with draggable boxes and a step-by-step walkthrough: the full circuit from the portal to the dashboard, the real n8n workflow node by node, how every tender document is analyzed with local AI and how the team uses the dashboard and corrects the AI.',
+    },
     decisionsLabel: 'technical decisions',
     decisionsHeading: 'Why it is built this way.',
     decisions: [
@@ -1205,6 +1223,12 @@ const en: typeof es = {
     ],
     solutionNote:
       'The system also covers the boring-but-critical: a ledger view per warehouse or site for any period, one item queried across all warehouses at once, purchases in pesos or dollars with their currency recorded, and purchase orders as PDFs with signature lines, because the physical circuit with the supplier is part of the system too.',
+    diagram: {
+      cta: 'Open the interactive diagram',
+      label: 'the system, in a diagram',
+      heading: 'How it all fits together, in a diagram you can move around.',
+      text: 'Five views with draggable boxes and a step-by-step walkthrough: who uses the system and what sits behind it, the material circuit from request to site, how every movement is recorded and valued, the life of a serial-numbered tool and how it is built.',
+    },
     archLabel: 'architecture',
     archHeading: 'Business logic lives in the database, not in the interface.',
     architecture: [

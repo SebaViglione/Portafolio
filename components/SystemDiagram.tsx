@@ -4,8 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
 import gsap from 'gsap';
 import { ArrowLeft, ArrowRight, Download, Minus, Play, Plus, RotateCcw, Scan, Square } from 'lucide-react';
-import type { Locale } from '@/lib/content';
-import { getSystemDiagram, type DiagramNode, type DiagramNodeType, type DiagramView } from '@/lib/systemDiagram';
+import type { DiagramNode, DiagramNodeType, DiagramView, SystemDiagramDictionary } from '@/lib/diagrams/types';
 
 /* ─────────────────────────── Tipos y constantes ─────────────────────────── */
 
@@ -220,9 +219,8 @@ const fill = (template: string, values: Record<string, string | number>) =>
 
 /* ───────────────────────────── Componente ──────────────────────────────── */
 
-export function SystemDiagram({ locale }: { locale: Locale }) {
-  const dict = useMemo(() => getSystemDiagram(locale), [locale]);
-  const { ui, typeNames, views } = dict;
+export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary }) {
+  const { ui, typeNames, views, project } = diagram;
 
   const [viewId, setViewId] = useState(views[0].id);
   const view: DiagramView = views.find((v) => v.id === viewId) ?? views[0];
@@ -632,12 +630,12 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
     const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cotizador-${view.id}.svg`;
+    a.download = `${project}-${view.id}.svg`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }, [rects, view.id]);
+  }, [rects, view.id, project]);
 
   /* ── Foco (selección, hover, recorrido) ── */
   const focus = useMemo(() => {

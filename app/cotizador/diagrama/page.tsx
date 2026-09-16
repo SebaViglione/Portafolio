@@ -28,5 +28,5 @@ export const metadata: Metadata = {
 };
 
 export default function CotizadorDiagrama() {
-  return <SystemDiagramPage locale="es" />;
+  return <SystemDiagramPage locale="es" project="cotizador" />;
 }
