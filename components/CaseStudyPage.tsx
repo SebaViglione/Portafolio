@@ -7,10 +7,10 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
-import { ArrowLeft, ArrowRight, Languages, MoveRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Languages, MoveRight, Workflow } from 'lucide-react';
 import { BackgroundGrid } from '@/components/BackgroundGrid';
 import { CustomCursor } from '@/components/CustomCursor';
-import { getDictionary, type CaseStudy, type CaseStudySlug, type Locale } from '@/lib/content';
+import { getDictionary, localizedHref, type CaseStudy, type CaseStudySlug, type Locale } from '@/lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -20,6 +20,7 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
   const home = locale === 'es' ? '/' : '/en';
   const switchHref = locale === 'es' ? `/en/${slug}` : `/${slug}`;
   const hasBeforeAfter = c.beforeLabel && c.beforeValue && c.afterLabel && c.afterValue;
+  const diagramHref = localizedHref(locale, `/${slug}/diagrama`);
 
   const rootRef = useRef<HTMLElement>(null);
 
@@ -148,6 +149,12 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
               {c.repoBtn}
               <ArrowRight size={18} />
             </Link>
+            {c.diagram ? (
+              <Link href={diagramHref} className="btn-secondary">
+                <Workflow size={18} />
+                {c.diagram.cta}
+              </Link>
+            ) : null}
             <span className="text-xs text-text-muted">{c.privateNote}</span>
           </div>
 
@@ -263,6 +270,31 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
                 {c.adminNote}
               </p>
             ) : null}
+          </section>
+        ) : null}
+
+        {c.diagram ? (
+          <section className="case-block diagram-teaser mt-20">
+            <div className="diagram-teaser-body">
+              <p className="section-label">{c.diagram.label}</p>
+              <h2 className="mt-4 font-display text-2xl font-semibold leading-tight text-text-primary md:text-3xl">{c.diagram.heading}</h2>
+              <p className="mt-4 max-w-2xl text-[15px] leading-[1.7] text-text-secondary">{c.diagram.text}</p>
+              <div className="mt-7">
+                <Link href={diagramHref} className="btn-secondary">
+                  <Workflow size={18} />
+                  {c.diagram.cta}
+                </Link>
+              </div>
+            </div>
+            <div className="diagram-teaser-art" aria-hidden="true">
+              <span className="diagram-teaser-node is-a" />
+              <span className="diagram-teaser-node is-b" />
+              <span className="diagram-teaser-node is-c" />
+              <span className="diagram-teaser-node is-d" />
+              <span className="diagram-teaser-link is-ab" />
+              <span className="diagram-teaser-link is-bc" />
+              <span className="diagram-teaser-link is-bd" />
+            </div>
           </section>
         ) : null}
 

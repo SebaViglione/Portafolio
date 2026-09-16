@@ -86,6 +86,7 @@ export type CaseStudy = {
   archHeading: string;
   architecture: CaseStudyArchStep[];
   archNote?: string;
+  diagram?: { cta: string; label: string; heading: string; text: string };
   securityLabel: string;
   securityHeading: string;
   security: CaseStudyItem[];
@@ -518,6 +519,12 @@ const es = {
     ],
     adminNote:
       'Esto es lo que hace que el sistema viva sin el programador: los dueños de los datos son los técnicos de la fábrica, no el código. La página del cliente es la mitad visible; esta es la mitad que la mantiene honesta.',
+    diagram: {
+      cta: 'Ver el diagrama interactivo',
+      label: 'el sistema, en un diagrama',
+      heading: 'Cómo encaja todo, en un diagrama que se puede tocar.',
+      text: 'Cinco vistas con cajas que se pueden mover y un recorrido explicado paso a paso: el circuito completo, lo que hace el cliente, cómo se calcula el precio, lo que carga el técnico y cómo llega el pedido a la fábrica. Es la misma pieza que uso para explicar el sistema en diez minutos.',
+    },
     archLabel: 'arquitectura',
     archHeading: 'Una frontera estricta entre lo público y lo privado.',
     architecture: [
@@ -1090,6 +1097,12 @@ const en: typeof es = {
     ],
     adminNote:
       'This is what lets the system live without the programmer: the owners of the data are the factory technicians, not the code. The client-facing page is the visible half; this is the half that keeps it honest.',
+    diagram: {
+      cta: 'Open the interactive diagram',
+      label: 'the system, in a diagram',
+      heading: 'How it all fits together, in a diagram you can move around.',
+      text: 'Five views with draggable boxes and a step-by-step walkthrough: the full circuit, what the client does, how the price is calculated, what the technician loads and how the order reaches the factory. It is the same piece I use to explain the system in ten minutes.',
+    },
     archLabel: 'architecture',
     archHeading: 'A strict boundary between public and private.',
     architecture: [

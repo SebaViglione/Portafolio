@@ -1,0 +1,1305 @@
+import type { Locale } from '@/lib/content';
+
+// Diagrama interactivo del cotizador (/cotizador/diagrama).
+// La DISPOSICIÓN (nodos, posiciones, flechas, grupos y pasos del recorrido) se
+// define una sola vez; los TEXTOS van por idioma. `getSystemDiagram(locale)`
+// junta las dos partes. Así ES y EN no pueden desincronizarse en la estructura.
+
+export type DiagramNodeType =
+  | 'persona'
+  | 'web'
+  | 'servidor'
+  | 'datos'
+  | 'panel'
+  | 'fabrica'
+  | 'paso'
+  | 'calc'
+  | 'total'
+  | 'entrada'
+  | 'gate'
+  | 'config'
+  | 'estado'
+  | 'ok'
+  | 'bad';
+
+export type DiagramNode = {
+  id: string;
+  type: DiagramNodeType;
+  x: number;
+  y: number;
+  w: number;
+  label: string;
+  sub?: string;
+  desc?: string;
+  bullets?: string[];
+};
+
+export type DiagramEdge = {
+  from: string;
+  to: string;
+  label?: string;
+  dashed?: boolean;
+  bidir?: boolean;
+};
+
+export type DiagramGroup = { id: string; label: string; nodes: string[] };
+
+/** `edges` usa la clave "from>to". */
+export type DiagramTourStep = { nodes: string[]; edges: string[]; text: string };
+
+export type DiagramView = {
+  id: string;
+  name: string;
+  intro: string;
+  script?: string[];
+  nodes: DiagramNode[];
+  groups: DiagramGroup[];
+  edges: DiagramEdge[];
+  tour: DiagramTourStep[];
+};
+
+export type SystemDiagramUi = {
+  kicker: string;
+  title: string;
+  intro: string;
+  hint: string;
+  tabsAria: string;
+  tourStart: string;
+  tourExit: string;
+  fit: string;
+  fitTitle: string;
+  reset: string;
+  resetTitle: string;
+  exportSvg: string;
+  exportTitle: string;
+  zoomIn: string;
+  zoomOut: string;
+  cursorDrag: string;
+  legendTitle: string;
+  viewOf: string;
+  stepOf: string;
+  prev: string;
+  next: string;
+  finish: string;
+  exit: string;
+  tourHint: string;
+  clickHint: string;
+  connections: string;
+  backToView: string;
+  scriptTitle: string;
+  svgAria: string;
+  back: string;
+  backFull: string;
+  switchLabel: string;
+  switchAria: string;
+  backCase: string;
+  ctaTalk: string;
+  footNote: string;
+};
+
+export type SystemDiagramDictionary = {
+  ui: SystemDiagramUi;
+  typeNames: Record<DiagramNodeType, string>;
+  legend: DiagramNodeType[];
+  views: DiagramView[];
+};
+
+/* ───────────────────────── Disposición (compartida) ───────────────────────── */
+
+type NodeLayout = { id: string; type: DiagramNodeType; x: number; y: number; w: number };
+type EdgeLayout = { from: string; to: string; dashed?: boolean; bidir?: boolean };
+type GroupLayout = { id: string; nodes: string[] };
+type TourLayout = { nodes: string[]; edges: string[] };
+type ViewLayout = { id: string; nodes: NodeLayout[]; edges: EdgeLayout[]; groups: GroupLayout[]; tour: TourLayout[] };
+
+const n = (id: string, type: DiagramNodeType, x: number, y: number, w: number): NodeLayout => ({ id, type, x, y, w });
+const e = (from: string, to: string, opts?: { dashed?: boolean; bidir?: boolean }): EdgeLayout => ({ from, to, ...opts });
+
+const layout: ViewLayout[] = [
+  {
+    id: 'mapa',
+    nodes: [
+      n('cliente', 'persona', 40, 230, 180),
+      n('web', 'web', 320, 210, 220),
+      n('servidor', 'servidor', 640, 210, 230),
+      n('fabrica', 'fabrica', 980, 210, 220),
+      n('bd', 'datos', 640, 500, 230),
+      n('panel', 'panel', 980, 500, 220),
+      n('tecnico', 'persona', 1300, 515, 170),
+    ],
+    groups: [
+      { id: 'g1', nodes: ['cliente', 'web'] },
+      { id: 'g2', nodes: ['servidor', 'bd'] },
+      { id: 'g3', nodes: ['fabrica', 'panel', 'tecnico'] },
+    ],
+    edges: [
+      e('cliente', 'web'),
+      e('web', 'servidor'),
+      e('servidor', 'web'),
+      e('servidor', 'bd'),
+      e('bd', 'servidor'),
+      e('servidor', 'fabrica'),
+      e('tecnico', 'panel'),
+      e('panel', 'bd'),
+      e('bd', 'panel', { dashed: true }),
+      e('panel', 'fabrica'),
+    ],
+    tour: [
+      { nodes: ['cliente', 'web'], edges: ['cliente>web'] },
+      { nodes: ['web', 'servidor'], edges: ['web>servidor', 'servidor>web'] },
+      { nodes: ['servidor', 'bd'], edges: ['servidor>bd', 'bd>servidor'] },
+      { nodes: ['tecnico', 'panel', 'bd'], edges: ['tecnico>panel', 'panel>bd'] },
+      { nodes: ['servidor', 'fabrica', 'panel'], edges: ['servidor>fabrica', 'panel>fabrica'] },
+    ],
+  },
+  {
+    id: 'cliente',
+    nodes: [
+      n('p1', 'paso', 40, 120, 210),
+      n('p2', 'paso', 290, 120, 210),
+      n('p3', 'paso', 540, 120, 210),
+      n('p4', 'paso', 790, 120, 210),
+      n('p5', 'paso', 1040, 120, 210),
+      n('carrito', 'datos', 540, 340, 210),
+      n('pedido', 'servidor', 790, 340, 210),
+      n('vidrios', 'web', 40, 340, 210),
+      n('revendedor', 'persona', 1040, 340, 210),
+      n('e1', 'estado', 40, 580, 150),
+      n('e2', 'estado', 220, 580, 150),
+      n('e3', 'paso', 400, 580, 150),
+      n('e4', 'estado', 580, 580, 150),
+      n('e5', 'estado', 760, 580, 170),
+      n('e6', 'estado', 960, 580, 170),
+      n('e7', 'ok', 1160, 520, 140),
+      n('e8', 'bad', 1160, 640, 140),
+      n('e9', 'bad', 1330, 520, 140),
+      n('e10', 'bad', 1330, 640, 140),
+    ],
+    groups: [
+      { id: 'gp', nodes: ['p1', 'p2', 'p3', 'p4', 'p5'] },
+      { id: 'ge', nodes: ['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8', 'e9', 'e10'] },
+    ],
+    edges: [
+      e('p1', 'p2'),
+      e('p2', 'p3'),
+      e('p3', 'p4'),
+      e('p4', 'p5'),
+      e('p3', 'carrito'),
+      e('carrito', 'pedido'),
+      e('p4', 'pedido'),
+      e('pedido', 'p5'),
+      e('p4', 'revendedor', { dashed: true }),
+      e('pedido', 'e3', { dashed: true }),
+      e('e1', 'e2'),
+      e('e2', 'e3'),
+      e('e3', 'e4'),
+      e('e4', 'e5'),
+      e('e5', 'e6'),
+      e('e6', 'e7'),
+      e('e6', 'e8'),
+      e('e5', 'e9', { dashed: true }),
+      e('e5', 'e10', { dashed: true }),
+    ],
+    tour: [
+      { nodes: ['p1', 'p2', 'p3'], edges: ['p1>p2', 'p2>p3'] },
+      { nodes: ['p3', 'carrito', 'pedido'], edges: ['p3>carrito', 'carrito>pedido'] },
+      { nodes: ['p4', 'pedido', 'p5'], edges: ['p4>pedido', 'pedido>p5'] },
+      { nodes: ['p4', 'revendedor', 'vidrios'], edges: ['p4>revendedor'] },
+      { nodes: ['e3', 'e4', 'e5', 'e6', 'e7', 'e8'], edges: ['e3>e4', 'e4>e5', 'e5>e6', 'e6>e7', 'e6>e8'] },
+    ],
+  },
+  {
+    id: 'precio',
+    nodes: [
+      n('in1', 'entrada', 40, 80, 250),
+      n('in2', 'entrada', 330, 80, 250),
+      n('in3', 'entrada', 620, 80, 250),
+      n('in4', 'entrada', 910, 80, 250),
+      n('gate', 'gate', 1210, 80, 240),
+      n('prox', 'gate', 1210, 330, 240),
+      n('s1', 'calc', 40, 340, 210),
+      n('s2', 'calc', 280, 340, 210),
+      n('s3', 'calc', 520, 340, 210),
+      n('s4', 'calc', 760, 340, 210),
+      n('s5', 'calc', 1000, 340, 210),
+      n('t1', 'total', 40, 600, 250),
+      n('t2', 'total', 330, 600, 250),
+      n('t3', 'total', 620, 600, 250),
+      n('t4', 'total', 910, 600, 250),
+    ],
+    groups: [
+      { id: 'gi', nodes: ['in1', 'in2', 'in3', 'in4'] },
+      { id: 'gm', nodes: ['s1', 's2', 's3', 's4', 's5'] },
+      { id: 'gt', nodes: ['t1', 't2', 't3', 't4'] },
+    ],
+    edges: [
+      e('gate', 's1'),
+      e('gate', 'prox'),
+      e('in1', 's1'),
+      e('in2', 's2'),
+      e('in2', 's4'),
+      e('in2', 's5'),
+      e('in3', 's2'),
+      e('in3', 's3'),
+      e('in3', 's4'),
+      e('in4', 's2', { dashed: true }),
+      e('in4', 't2', { dashed: true }),
+      e('in4', 't4', { dashed: true }),
+      e('s1', 's2'),
+      e('s2', 's3'),
+      e('s3', 's4'),
+      e('s4', 's5'),
+      e('s1', 't1'),
+      e('s2', 't1'),
+      e('s3', 't1'),
+      e('s4', 't1'),
+      e('s5', 't1'),
+      e('t1', 't2'),
+      e('t2', 't3'),
+      e('t3', 't4'),
+    ],
+    tour: [
+      { nodes: ['gate', 'prox', 's1'], edges: ['gate>s1', 'gate>prox'] },
+      { nodes: ['in1', 'in2', 'in3', 'in4'], edges: [] },
+      { nodes: ['s1', 's2', 's3'], edges: ['in1>s1', 'in2>s2', 'in3>s2', 'in3>s3', 's1>s2', 's2>s3'] },
+      { nodes: ['s4', 's5'], edges: ['in2>s4', 'in2>s5', 's3>s4', 's4>s5'] },
+      { nodes: ['t1', 't2', 't3', 't4'], edges: ['s5>t1', 't1>t2', 't2>t3', 't3>t4', 'in4>t2', 'in4>t4'] },
+    ],
+  },
+  {
+    id: 'tecnico',
+    nodes: [
+      n('c1', 'datos', 40, 80, 240),
+      n('c2', 'datos', 40, 220, 240),
+      n('c3', 'datos', 40, 360, 240),
+      n('c4', 'datos', 40, 500, 240),
+      n('c5', 'datos', 40, 640, 240),
+      n('c6', 'datos', 40, 780, 240),
+      n('receta', 'panel', 400, 120, 300),
+      n('pw', 'panel', 400, 450, 300),
+      n('sem', 'gate', 400, 610, 300),
+      n('web', 'web', 400, 770, 300),
+      n('k1', 'config', 860, 80, 240),
+      n('k2', 'config', 860, 200, 240),
+      n('k3', 'config', 860, 320, 240),
+      n('k4', 'config', 860, 440, 240),
+      n('k5', 'config', 860, 560, 240),
+      n('k6', 'config', 860, 680, 240),
+      n('pedidos', 'fabrica', 860, 820, 240),
+    ],
+    groups: [
+      { id: 'gc', nodes: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'] },
+      { id: 'gr', nodes: ['receta', 'pw', 'sem', 'web'] },
+      { id: 'gk', nodes: ['k1', 'k2', 'k3', 'k4', 'k5', 'k6'] },
+    ],
+    edges: [
+      e('c1', 'receta'),
+      e('c2', 'receta'),
+      e('c3', 'receta'),
+      e('c4', 'receta'),
+      e('c5', 'web', { dashed: true }),
+      e('c6', 'web', { dashed: true }),
+      e('k1', 'receta'),
+      e('k2', 'receta'),
+      e('k3', 'c1'),
+      e('k4', 'web', { dashed: true }),
+      e('receta', 'sem'),
+      e('pw', 'sem'),
+      e('sem', 'web'),
+      e('web', 'pedidos'),
+    ],
+    tour: [
+      { nodes: ['c1', 'c2', 'c3', 'c4', 'receta'], edges: ['c1>receta', 'c2>receta', 'c3>receta', 'c4>receta'] },
+      { nodes: ['k1', 'k2', 'k3', 'receta'], edges: ['k1>receta', 'k2>receta', 'k3>c1'] },
+      { nodes: ['receta', 'pw', 'sem'], edges: ['receta>sem', 'pw>sem'] },
+      { nodes: ['sem', 'web', 'c5', 'pedidos'], edges: ['sem>web', 'c5>web', 'web>pedidos'] },
+    ],
+  },
+  {
+    id: 'fabrica',
+    nodes: [
+      n('f1', 'servidor', 40, 160, 220),
+      n('f2', 'servidor', 320, 160, 220),
+      n('f3', 'panel', 600, 160, 220),
+      n('f4', 'panel', 880, 160, 220),
+      n('f5', 'fabrica', 1160, 160, 220),
+      n('g1', 'datos', 40, 430, 260),
+      n('g2', 'persona', 380, 430, 260),
+      n('g3', 'gate', 860, 430, 260),
+      n('g4', 'fabrica', 1160, 430, 240),
+    ],
+    groups: [{ id: 'gf', nodes: ['f1', 'f2', 'f3', 'f4', 'f5'] }],
+    edges: [
+      e('f1', 'f2'),
+      e('f2', 'f3'),
+      e('f3', 'f4'),
+      e('f4', 'f5'),
+      e('f1', 'g1'),
+      e('f1', 'g2', { dashed: true }),
+      e('f4', 'g3', { dashed: true }),
+      e('f5', 'g4'),
+    ],
+    tour: [
+      { nodes: ['f1', 'f2', 'f3'], edges: ['f1>f2', 'f2>f3'] },
+      { nodes: ['f3', 'f4', 'f5'], edges: ['f3>f4', 'f4>f5'] },
+      { nodes: ['f4', 'g3'], edges: ['f4>g3'] },
+      { nodes: ['f1', 'g1', 'g2'], edges: ['f1>g1', 'f1>g2'] },
+      { nodes: ['f5', 'g4'], edges: ['f5>g4'] },
+    ],
+  },
+];
+
+/* ───────────────────────────── Textos por idioma ──────────────────────────── */
+
+type NodeText = { label: string; sub?: string; desc?: string; bullets?: string[] };
+type ViewText = {
+  name: string;
+  intro: string;
+  script?: string[];
+  nodes: Record<string, NodeText>;
+  edges: Record<string, string>;
+  groups: Record<string, string>;
+  tour: string[];
+};
+type DiagramText = {
+  ui: SystemDiagramUi;
+  typeNames: Record<DiagramNodeType, string>;
+  views: Record<string, ViewText>;
+};
+
+const esText: DiagramText = {
+  ui: {
+    kicker: 'case study · cotizador de aberturas',
+    title: 'El sistema, en un diagrama que se puede tocar.',
+    intro:
+      'Cinco vistas del cotizador: el circuito completo, lo que hace el cliente, cómo se calcula el precio, lo que carga el técnico y cómo llega el pedido a la fábrica. Cada caja se puede mover; cada vista tiene un recorrido explicado paso a paso.',
+    hint: 'Arrastrá las cajas para acomodarlas. Clic en una caja para ver el detalle. Ctrl + rueda o los botones para acercar; fondo para desplazar. Esc limpia, F ajusta.',
+    tabsAria: 'Vistas del diagrama',
+    tourStart: 'Explicar paso a paso',
+    tourExit: 'Salir de la explicación',
+    fit: 'Ajustar',
+    fitTitle: 'Encuadrar el diagrama en la pantalla (F)',
+    reset: 'Reordenar',
+    resetTitle: 'Volver a la disposición original de esta vista',
+    exportSvg: 'Exportar SVG',
+    exportTitle: 'Descargar la vista actual como archivo SVG',
+    zoomIn: 'Acercar',
+    zoomOut: 'Alejar',
+    cursorDrag: 'mover',
+    legendTitle: 'Referencias',
+    viewOf: 'Vista {i} de {n}',
+    stepOf: 'Paso {i} de {n}',
+    prev: 'Anterior',
+    next: 'Siguiente',
+    finish: 'Terminar',
+    exit: 'Salir',
+    tourHint: 'Podés seguir moviendo cajas mientras explicás. Las flechas del teclado cambian de paso.',
+    clickHint:
+      'Hacé clic en una caja para ver qué es y con quién se conecta. Arrastrá para acomodar; la disposición se guarda en este navegador.',
+    connections: 'Conexiones',
+    backToView: 'Volver a la vista',
+    scriptTitle: 'Guion de dos minutos',
+    svgAria: 'Diagrama interactivo del cotizador de aberturas',
+    back: 'Volver',
+    backFull: 'Volver al case study',
+    switchLabel: 'EN',
+    switchAria: 'Ver el diagrama en inglés',
+    backCase: 'Volver al case study',
+    ctaTalk: 'Hablemos del proyecto',
+    footNote:
+      'El diagrama describe el mecanismo del sistema, no datos de clientes ni precios. El código del proyecto es privado.',
+  },
+  typeNames: {
+    persona: 'persona',
+    web: 'web pública',
+    servidor: 'servidor',
+    datos: 'datos',
+    panel: 'panel interno',
+    fabrica: 'fábrica',
+    paso: 'paso',
+    calc: 'bloque del motor',
+    total: 'total',
+    entrada: 'entrada',
+    gate: 'control',
+    config: 'configuración',
+    estado: 'estado',
+    ok: 'estado final',
+    bad: 'estado final',
+  },
+  views: {
+    mapa: {
+      name: 'Mapa general',
+      intro:
+        'Dos flujos que se cruzan en la base de datos: el del cliente, que entra por la web y termina en la fábrica, y el del técnico, que carga recetas y precios para que el motor pueda calcular.',
+      script: [
+        'Es un cotizador web de aberturas de aluminio y vidrio para Grupo CPS. El cliente entra, arma la ventana y recibe un precio; no hace falta que lo atienda nadie.',
+        'Arma la ventana paso a paso: línea de aluminio, tipología, medidas, vidrio, color y accesorios. Puede juntar varias en un carrito y enviar todo como un pedido.',
+        'El precio no sale de una tabla por metro cuadrado. El motor despieza la ventana como lo haría la fábrica: perfiles con sus cortes, vidrio, herrajes y horas de taller, con la receta de esa línea y tipología. A ese costo le suma margen e IVA.',
+        'Todo lo que usa el motor lo carga el técnico en un panel interno: perfiles y precios por color, accesorios, horas, y qué producto de WinMaker corresponde. Si a una combinación le falta algo, en la web aparece «Próximamente» en vez de un precio inventado.',
+        'Cuando entra un pedido, la fábrica recibe un aviso, lo ve en el panel con el despiece completo y descarga un archivo .PTO que WinMaker abre directo para producir.',
+      ],
+      nodes: {
+        cliente: {
+          label: 'Cliente',
+          sub: 'final o revendedor · desde el navegador, con o sin cuenta',
+          desc: 'Quien cotiza. Puede ser un cliente final sin cuenta, o un revendedor con cuenta que cotiza para un cliente propio.',
+          bullets: [
+            'Sin cuenta: envía una abertura por vez, con tope de envíos.',
+            'Con cuenta: carrito con varias aberturas, seguimiento de pedidos y descuento propio.',
+            'Nunca ve costos internos, margen ni precio por metro.',
+          ],
+        },
+        web: {
+          label: 'Web pública',
+          sub: 'cotizador · solo vidrios · carrito · mis pedidos · dibujo 2D y 3D',
+          desc: 'La cara visible: el configurador de cinco pasos, el cotizador de solo vidrios, el carrito y el seguimiento.',
+          bullets: [
+            'Muestra solo lo que el semáforo marca en verde; el resto aparece como «Próximamente».',
+            'Dibuja la abertura en 2D y 3D mientras se configura.',
+            'No calcula precios: todo se lo pide al servidor.',
+          ],
+        },
+        servidor: {
+          label: 'Servidor',
+          sub: 'motor de cálculo · validaciones · semáforo · PDF · .PTO',
+          desc: 'El corazón. Valida la configuración, despieza la ventana con la receta y devuelve precio, PDF y link. Es el único que toca la base de datos.',
+          bullets: [
+            'Rutas con sesión y rol; respuestas sin datos sensibles.',
+            'Motor puro, sin base ni red, alimentado por cargadores con caché.',
+            'Genera el PDF de la cotización y el .PTO para WinMaker.',
+          ],
+        },
+        fabrica: {
+          label: 'Fábrica · WinMaker',
+          sub: 'recibe el aviso, abre el .PTO y produce',
+          desc: 'El taller. Recibe un aviso automático por cada pedido y, desde el panel, baja el .PTO que WinMaker abre como si el pedido se hubiera cargado ahí.',
+          bullets: [
+            'WinMaker despieza, valoriza y arma la orden de producción.',
+            'Se contrastan pedidos de prueba: la web nunca por debajo del bruto del taller.',
+          ],
+        },
+        bd: {
+          label: 'Base de datos',
+          sub: 'recetas, perfiles, precios · cotizaciones y pedidos · PostgreSQL',
+          desc: 'PostgreSQL con autenticación. Guarda catálogos técnicos, recetas, precios y las cotizaciones con sus ítems y componentes.',
+          bullets: [
+            'Cada cotización guarda un snapshot de nombres y costos: no se recalcula en silencio.',
+            'El esquema vive en el repo como SQL y se aplica por migraciones ordenadas.',
+            'Solo accesible desde el servidor.',
+          ],
+        },
+        panel: {
+          label: 'Panel interno',
+          sub: 'técnico: recetas, precios, horas, productos WinMaker, pedidos',
+          desc: 'El back-office. Acá se carga todo lo que el motor necesita y se atienden los pedidos.',
+          bullets: [
+            'Recetas, perfiles y precios por color, accesorios, mano de obra, vidrios, cámaras, mosquiteros.',
+            'Semáforo de estado de carga: qué combos están completos.',
+            'Pedidos: detalle, despiece con costos, cambio de estado, descarga del .PTO.',
+          ],
+        },
+        tecnico: {
+          label: 'Técnico',
+          sub: 'rol interno · el admin además configura',
+          desc: 'La persona de la fábrica que carga y mantiene los datos técnicos. El rol admin suma parámetros (margen, IVA), monedas y usuarios.',
+          bullets: ['Entra al panel con su cuenta.', 'El sistema le marca en rojo lo que falta para que un combo se pueda vender.'],
+        },
+      },
+      edges: {
+        'cliente>web': 'arma y envía',
+        'web>servidor': 'cotizar · enviar',
+        'servidor>web': 'precio · link · PDF',
+        'servidor>bd': 'guarda la cotización',
+        'bd>servidor': 'recetas, precios, parámetros',
+        'servidor>fabrica': 'aviso del pedido',
+        'tecnico>panel': 'carga y mantiene',
+        'panel>bd': 'recetas, precios, horas',
+        'bd>panel': 'pedidos',
+        'panel>fabrica': '.PTO para WinMaker',
+      },
+      groups: { g1: 'LO QUE VE EL CLIENTE', g2: 'APLICACIÓN', g3: 'FÁBRICA Y TÉCNICO' },
+      tour: [
+        'El cliente entra a la web, arma la ventana paso a paso y la envía como pedido, sola o en un carrito con otras.',
+        'La web no calcula nada: le pide al servidor, que devuelve el precio, el link de resumen y el PDF.',
+        'El servidor despieza la ventana con la receta de esa línea y tipología, que lee de la base junto con precios y parámetros, y guarda la cotización.',
+        'Todo lo que el motor lee lo cargó el técnico en el panel interno: perfiles y precios por color, accesorios, horas y productos WinMaker.',
+        'Cuando entra un pedido, la fábrica recibe un aviso; desde el panel se ve el despiece y se baja el .PTO que WinMaker abre para producir.',
+      ],
+    },
+    cliente: {
+      name: 'El cliente',
+      intro:
+        'Cinco pasos con validación en el camino y dos salidas: agregar al carrito para seguir sumando, o enviar directo. Las dos terminan en un Pedido WEB con número.',
+      nodes: {
+        p1: {
+          label: '1 · Abertura',
+          sub: 'línea y tipología · medidas y cantidad · color',
+          desc: 'El cliente elige la línea de aluminio, cómo abre (tipología) y las medidas. El código de la tipología ya dice hojas y guías.',
+          bullets: ['Solo aparecen los combos en verde en el semáforo.', 'Validación en vivo: medidas fabricables, hojas posibles, peso.'],
+        },
+        p2: {
+          label: '2 · Vidrio y accesorios',
+          sub: 'simple, laminado o DVH · mosquitero, cortina, herraje',
+          desc: 'Vidrio por composición (el DVH es vidrio + cámara + vidrio), mosquitero sí/no, cortina y herraje visible.',
+          bullets: ['El herraje visible no cambia el precio; el real lo define la receta.', 'El mosquitero se cotiza con tela por rollo y marco por tira.'],
+        },
+        p3: {
+          label: '3 · Resumen técnico',
+          sub: 'dibujo 2D y 3D · avisos de coherencia · medidas fabricables',
+          desc: 'Resumen legible de lo elegido, con el dibujo. Desde acá se puede agregar al carrito si hay sesión.',
+          bullets: ['Sin cálculos visibles para el cliente.', 'Los avisos de proporción y peso vienen de validaciones compartidas con el servidor.'],
+        },
+        p4: {
+          label: '4 · Contacto',
+          sub: 'para mí o para un cliente propio · obra y contacto',
+          desc: 'Datos de obra y contacto. «Para un cliente propio» activa el flujo de revendedor (requiere cuenta).',
+          bullets: ['Sin cuenta se puede enviar igual (una abertura, con tope de envíos).', 'El revendedor define margen y colocación.'],
+        },
+        p5: {
+          label: '5 · Confirmación',
+          sub: 'número de pedido · link de resumen · PDF',
+          desc: 'El pedido quedó guardado. Se muestra el número, el link público por token y el PDF para descargar.',
+          bullets: ['El link no es adivinable (token aleatorio).', 'El PDF sale con la marca de la empresa, sin costos internos.'],
+        },
+        carrito: {
+          label: 'Carrito',
+          sub: 'pedido en Borrador, con cuenta · varias aberturas',
+          desc: 'Una cotización en estado Borrador reutilizable por usuario. Cada abertura es un ítem; al agregar o quitar se recalculan los totales.',
+        },
+        pedido: {
+          label: 'Pedido WEB',
+          sub: 'guardado con número · la fábrica recibe aviso',
+          desc: 'Lo que la web crea al confirmar: cliente → proyecto → cotización → ítems → componentes, con snapshots de costos.',
+          bullets: ['Dispara el aviso automático a la fábrica.', 'Aparece en el panel interno para trabajarlo.'],
+        },
+        vidrios: {
+          label: 'Solo vidrios',
+          sub: 'paños sueltos por medida, con servicios por m²',
+          desc: 'Cotizador aparte para vidrio suelto: monolítico, laminado estándar o DVH, con servicios (pulido, templado…). Genera su propio presupuesto.',
+        },
+        revendedor: {
+          label: 'Revendedor',
+          sub: 'margen y colocación propios · segundo PDF con link aparte',
+          desc: 'Usuario con cuenta que cotiza para su cliente. Recibe el PDF de costo y un segundo PDF con su margen aplicado y su descuento absorbido.',
+        },
+        e1: { label: 'Borrador', sub: 'carrito', desc: 'Estado interno del carrito.' },
+        e2: { label: 'Calculada', sub: 'interno', desc: 'Estado interno intermedio.' },
+        e3: { label: 'Pedido WEB', sub: 'lo crea la web', desc: 'Con este estado llega el pedido desde la web. De acá en más lo mueve la empresa.' },
+        e4: { label: 'Enviada', sub: 'cotización formal', desc: 'La empresa envió la cotización formal al cliente.' },
+        e5: { label: 'En negociación', desc: 'Ida y vuelta comercial.' },
+        e6: { label: 'Entrega parcial', desc: 'Parte del pedido entregado.' },
+        e7: { label: 'Ganada', desc: 'Cerrado a favor.' },
+        e8: { label: 'Perdida', desc: 'Cerrado en contra.' },
+        e9: { label: 'Vencida', desc: 'Venció sin respuesta.' },
+        e10: { label: 'Cancelada', desc: 'Cancelado por alguna de las partes.' },
+      },
+      edges: {
+        'p3>carrito': 'Agregar al carrito (con cuenta)',
+        'carrito>pedido': 'Enviar el pedido',
+        'p4>pedido': 'Enviar (sin cuenta también)',
+        'pedido>p5': 'número y link',
+        'p4>revendedor': 'para un cliente propio',
+        'pedido>e3': 'crea',
+      },
+      groups: { gp: 'LOS CINCO PASOS DEL COTIZADOR', ge: 'ESTADOS DE UN PEDIDO (LOS MISMOS NOMBRES QUE EL TABLERO COMERCIAL)' },
+      tour: [
+        'Tres pasos técnicos: qué ventana, con qué vidrio y accesorios, y un resumen con el dibujo. La validación va avisando si algo no se puede fabricar.',
+        'Con cuenta, cada abertura se agrega a un carrito (un pedido en borrador) y al final se envía todo junto.',
+        'Sin cuenta también se puede: contacto, enviar, y la confirmación muestra el número, el link y el PDF.',
+        'Dos variantes: el revendedor cotiza para su cliente y recibe un segundo PDF con su margen; y en «solo vidrios» se cotizan paños sueltos.',
+        'El pedido entra como «Pedido WEB» y después lo mueve la empresa por los mismos estados que usa su tablero comercial.',
+      ],
+    },
+    precio: {
+      name: 'El precio',
+      intro:
+        'Cuatro entradas, cinco bloques de costo y una cadena de totales. La clave es la receta: el motor no estima por metro cuadrado, despieza la ventana con los mismos perfiles y cortes que usa la fábrica.',
+      nodes: {
+        in1: {
+          label: 'Lo que eligió el cliente',
+          sub: 'línea, tipología, medidas, color, cantidad · vidrio, mosquitero, herraje',
+          desc: 'El formulario normalizado y validado, con cotas defensivas: medidas hasta 6000 mm, cantidades enteras con tope.',
+        },
+        in2: {
+          label: 'Receta del combo',
+          sub: 'perfiles con cortes · accesorios y herrajes · horas por estación',
+          desc: 'La receta de esa línea × tipología: qué perfiles lleva, cuántos cortes de cada uno y de qué largo según las medidas, qué accesorios por hoja o paño, y horas de taller.',
+          bullets: ['Derivadas de las recetas del software de fábrica y corregidas por el técnico.', 'Variantes por guías, hojas y divisiones.'],
+        },
+        in3: {
+          label: 'Precios',
+          sub: 'perfil = peso × precio del kg, por color · vidrio por m² · accesorios por unidad',
+          desc: 'El costo por metro de cada perfil sale de la ficha (peso por metro) por el precio del kilo en ese color. Vidrio y accesorios tienen precio propio.',
+        },
+        in4: {
+          label: 'Parámetros',
+          sub: 'desperdicio por tira ×1,2 · margen, IVA, moneda · límites físicos',
+          desc: 'Valores globales que administra el admin desde el panel. La cabecera de la receta puede pisar desperdicio y mano de obra.',
+        },
+        gate: {
+          label: 'Semáforo del combo',
+          sub: '¿receta completa + producto WinMaker?',
+          desc: 'Antes de calcular, el servidor mira si el combo está listo. Mismo criterio que el tablero de estado de carga del panel.',
+          bullets: [
+            'Al menos un perfil activo y todos con precio en el color por defecto.',
+            'Mano de obra cargada (propia, por línea o por tipología).',
+            'Receta no desactivada.',
+            'Al menos un producto WinMaker para el combo.',
+          ],
+        },
+        prox: {
+          label: '«Próximamente»',
+          sub: 'sin precio inventado: el combo no se cotiza online',
+          desc: 'Si falta algo, la web no vende ese combo. Antes el motor caía a un modelo paramétrico con precio estimado y mano de obra cero; eso se eliminó.',
+        },
+        s1: {
+          label: 'Geometría',
+          sub: 'paños y hojas · luz de cada paño · ¿se puede fabricar?',
+          desc: 'Traduce la tipología a paños, hojas, divisores y luces, siguiendo lo observado en las recetas de fábrica. La luz real ya no se usa para el vidrio: solo para detectar medidas no fabricables.',
+        },
+        s2: {
+          label: 'Perfiles',
+          sub: 'cada corte × costo/m · desperdicio ×1,2 por tira · según color',
+          desc: 'Por cada perfil de la receta: largo del corte en función de las medidas × cantidad × costo por metro, con el desperdicio aplicado por tira.',
+        },
+        s3: {
+          label: 'Vidrio',
+          sub: 'ancho × alto por paño · DVH = vidrio + cámara + vidrio · servicios',
+          desc: 'Vidrio por medida exterior (no por luz real, a propósito). El DVH suma vidrio exterior, cámara por metro de perímetro y vidrio interior. Servicios por m².',
+        },
+        s4: {
+          label: 'Accesorios y herrajes',
+          sub: 'por hoja, paño o abertura · mosquitero por rollo',
+          desc: 'Accesorios de la receta con su regla de cantidad: por hoja, por paño, por metro o por unidad. Herrajes reales por hoja. Mosquitero: tela por metro lineal con orientación óptima del rollo.',
+        },
+        s5: {
+          label: 'Mano de obra',
+          sub: 'horas por estación × tarifa · solo fabricación',
+          desc: 'Horas de taller por estación (corte, armado, vidriado…) cargadas por receta o heredadas por línea o tipología, por la tarifa. Sin colocación ni flete.',
+        },
+        t1: {
+          label: 'Costo interno',
+          sub: 'suma de los cinco bloques · el cliente nunca lo ve',
+          desc: 'Materiales + mano de obra. Es lo que se compara contra el bruto de WinMaker en los lotes de contraste.',
+        },
+        t2: { label: 'Precio de venta', sub: 'costo × (1 + margen)', desc: 'El margen es un parámetro global que administra el admin.' },
+        t3: {
+          label: 'Subtotal del pedido',
+          sub: '× cantidad, sumando aberturas · − descuento de la cuenta',
+          desc: 'Se suman todas las aberturas del pedido y se aplica el descuento del usuario, si tiene.',
+        },
+        t4: {
+          label: 'Total',
+          sub: '+ IVA · en la moneda del pedido',
+          desc: 'Con IVA y convertido a la moneda del pedido (dólares como base; el vidrio puede estar en otra moneda).',
+        },
+      },
+      edges: {
+        'gate>s1': 'verde: calcula',
+        'gate>prox': 'amarillo o rojo',
+        'in4>s2': 'desperdicio',
+        'in4>t2': 'margen',
+        'in4>t4': 'IVA',
+        's5>t1': 'se suman',
+      },
+      groups: { gi: 'ENTRADAS', gm: 'EL MOTOR, EN ORDEN', gt: 'TOTALES' },
+      tour: [
+        'Antes de calcular, el servidor mira el semáforo del combo. Si a la receta le falta algo o no hay producto WinMaker, en la web sale «Próximamente»: nunca un precio inventado.',
+        'Cuatro entradas: lo que eligió el cliente, la receta de ese combo, los precios (el perfil vale peso por precio del kilo, según el color) y los parámetros globales.',
+        'La geometría convierte la tipología en paños y hojas. Después, cada perfil de la receta se corta al largo que dictan las medidas y se multiplica por su costo por metro, con desperdicio por tira. El vidrio va por ancho por alto; el DVH se suma por partes.',
+        'Accesorios y herrajes por hoja, paño o abertura, mosquitero por rollo, y las horas de taller por estación por la tarifa. Solo fabricación: sin flete ni colocación.',
+        'La suma es el costo interno, que el cliente nunca ve. Con margen da el precio de venta; por cantidad y menos el descuento de la cuenta, el subtotal; con IVA, el total.',
+      ],
+    },
+    tecnico: {
+      name: 'El técnico',
+      intro:
+        'Todo el panel gira alrededor de la receta. Los catálogos de la izquierda la alimentan, la configuración de la derecha define qué combos existen, y el semáforo decide qué llega a la web.',
+      nodes: {
+        c1: {
+          label: 'Perfiles',
+          sub: 'ficha física + precio por color y kg',
+          desc: 'Cada perfil de aluminio una sola vez (número, peso por metro) y sus precios por color. Cambiar un precio acá cambia todas las ventanas que lo usan.',
+        },
+        c2: { label: 'Accesorios y herrajes', sub: 'por categoría, con costo y uso', desc: 'Catálogo de accesorios (burletes, felpas, escuadras, cierres, ruedas…) con su costo y la regla de uso en cada receta.' },
+        c3: { label: 'Cámaras DVH · mosquiteros', sub: 'cámara por metro · tela por rollo', desc: 'Cámaras de DVH por metro lineal y rollos de tela mosquitera con ancho y precio, para cotizar la tela con orientación óptima.' },
+        c4: { label: 'Mano de obra', sub: 'estaciones y horas: propias, por línea o por tipología', desc: 'Horas por estación de taller. Se cargan por receta o como globales por línea o tipología; el semáforo exige que haya alguna.' },
+        c5: { label: 'Vidrios y servicios', sub: 'precio por m² · laminados estándar · servicios', desc: 'Lista de vidrios con precio por m² y moneda, y servicios (pulido, templado…) con subopciones. Van directo al cotizador.' },
+        c6: { label: 'Uniones', sub: 'perfil de unión para aberturas compuestas', desc: 'Perfiles de unión entre módulos de una abertura compuesta, costeados por tira.' },
+        receta: {
+          label: 'Receta = línea × tipología',
+          sub: '• perfiles con cortes (largo, cantidad) • accesorios y herrajes por hoja o paño • horas por estación • variantes por guías, hojas y divisiones • alternativas y valores por defecto',
+          desc: 'La unidad de trabajo del técnico. Una receta por combo, con todo lo que el motor necesita para despiezar.',
+          bullets: ['Se puede duplicar, imprimir en PDF y desactivar.', 'El estado de carga le marca perfiles sin precio, sin cortes o sin mano de obra.'],
+        },
+        pw: {
+          label: 'Productos WinMaker',
+          sub: 'combo → código de producto de la fábrica',
+          desc: 'Qué producto de WinMaker corresponde a cada línea × tipología × hojas, guías o divisiones. Sin producto no hay .PTO ni venta online.',
+        },
+        sem: {
+          label: 'Estado de carga (semáforo)',
+          sub: 'verde = receta completa + producto WinMaker',
+          desc: 'Calculado con el criterio del motor, no declarado a mano: perfiles con precio en el color por defecto, mano de obra, receta activa y producto.',
+        },
+        web: { label: 'Web pública', sub: 'lo verde se cotiza online; el resto sale «Próximamente»', desc: 'El catálogo público solo incluye los combos verdes.' },
+        k1: { label: 'Líneas', sub: 'las series de aluminio del proveedor', desc: 'Las series de aluminio del proveedor, con sus límites: tipologías admitidas, DVH, rotura de puente térmico.' },
+        k2: { label: 'Tipologías', sub: 'el código define hojas, guías y geometría', desc: 'El código de la tipología es el preset: prefijo de familia más hojas y guías (por ejemplo 2 hojas, 2 guías).' },
+        k3: { label: 'Colores', sub: 'el precio del perfil va por color', desc: 'Colores de aluminio; cada perfil tiene un precio por color.' },
+        k4: { label: 'Parámetros · admin', sub: 'margen, IVA, desperdicio, color base', desc: 'Valores globales: margen base, IVA, desperdicio de perfil y vidrio, color por defecto de WinMaker.' },
+        k5: { label: 'Monedas', sub: 'dólares y pesos: tipo de cambio' },
+        k6: { label: 'Usuarios · admin', sub: 'roles y descuento por cuenta', desc: 'Roles cliente / interno / admin, activo o no, descuento por cuenta.' },
+        pedidos: { label: 'Pedidos', sub: 'detalle, despiece, estado, .PTO', desc: 'Lo que entra desde la web, con cliente, obra, despiece con costos internos, cambio de estado y descarga del .PTO.' },
+      },
+      edges: {
+        'c5>web': 'opciones directas al cotizador',
+        'k1>receta': 'definen los combos',
+        'k3>c1': 'precio por color',
+        'k4>web': 'margen e IVA',
+        'sem>web': 'verde',
+        'web>pedidos': 'pedidos',
+      },
+      groups: { gc: 'CATÁLOGOS QUE CARGA', gr: 'RECETAS Y CONTROL', gk: 'CONFIGURACIÓN' },
+      tour: [
+        'El técnico carga catálogos una vez (perfiles con precio por color, accesorios, cámaras, horas) y arma la receta de cada combo con ellos.',
+        'Líneas y tipologías definen qué combos existen; los colores, a qué precio va cada perfil.',
+        'La receta y el producto WinMaker alimentan el semáforo: verde solo si todos los perfiles tienen precio, hay mano de obra y la fábrica tiene el producto.',
+        'Solo lo verde llega a la web; el resto sale «Próximamente». Vidrios y servicios van directo al cotizador. Los pedidos que entran se atienden desde el mismo panel.',
+      ],
+    },
+    fabrica: {
+      name: 'La fábrica',
+      intro:
+        'El pedido no se retipea. Desde el panel se baja un archivo .PTO que WinMaker abre como si el pedido se hubiera cargado ahí, con el producto real de la fábrica, no un dibujo genérico.',
+      nodes: {
+        f1: { label: 'Pedido WEB', sub: 'el cliente confirmó · número de pedido', desc: 'El pedido guardado con cliente, obra, aberturas y despiece.' },
+        f2: {
+          label: 'Aviso a fábrica',
+          sub: 'mensaje automático: chat del equipo o mail',
+          desc: 'Al confirmar, el servidor manda un mensaje con número, cliente, total y link al panel. Si falla, no frena el pedido.',
+        },
+        f3: {
+          label: 'Panel de pedidos',
+          sub: 'cliente, obra, despiece con costos internos · cambio de estado',
+          desc: 'Todo lo que la persona de fábrica necesita para trabajarlo. Los costos internos nunca salen de acá.',
+        },
+        f4: {
+          label: 'Descargar .PTO',
+          sub: 'un archivo por pedido · solo con producto WinMaker real',
+          desc: 'Una pared por abertura con el producto de la fábrica, sus variables (vidrio, espesor, hojas, mosquitero, mano) y sus paños. Mismo formato que exporta WinMaker, validado contra archivos históricos del taller.',
+        },
+        f5: {
+          label: 'WinMaker (taller)',
+          sub: 'despieza y valoriza · corta, arma, entrega',
+          desc: 'El software de la fábrica abre el .PTO, suma herrajes y horas de su propia receta y genera la orden de producción.',
+        },
+        g1: { label: 'Lo que recibe el cliente', sub: 'link privado con el detalle · PDF con la marca de la empresa, sin costos internos' },
+        g2: { label: 'Si lo pidió un revendedor', sub: 'segundo PDF con su margen y colocación · link aparte · su descuento no se ve' },
+        g3: {
+          label: 'Sin producto WinMaker',
+          sub: 'el .PTO no se genera; el panel dice qué ítem y por qué · nunca dibujo genérico',
+          desc: 'Antes se mandaba un dibujo genérico. Se descartó porque WinMaker no le suma herrajes ni horas y el presupuesto de fábrica salía mal.',
+        },
+        g4: {
+          label: 'Contraste con el taller',
+          sub: 'lotes de pedidos de prueba, ítem por ítem · la web nunca por debajo de WinMaker',
+          desc: 'Se generan pedidos de prueba, el taller los valoriza en WinMaker y se compara componente por componente. Los rojos se cierran corrigiendo la receta.',
+        },
+      },
+      edges: {
+        'f2>f3': 'el técnico lo abre',
+        'f4>f5': 'archivo .pto',
+        'f1>g1': 'link y PDF',
+        'f1>g2': 'si es para un cliente propio',
+        'f4>g3': 'falta producto',
+        'f5>g4': 'se compara',
+      },
+      groups: { gf: 'DEL PEDIDO A LA PRODUCCIÓN' },
+      tour: [
+        'Cuando el cliente confirma, la fábrica recibe un aviso automático y ve el pedido completo en el panel, con el despiece y los costos internos.',
+        'Desde el panel se descarga el .PTO y WinMaker lo abre como un pedido propio: producto real, vidrio, hojas, mosquitero. Nadie retipea nada.',
+        'Si algún ítem no tiene producto WinMaker, el archivo no se genera y el panel dice cuál y por qué. Se eliminó el dibujo genérico porque hacía mentir al presupuesto de fábrica.',
+        'El cliente recibe un link con el detalle y un PDF sin costos internos. Si lo pidió un revendedor, además recibe un segundo PDF con su margen para entregarle a su cliente.',
+        'Y se controla: lotes de pedidos de prueba se valorizan en WinMaker y se comparan ítem por ítem. Regla: la web nunca por debajo del taller.',
+      ],
+    },
+  },
+};
+
+const enText: DiagramText = {
+  ui: {
+    kicker: 'case study · aluminum joinery quoter',
+    title: 'The system, in a diagram you can move around.',
+    intro:
+      'Five views of the quoter: the full circuit, what the client does, how the price is calculated, what the technician loads and how the order reaches the factory. Every box can be dragged; every view has a step-by-step walkthrough.',
+    hint: 'Drag the boxes to arrange them. Click a box to see its details. Ctrl + wheel or the buttons to zoom; drag the background to pan. Esc clears, F fits.',
+    tabsAria: 'Diagram views',
+    tourStart: 'Explain step by step',
+    tourExit: 'Exit the walkthrough',
+    fit: 'Fit',
+    fitTitle: 'Fit the diagram to the screen (F)',
+    reset: 'Rearrange',
+    resetTitle: 'Restore the original layout of this view',
+    exportSvg: 'Export SVG',
+    exportTitle: 'Download the current view as an SVG file',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+    cursorDrag: 'drag',
+    legendTitle: 'Legend',
+    viewOf: 'View {i} of {n}',
+    stepOf: 'Step {i} of {n}',
+    prev: 'Previous',
+    next: 'Next',
+    finish: 'Finish',
+    exit: 'Exit',
+    tourHint: 'You can keep moving boxes while you explain. The arrow keys change step.',
+    clickHint: 'Click a box to see what it is and what it connects to. Drag to arrange; the layout is saved in this browser.',
+    connections: 'Connections',
+    backToView: 'Back to the view',
+    scriptTitle: 'Two-minute script',
+    svgAria: 'Interactive diagram of the aluminum joinery quoter',
+    back: 'Back',
+    backFull: 'Back to the case study',
+    switchLabel: 'ES',
+    switchAria: 'View the diagram in Spanish',
+    backCase: 'Back to the case study',
+    ctaTalk: "Let's talk about the project",
+    footNote: 'The diagram describes how the system works, not client data or prices. The project’s code is private.',
+  },
+  typeNames: {
+    persona: 'person',
+    web: 'public web',
+    servidor: 'server',
+    datos: 'data',
+    panel: 'internal panel',
+    fabrica: 'factory',
+    paso: 'step',
+    calc: 'engine block',
+    total: 'total',
+    entrada: 'input',
+    gate: 'control',
+    config: 'configuration',
+    estado: 'status',
+    ok: 'final status',
+    bad: 'final status',
+  },
+  views: {
+    mapa: {
+      name: 'Overview',
+      intro:
+        'Two flows that meet at the database: the client’s, which enters through the web and ends at the factory, and the technician’s, who loads recipes and prices so the engine can calculate.',
+      script: [
+        'It is a web quoter for aluminum-and-glass joinery, built for Grupo CPS. The client comes in, builds the window and gets a price; nobody has to attend them.',
+        'They build the window step by step: aluminum line, window type, dimensions, glass, color and accessories. They can group several in a cart and send everything as one order.',
+        'The price does not come from a per-square-meter table. The engine breaks the window down the way the factory would: profiles with their cuts, glass, hardware and shop hours, using the recipe for that line and window type. Then it adds margin and VAT.',
+        'Everything the engine uses is loaded by the technician in an internal panel: profiles and prices per color, accessories, hours, and which WinMaker product applies. If a combination is missing something, the web shows “Coming soon” instead of a made-up price.',
+        'When an order comes in, the factory gets a notification, sees it in the panel with the full breakdown and downloads a .PTO file that WinMaker opens directly to produce it.',
+      ],
+      nodes: {
+        cliente: {
+          label: 'Client',
+          sub: 'end client or reseller · from the browser, with or without an account',
+          desc: 'Whoever quotes. It can be an end client without an account, or a reseller with an account quoting for a client of their own.',
+          bullets: [
+            'Without an account: one window per submission, with a submission cap.',
+            'With an account: cart with several windows, order tracking and their own discount.',
+            'Never sees internal costs, margin or price per meter.',
+          ],
+        },
+        web: {
+          label: 'Public web',
+          sub: 'quoter · glass only · cart · my orders · 2D and 3D drawing',
+          desc: 'The visible face: the five-step configurator, the glass-only quoter, the cart and order tracking.',
+          bullets: [
+            'Shows only what the traffic light marks green; the rest appears as “Coming soon”.',
+            'Draws the window in 2D and 3D while it is configured.',
+            'Calculates no prices: it asks the server for everything.',
+          ],
+        },
+        servidor: {
+          label: 'Server',
+          sub: 'pricing engine · validations · traffic light · PDF · .PTO',
+          desc: 'The heart. It validates the configuration, breaks the window down with the recipe and returns price, PDF and link. It is the only one that touches the database.',
+          bullets: [
+            'Routes with session and role; responses with no sensitive data.',
+            'Pure engine, no database or network, fed by cached loaders.',
+            'Generates the quote PDF and the .PTO for WinMaker.',
+          ],
+        },
+        fabrica: {
+          label: 'Factory · WinMaker',
+          sub: 'gets the notification, opens the .PTO and produces',
+          desc: 'The shop. It receives an automatic notification for every order and, from the panel, downloads the .PTO that WinMaker opens as if the order had been entered there.',
+          bullets: ['WinMaker breaks it down, prices it and builds the production order.', 'Test orders are cross-checked: the web is never below the shop’s gross cost.'],
+        },
+        bd: {
+          label: 'Database',
+          sub: 'recipes, profiles, prices · quotes and orders · PostgreSQL',
+          desc: 'PostgreSQL with authentication. It stores technical catalogs, recipes, prices and the quotes with their items and components.',
+          bullets: [
+            'Every quote stores a snapshot of names and costs: nothing is recalculated silently.',
+            'The schema lives in the repo as SQL and is applied through ordered migrations.',
+            'Reachable only from the server.',
+          ],
+        },
+        panel: {
+          label: 'Internal panel',
+          sub: 'technician: recipes, prices, hours, WinMaker products, orders',
+          desc: 'The back office. Everything the engine needs is loaded here, and orders are handled here.',
+          bullets: [
+            'Recipes, profiles and prices per color, accessories, labor, glass, IGU spacers, insect screens.',
+            'Load-status traffic light: which combos are complete.',
+            'Orders: detail, breakdown with costs, status changes, .PTO download.',
+          ],
+        },
+        tecnico: {
+          label: 'Technician',
+          sub: 'internal role · the admin also configures',
+          desc: 'The factory person who loads and maintains the technical data. The admin role adds parameters (margin, VAT), currencies and users.',
+          bullets: ['Signs in to the panel with their account.', 'The system flags in red what is missing before a combo can be sold.'],
+        },
+      },
+      edges: {
+        'cliente>web': 'builds and submits',
+        'web>servidor': 'quote · submit',
+        'servidor>web': 'price · link · PDF',
+        'servidor>bd': 'stores the quote',
+        'bd>servidor': 'recipes, prices, parameters',
+        'servidor>fabrica': 'order notification',
+        'tecnico>panel': 'loads and maintains',
+        'panel>bd': 'recipes, prices, hours',
+        'bd>panel': 'orders',
+        'panel>fabrica': '.PTO for WinMaker',
+      },
+      groups: { g1: 'WHAT THE CLIENT SEES', g2: 'APPLICATION', g3: 'FACTORY AND TECHNICIAN' },
+      tour: [
+        'The client enters the web, builds the window step by step and submits it as an order, alone or in a cart with others.',
+        'The web calculates nothing: it asks the server, which returns the price, the summary link and the PDF.',
+        'The server breaks the window down with the recipe for that line and window type, read from the database along with prices and parameters, and stores the quote.',
+        'Everything the engine reads was loaded by the technician in the internal panel: profiles and prices per color, accessories, hours and WinMaker products.',
+        'When an order comes in, the factory gets a notification; from the panel they see the breakdown and download the .PTO that WinMaker opens to produce it.',
+      ],
+    },
+    cliente: {
+      name: 'The client',
+      intro:
+        'Five steps with validation along the way and two exits: add to the cart to keep adding, or submit directly. Both end in a numbered WEB Order.',
+      nodes: {
+        p1: {
+          label: '1 · Window',
+          sub: 'line and window type · dimensions and quantity · color',
+          desc: 'The client picks the aluminum line, how it opens (window type) and the dimensions. The window-type code already states sashes and tracks.',
+          bullets: ['Only combos that are green on the traffic light appear.', 'Live validation: manufacturable dimensions, possible sashes, weight.'],
+        },
+        p2: {
+          label: '2 · Glass and accessories',
+          sub: 'single, laminated or IGU · insect screen, blind, hardware',
+          desc: 'Glass by composition (an IGU is glass + spacer + glass), insect screen yes/no, blind and visible hardware.',
+          bullets: ['The visible hardware does not change the price; the real one is set by the recipe.', 'The insect screen is priced with mesh per roll and frame per stock length.'],
+        },
+        p3: {
+          label: '3 · Technical summary',
+          sub: '2D and 3D drawing · consistency warnings · manufacturable dimensions',
+          desc: 'A readable summary of the choices, with the drawing. From here it can be added to the cart if signed in.',
+          bullets: ['No calculations visible to the client.', 'Proportion and weight warnings come from validations shared with the server.'],
+        },
+        p4: {
+          label: '4 · Contact',
+          sub: 'for me or for a client of my own · site and contact',
+          desc: 'Site and contact details. “For a client of my own” turns on the reseller flow (requires an account).',
+          bullets: ['Without an account it can still be submitted (one window, with a submission cap).', 'The reseller sets margin and installation.'],
+        },
+        p5: {
+          label: '5 · Confirmation',
+          sub: 'order number · summary link · PDF',
+          desc: 'The order is saved. It shows the number, the public link by token and the PDF to download.',
+          bullets: ['The link cannot be guessed (random token).', 'The PDF carries the company brand, with no internal costs.'],
+        },
+        carrito: {
+          label: 'Cart',
+          sub: 'order in Draft, with an account · several windows',
+          desc: 'A quote in Draft status, reusable per user. Each window is an item; adding or removing recalculates the totals.',
+        },
+        pedido: {
+          label: 'WEB Order',
+          sub: 'saved with a number · the factory is notified',
+          desc: 'What the web creates on confirmation: client → project → quote → items → components, with cost snapshots.',
+          bullets: ['Triggers the automatic notification to the factory.', 'Shows up in the internal panel to be worked on.'],
+        },
+        vidrios: {
+          label: 'Glass only',
+          sub: 'loose panes by size, with services per m²',
+          desc: 'A separate quoter for loose glass: monolithic, standard laminated or IGU, with services (polishing, tempering…). It produces its own quote.',
+        },
+        revendedor: {
+          label: 'Reseller',
+          sub: 'own margin and installation · second PDF with a separate link',
+          desc: 'A user with an account quoting for their client. They get the cost PDF and a second PDF with their margin applied and their discount absorbed.',
+        },
+        e1: { label: 'Draft', sub: 'cart', desc: 'Internal cart status.' },
+        e2: { label: 'Calculated', sub: 'internal', desc: 'Internal intermediate status.' },
+        e3: { label: 'WEB Order', sub: 'created by the web', desc: 'The status an order arrives with from the web. From here on the company moves it.' },
+        e4: { label: 'Sent', sub: 'formal quote', desc: 'The company sent the formal quote to the client.' },
+        e5: { label: 'Negotiating', desc: 'Commercial back and forth.' },
+        e6: { label: 'Partial delivery', desc: 'Part of the order delivered.' },
+        e7: { label: 'Won', desc: 'Closed in favor.' },
+        e8: { label: 'Lost', desc: 'Closed against.' },
+        e9: { label: 'Expired', desc: 'Expired with no answer.' },
+        e10: { label: 'Cancelled', desc: 'Cancelled by either side.' },
+      },
+      edges: {
+        'p3>carrito': 'Add to cart (with an account)',
+        'carrito>pedido': 'Submit the order',
+        'p4>pedido': 'Submit (also without an account)',
+        'pedido>p5': 'number and link',
+        'p4>revendedor': 'for a client of their own',
+        'pedido>e3': 'creates',
+      },
+      groups: { gp: 'THE FIVE STEPS OF THE QUOTER', ge: 'ORDER STATUSES (SAME NAMES AS THE SALES BOARD)' },
+      tour: [
+        'Three technical steps: which window, with which glass and accessories, and a summary with the drawing. Validation warns along the way if something cannot be manufactured.',
+        'With an account, each window is added to a cart (an order in draft) and everything is submitted together at the end.',
+        'It also works without an account: contact, submit, and the confirmation shows the number, the link and the PDF.',
+        'Two variants: the reseller quotes for their client and gets a second PDF with their margin; and “glass only” quotes loose panes.',
+        'The order arrives as “WEB Order” and the company then moves it through the same statuses its sales board uses.',
+      ],
+    },
+    precio: {
+      name: 'The price',
+      intro:
+        'Four inputs, five cost blocks and a chain of totals. The key is the recipe: the engine does not estimate per square meter, it breaks the window down with the same profiles and cuts the factory uses.',
+      nodes: {
+        in1: {
+          label: 'What the client chose',
+          sub: 'line, window type, dimensions, color, quantity · glass, insect screen, hardware',
+          desc: 'The normalized and validated form, with defensive bounds: dimensions up to 6000 mm, integer quantities with a cap.',
+        },
+        in2: {
+          label: 'The combo’s recipe',
+          sub: 'profiles with cuts · accessories and hardware · hours per station',
+          desc: 'The recipe for that line × window type: which profiles it takes, how many cuts of each and how long based on the dimensions, which accessories per sash or pane, and shop hours.',
+          bullets: ['Derived from the factory software’s recipes and corrected by the technician.', 'Variants by tracks, sashes and divisions.'],
+        },
+        in3: {
+          label: 'Prices',
+          sub: 'profile = weight × price per kg, per color · glass per m² · accessories per unit',
+          desc: 'The cost per meter of each profile comes from its data sheet (weight per meter) times the price per kilo in that color. Glass and accessories have their own prices.',
+        },
+        in4: {
+          label: 'Parameters',
+          sub: 'waste per stock length ×1.2 · margin, VAT, currency · physical limits',
+          desc: 'Global values managed by the admin from the panel. The recipe header can override waste and labor.',
+        },
+        gate: {
+          label: 'Combo traffic light',
+          sub: 'complete recipe + WinMaker product?',
+          desc: 'Before calculating, the server checks whether the combo is ready. Same criterion as the panel’s load-status board.',
+          bullets: [
+            'At least one active profile, and all of them priced in the default color.',
+            'Labor loaded (own, per line or per window type).',
+            'Recipe not deactivated.',
+            'At least one WinMaker product for the combo.',
+          ],
+        },
+        prox: {
+          label: '“Coming soon”',
+          sub: 'no made-up price: the combo is not quoted online',
+          desc: 'If something is missing, the web does not sell that combo. The engine used to fall back to a parametric model with an estimated price and zero labor; that was removed.',
+        },
+        s1: {
+          label: 'Geometry',
+          sub: 'panes and sashes · daylight opening of each pane · can it be made?',
+          desc: 'Translates the window type into panes, sashes, dividers and openings, following what the factory recipes show. The real opening is no longer used for glass: only to catch dimensions that cannot be manufactured.',
+        },
+        s2: {
+          label: 'Profiles',
+          sub: 'each cut × cost/m · waste ×1.2 per stock length · per color',
+          desc: 'For each profile in the recipe: cut length as a function of the dimensions × quantity × cost per meter, with waste applied per stock length.',
+        },
+        s3: {
+          label: 'Glass',
+          sub: 'width × height per pane · IGU = glass + spacer + glass · services',
+          desc: 'Glass by outer dimension (not real opening, on purpose). An IGU adds outer glass, spacer per meter of perimeter and inner glass. Services per m².',
+        },
+        s4: {
+          label: 'Accessories and hardware',
+          sub: 'per sash, pane or window · insect screen per roll',
+          desc: 'Recipe accessories with their quantity rule: per sash, per pane, per meter or per unit. Real hardware per sash. Insect screen: mesh per linear meter with optimal roll orientation.',
+        },
+        s5: {
+          label: 'Labor',
+          sub: 'hours per station × rate · manufacturing only',
+          desc: 'Shop hours per station (cutting, assembly, glazing…) loaded per recipe or inherited per line or window type, times the rate. No installation or freight.',
+        },
+        t1: {
+          label: 'Internal cost',
+          sub: 'sum of the five blocks · the client never sees it',
+          desc: 'Materials + labor. This is what gets compared against WinMaker’s gross cost in the cross-check batches.',
+        },
+        t2: { label: 'Sale price', sub: 'cost × (1 + margin)', desc: 'The margin is a global parameter managed by the admin.' },
+        t3: {
+          label: 'Order subtotal',
+          sub: '× quantity, adding up windows · − account discount',
+          desc: 'All the windows in the order are added up and the user’s discount, if any, is applied.',
+        },
+        t4: {
+          label: 'Total',
+          sub: '+ VAT · in the order’s currency',
+          desc: 'With VAT and converted to the order’s currency (dollars as the base; glass may be in another currency).',
+        },
+      },
+      edges: {
+        'gate>s1': 'green: calculate',
+        'gate>prox': 'yellow or red',
+        'in4>s2': 'waste',
+        'in4>t2': 'margin',
+        'in4>t4': 'VAT',
+        's5>t1': 'added up',
+      },
+      groups: { gi: 'INPUTS', gm: 'THE ENGINE, IN ORDER', gt: 'TOTALS' },
+      tour: [
+        'Before calculating, the server checks the combo’s traffic light. If the recipe is missing something or there is no WinMaker product, the web shows “Coming soon”: never a made-up price.',
+        'Four inputs: what the client chose, the recipe for that combo, the prices (a profile is worth weight times price per kilo, per color) and the global parameters.',
+        'Geometry turns the window type into panes and sashes. Then each profile in the recipe is cut to the length the dimensions dictate and multiplied by its cost per meter, with waste per stock length. Glass goes by width times height; the IGU is added up by parts.',
+        'Accessories and hardware per sash, pane or window, insect screen per roll, and shop hours per station times the rate. Manufacturing only: no freight or installation.',
+        'The sum is the internal cost, which the client never sees. With margin it becomes the sale price; times quantity and minus the account discount, the subtotal; with VAT, the total.',
+      ],
+    },
+    tecnico: {
+      name: 'The technician',
+      intro:
+        'The whole panel revolves around the recipe. The catalogs on the left feed it, the configuration on the right defines which combos exist, and the traffic light decides what reaches the web.',
+      nodes: {
+        c1: {
+          label: 'Profiles',
+          sub: 'physical data sheet + price per color and kg',
+          desc: 'Each aluminum profile once (number, weight per meter) and its prices per color. Changing a price here changes every window that uses it.',
+        },
+        c2: { label: 'Accessories and hardware', sub: 'by category, with cost and usage', desc: 'Accessory catalog (gaskets, brush seals, corner cleats, locks, rollers…) with cost and the usage rule in each recipe.' },
+        c3: { label: 'IGU spacers · insect screens', sub: 'spacer per meter · mesh per roll', desc: 'IGU spacers per linear meter and insect-mesh rolls with width and price, to quote the mesh with optimal orientation.' },
+        c4: { label: 'Labor', sub: 'stations and hours: own, per line or per window type', desc: 'Hours per shop station. Loaded per recipe or as globals per line or window type; the traffic light requires some.' },
+        c5: { label: 'Glass and services', sub: 'price per m² · standard laminates · services', desc: 'Glass list with price per m² and currency, and services (polishing, tempering…) with sub-options. They go straight to the quoter.' },
+        c6: { label: 'Couplers', sub: 'coupling profile for composite windows', desc: 'Coupling profiles between modules of a composite window, costed per stock length.' },
+        receta: {
+          label: 'Recipe = line × window type',
+          sub: '• profiles with cuts (length, quantity) • accessories and hardware per sash or pane • hours per station • variants by tracks, sashes and divisions • alternatives and defaults',
+          desc: 'The technician’s unit of work. One recipe per combo, with everything the engine needs to break a window down.',
+          bullets: ['It can be duplicated, printed to PDF and deactivated.', 'The load status flags profiles without price, without cuts or without labor.'],
+        },
+        pw: {
+          label: 'WinMaker products',
+          sub: 'combo → factory product code',
+          desc: 'Which WinMaker product corresponds to each line × window type × sashes, tracks or divisions. Without a product there is no .PTO and no online sale.',
+        },
+        sem: {
+          label: 'Load status (traffic light)',
+          sub: 'green = complete recipe + WinMaker product',
+          desc: 'Computed with the engine’s own criterion, not declared by hand: profiles priced in the default color, labor, active recipe and product.',
+        },
+        web: { label: 'Public web', sub: 'green is quoted online; the rest shows “Coming soon”', desc: 'The public catalog only includes green combos.' },
+        k1: { label: 'Lines', sub: 'the supplier’s aluminum series', desc: 'The supplier’s aluminum series, with their limits: allowed window types, IGU, thermal break.' },
+        k2: { label: 'Window types', sub: 'the code defines sashes, tracks and geometry', desc: 'The window-type code is the preset: family prefix plus sashes and tracks (for example 2 sashes, 2 tracks).' },
+        k3: { label: 'Colors', sub: 'profile price goes per color', desc: 'Aluminum colors; each profile has a price per color.' },
+        k4: { label: 'Parameters · admin', sub: 'margin, VAT, waste, base color', desc: 'Global values: base margin, VAT, profile and glass waste, WinMaker default color.' },
+        k5: { label: 'Currencies', sub: 'dollars and pesos: exchange rate' },
+        k6: { label: 'Users · admin', sub: 'roles and discount per account', desc: 'Client / internal / admin roles, active or not, discount per account.' },
+        pedidos: { label: 'Orders', sub: 'detail, breakdown, status, .PTO', desc: 'What comes in from the web, with client, site, breakdown with internal costs, status changes and .PTO download.' },
+      },
+      edges: {
+        'c5>web': 'options straight to the quoter',
+        'k1>receta': 'define the combos',
+        'k3>c1': 'price per color',
+        'k4>web': 'margin and VAT',
+        'sem>web': 'green',
+        'web>pedidos': 'orders',
+      },
+      groups: { gc: 'CATALOGS THEY LOAD', gr: 'RECIPES AND CONTROL', gk: 'CONFIGURATION' },
+      tour: [
+        'The technician loads catalogs once (profiles priced per color, accessories, spacers, hours) and builds each combo’s recipe with them.',
+        'Lines and window types define which combos exist; colors, what price each profile gets.',
+        'The recipe and the WinMaker product feed the traffic light: green only if every profile has a price, there is labor and the factory has the product.',
+        'Only green reaches the web; the rest shows “Coming soon”. Glass and services go straight to the quoter. Incoming orders are handled from the same panel.',
+      ],
+    },
+    fabrica: {
+      name: 'The factory',
+      intro:
+        'The order is not retyped. From the panel you download a .PTO file that WinMaker opens as if the order had been entered there, with the factory’s real product, not a generic drawing.',
+      nodes: {
+        f1: { label: 'WEB Order', sub: 'the client confirmed · order number', desc: 'The saved order with client, site, windows and breakdown.' },
+        f2: {
+          label: 'Factory notification',
+          sub: 'automatic message: team chat or email',
+          desc: 'On confirmation, the server sends a message with number, client, total and a link to the panel. If it fails, it does not block the order.',
+        },
+        f3: {
+          label: 'Orders panel',
+          sub: 'client, site, breakdown with internal costs · status changes',
+          desc: 'Everything the factory person needs to work on it. Internal costs never leave this place.',
+        },
+        f4: {
+          label: 'Download .PTO',
+          sub: 'one file per order · only with a real WinMaker product',
+          desc: 'One wall per window with the factory product, its variables (glass, thickness, sashes, insect screen, handing) and its panes. Same format WinMaker exports, validated against historical shop files.',
+        },
+        f5: {
+          label: 'WinMaker (shop)',
+          sub: 'breaks down and prices · cuts, assembles, delivers',
+          desc: 'The factory software opens the .PTO, adds hardware and hours from its own recipe and generates the production order.',
+        },
+        g1: { label: 'What the client receives', sub: 'private link with the detail · PDF with the company brand, no internal costs' },
+        g2: { label: 'If a reseller placed it', sub: 'second PDF with their margin and installation · separate link · their discount is not shown' },
+        g3: {
+          label: 'No WinMaker product',
+          sub: 'the .PTO is not generated; the panel says which item and why · never a generic drawing',
+          desc: 'A generic drawing used to be sent. It was dropped because WinMaker adds no hardware or hours to it, and the factory quote came out wrong.',
+        },
+        g4: {
+          label: 'Cross-check with the shop',
+          sub: 'batches of test orders, item by item · the web is never below WinMaker',
+          desc: 'Test orders are generated, the shop prices them in WinMaker and they are compared component by component. Reds are closed by fixing the recipe.',
+        },
+      },
+      edges: {
+        'f2>f3': 'the technician opens it',
+        'f4>f5': '.pto file',
+        'f1>g1': 'link and PDF',
+        'f1>g2': 'if it is for a client of their own',
+        'f4>g3': 'product missing',
+        'f5>g4': 'gets compared',
+      },
+      groups: { gf: 'FROM ORDER TO PRODUCTION' },
+      tour: [
+        'When the client confirms, the factory gets an automatic notification and sees the full order in the panel, with the breakdown and internal costs.',
+        'From the panel they download the .PTO and WinMaker opens it as its own order: real product, glass, sashes, insect screen. Nobody retypes anything.',
+        'If any item has no WinMaker product, the file is not generated and the panel says which one and why. The generic drawing was removed because it made the factory quote lie.',
+        'The client gets a link with the detail and a PDF with no internal costs. If a reseller placed it, they also get a second PDF with their margin to hand to their client.',
+        'And it is checked: batches of test orders are priced in WinMaker and compared item by item. Rule: the web is never below the shop.',
+      ],
+    },
+  },
+};
+
+const texts: Record<Locale, DiagramText> = { es: esText, en: enText };
+
+const LEGEND: DiagramNodeType[] = ['persona', 'web', 'servidor', 'datos', 'panel', 'fabrica', 'calc', 'gate'];
+
+export function getSystemDiagram(locale: Locale): SystemDiagramDictionary {
+  const t = texts[locale];
+  const views: DiagramView[] = layout.map((view) => {
+    const vt = t.views[view.id];
+    return {
+      id: view.id,
+      name: vt.name,
+      intro: vt.intro,
+      script: vt.script,
+      nodes: view.nodes.map((node) => ({ ...node, ...(vt.nodes[node.id] ?? { label: node.id }) })),
+      groups: view.groups.map((group) => ({ ...group, label: vt.groups[group.id] ?? group.id })),
+      edges: view.edges.map((edge) => ({ ...edge, label: vt.edges[`${edge.from}>${edge.to}`] })),
+      tour: view.tour.map((step, index) => ({ ...step, text: vt.tour[index] ?? '' })),
+    };
+  });
+  return { ui: t.ui, typeNames: t.typeNames, legend: LEGEND, views };
+}
+
+export const systemDiagramViewIds = layout.map((view) => view.id);
