@@ -93,6 +93,11 @@ export type SystemDiagramUi = {
   switchAria: string;
   backCase: string;
   ctaTalk: string;
+  overview: string;
+  pinchHint: string;
+  sheetExpand: string;
+  sheetCollapse: string;
+  stepShort: string;
 };
 
 /** Cabecera de la página, propia de cada proyecto. */

@@ -1,9 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
 import gsap from 'gsap';
-import { ArrowLeft, ArrowRight, Download, Minus, Play, Plus, RotateCcw, Scan, Square } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Download, Minus, Play, Plus, RotateCcw, Scan, Square } from 'lucide-react';
 import type { DiagramNode, DiagramNodeType, DiagramView, SystemDiagramDictionary } from '@/lib/diagrams/types';
 
 /* ─────────────────────────── Tipos y constantes ─────────────────────────── */
@@ -16,8 +16,9 @@ type Tone = 'core' | 'mid' | 'light' | 'persona' | 'ok' | 'bad';
 type DragState =
   | { kind: 'node'; id: string; start: Pos; origin: Record<string, Pos>; moved: boolean }
   | { kind: 'group'; ids: string[]; start: Pos; origin: Record<string, Pos>; moved: boolean }
-  | { kind: 'pan'; startClient: Pos; cam0: Cam; moved: boolean }
-  | { kind: 'pinch'; dist0: number; s0: number; moved: boolean };
+  | { kind: 'pan'; startClient: Pos; cam0: Cam; moved: boolean; tapNode?: string; touch: boolean }
+  | { kind: 'pinch'; dist0: number; s0: number; mid: Pos; moved: boolean };
+type SheetState = 'peek' | 'half' | 'full';
 
 // Diferenciación por tipo sin arcoíris: lima para el núcleo, gris para datos y
 // configuración, claro para la web y los pasos, punteado para las personas.
@@ -47,6 +48,11 @@ const LINE_TITLE = 17;
 const LINE_SUB = 15;
 const GROUP_PAD = 22;
 const GROUP_TOP = 40;
+// Celular (≤ 900 px): panel deslizable sobre el lienzo y escala mínima legible.
+const COMPACT_QUERY = '(max-width: 900px)';
+const SHEET_PEEK_PX = 96;
+const SHEET_HALF_RATIO = 0.42;
+const MIN_READABLE = 0.85;
 const EMPTY_POS: Record<string, Pos> = {};
 
 /* ───────────────────────── Medición determinista ────────────────────────── */
@@ -214,6 +220,14 @@ function computeRects(measured: Measured[], positions: Record<string, Pos>): Map
 const reduceMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const subscribeCompact = (callback: () => void) => {
+  const query = window.matchMedia(COMPACT_QUERY);
+  query.addEventListener('change', callback);
+  return () => query.removeEventListener('change', callback);
+};
+const readCompact = () => window.matchMedia(COMPACT_QUERY).matches;
+const readCompactServer = () => false;
+
 const fill = (template: string, values: Record<string, string | number>) =>
   template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
 
@@ -242,6 +256,16 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
   const [hover, setHover] = useState<string | null>(null);
   const [tourIdx, setTourIdx] = useState<number | null>(null);
 
+  // Celular: el panel lateral es un panel deslizable con tres alturas.
+  const compact = useSyncExternalStore(subscribeCompact, readCompact, readCompactServer);
+  const [sheet, setSheet] = useState<SheetState>('peek');
+  const [hint, setHint] = useState(false);
+  const hintTimer = useRef(0);
+  const sheetRef = useRef<HTMLElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const sheetDrag = useRef<{ startY: number; startH: number; moved: boolean } | null>(null);
+  const lastTap = useRef<{ t: number; x: number; y: number } | null>(null);
+
   const svgRef = useRef<SVGSVGElement>(null);
   const worldRef = useRef<SVGGElement>(null);
   const camRef = useRef<Cam>({ x: 0, y: 0, s: 1 });
@@ -249,9 +273,9 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
   const livePos = useRef<Record<string, Pos>>({});
   const pointers = useRef(new Map<number, Pos>());
   const frameRef = useRef(0);
-  const latest = useRef({ measured, view, reverse, positions });
+  const latest = useRef({ measured, view, reverse, positions, compact, sheet });
   useLayoutEffect(() => {
-    latest.current = { measured, view, reverse, positions };
+    latest.current = { measured, view, reverse, positions, compact, sheet };
   });
 
   /* ── Cámara ── */
@@ -267,15 +291,26 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
     applyCam();
   });
 
-  /** Cámara que encuadra `box` con `pad` px de aire, sin pasar de `maxScale`. */
-  const cameraFor = useCallback((box: Rect, pad: number, maxScale: number): Cam | null => {
-    const svg = svgRef.current;
-    if (!svg) return null;
-    const r = svg.getBoundingClientRect();
-    if (r.width < 2 || r.height < 2) return null;
-    const s = Math.max(0.2, Math.min(maxScale, Math.min((r.width - 2 * pad) / box.w, (r.height - 2 * pad) / box.h)));
-    return { s, x: (r.width - box.w * s) / 2 - box.x * s, y: (r.height - box.h * s) / 2 - box.y * s };
+  /** Alto del lienzo tapado por el panel deslizable (solo en celular). */
+  const occlusion = useCallback((sheetState: SheetState = latest.current.sheet) => {
+    if (!latest.current.compact) return 0;
+    const h = svgRef.current?.clientHeight ?? 0;
+    return sheetState === 'peek' ? SHEET_PEEK_PX : Math.round(h * SHEET_HALF_RATIO);
   }, []);
+
+  /** Cámara que encuadra `box` en la zona visible del lienzo, con `pad` px de aire y escala acotada. */
+  const cameraFor = useCallback(
+    (box: Rect, pad: number, maxScale: number, minScale = 0.2, sheetState?: SheetState): Cam | null => {
+      const svg = svgRef.current;
+      if (!svg) return null;
+      const r = svg.getBoundingClientRect();
+      const visibleH = r.height - occlusion(sheetState);
+      if (r.width < 2 || visibleH < 2) return null;
+      const s = Math.max(minScale, Math.min(maxScale, Math.min((r.width - 2 * pad) / box.w, (visibleH - 2 * pad) / box.h)));
+      return { s, x: (r.width - box.w * s) / 2 - box.x * s, y: (visibleH - box.h * s) / 2 - box.y * s };
+    },
+    [occlusion],
+  );
 
   const animateTo = useCallback(
     (target: Cam) => {
@@ -307,41 +342,66 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
     [cameraFor, animateTo, applyCam],
   );
 
-  /** Encuadra las cajas de un paso del recorrido: más cerca que la vista general, nunca más de 1,4×. */
+  /**
+   * Encuadra las cajas de un paso del recorrido: más cerca que la vista general y
+   * nunca más de 1,4×. En celular, nunca por debajo de la escala legible: si el
+   * paso no entra, se centra en él y el dedo hace el resto.
+   */
   const focusOn = useCallback(
-    (ids: string[]) => {
+    (ids: string[], animate = true, sheetState?: SheetState) => {
       const svg = svgRef.current;
       if (!svg) return;
-      const { measured: m, positions: p } = latest.current;
+      const { measured: m, positions: p, compact: isCompact } = latest.current;
       const all = computeRects(m, p);
       const targets = ids.map((id) => all.get(id)).filter((r): r is Rect => Boolean(r));
       if (!targets.length) return;
       const box = bbox(targets);
-      const overview = cameraFor(bbox(all.values()), 20, 1.5);
-      const step = cameraFor(box, 70, 1.4);
+      const overview = cameraFor(bbox(all.values()), 20, 1.5, 0.2, sheetState);
+      const step = cameraFor(box, isCompact ? 24 : 70, 1.4, isCompact ? MIN_READABLE : 0.2, sheetState);
       if (!overview || !step) return;
-      const s = Math.max(step.s, overview.s);
+      const s = isCompact ? step.s : Math.max(step.s, overview.s);
       const r = svg.getBoundingClientRect();
-      animateTo({ s, x: r.width / 2 - (box.x + box.w / 2) * s, y: r.height / 2 - (box.y + box.h / 2) * s });
+      const visibleH = r.height - occlusion(sheetState);
+      const target = { s, x: r.width / 2 - (box.x + box.w / 2) * s, y: visibleH / 2 - (box.y + box.h / 2) * s };
+      if (animate) animateTo(target);
+      else {
+        gsap.killTweensOf(camRef.current);
+        camRef.current = target;
+        applyCam();
+      }
     },
-    [cameraFor, animateTo],
+    [cameraFor, animateTo, applyCam, occlusion],
+  );
+
+  /** Cámara de inicio: en celular, el primer paso del recorrido a escala legible; si no, la vista entera. */
+  const home = useCallback(
+    (animate = false) => {
+      const { compact: isCompact, view: v } = latest.current;
+      if (isCompact && v.tour.length) focusOn(v.tour[0].nodes, animate, 'peek');
+      else fit(animate);
+    },
+    [focusOn, fit],
   );
 
   const zoomAt = useCallback(
-    (factor: number, cx?: number, cy?: number) => {
+    (factor: number, cx?: number, cy?: number, animate = false) => {
       const svg = svgRef.current;
       if (!svg) return;
       const r = svg.getBoundingClientRect();
       const px = cx ?? r.width / 2;
-      const py = cy ?? r.height / 2;
+      const py = cy ?? (r.height - occlusion()) / 2;
       const cam = camRef.current;
       const s2 = Math.max(0.2, Math.min(3, cam.s * factor));
       const wx = (px - cam.x) / cam.s;
       const wy = (py - cam.y) / cam.s;
-      camRef.current = { s: s2, x: px - wx * s2, y: py - wy * s2 };
-      applyCam();
+      const target = { s: s2, x: px - wx * s2, y: py - wy * s2 };
+      if (animate) animateTo(target);
+      else {
+        camRef.current = target;
+        applyCam();
+      }
     },
-    [applyCam],
+    [applyCam, animateTo, occlusion],
   );
 
   /* ── Cambio de vista: cada vista abre con su disposición original y encuadrada ── */
@@ -352,17 +412,20 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
       setSel(null);
       setHover(null);
       setTourIdx(null);
+      setSheet('peek');
       // Se encuadra cuando el nuevo layout ya está en el DOM.
-      window.requestAnimationFrame(() => fit());
+      window.requestAnimationFrame(() => home());
     },
-    [fit],
+    [home],
   );
 
-  // Al montar: encuadrar la vista inicial (fuera del render síncrono).
+  // Al montar (y si cambia entre celular y escritorio): encuadrar la vista inicial.
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => fit());
+    const frame = window.requestAnimationFrame(() => home());
     return () => window.cancelAnimationFrame(frame);
-  }, [fit]);
+  }, [home, compact]);
+
+  useEffect(() => () => window.clearTimeout(hintTimer.current), []);
 
   /* ── Al cambiar el tamaño del lienzo (ventana, orientación) se vuelve a encuadrar ── */
   useEffect(() => {
@@ -375,14 +438,14 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
       if (Math.abs(next.w - last.w) < 2 && Math.abs(next.h - last.h) < 2) return;
       last = next;
       window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => fit());
+      frame = window.requestAnimationFrame(() => home());
     });
     observer.observe(svg);
     return () => {
       observer.disconnect();
       window.cancelAnimationFrame(frame);
     };
-  }, [fit]);
+  }, [home]);
 
   /* ── Zoom con Ctrl/⌘ + rueda (la rueda sola deja pasar el scroll de la página) ── */
   useEffect(() => {
@@ -452,6 +515,7 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
   const select = useCallback((id: string | null) => {
     setSel(id);
     if (id) setTourIdx(null);
+    if (latest.current.compact) setSheet(id ? 'half' : 'peek');
   }, []);
 
   const onPointerDown = (event: ReactPointerEvent<SVGSVGElement>) => {
@@ -463,13 +527,34 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
 
     if (pointers.current.size === 2) {
       const [p1, p2] = [...pointers.current.values()];
-      dragRef.current = { kind: 'pinch', dist0: Math.hypot(p2.x - p1.x, p2.y - p1.y) || 1, s0: camRef.current.s, moved: true };
+      svg.classList.remove('is-panning');
+      dragRef.current = {
+        kind: 'pinch',
+        dist0: Math.hypot(p2.x - p1.x, p2.y - p1.y) || 1,
+        s0: camRef.current.s,
+        mid: { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 },
+        moved: true,
+      };
       return;
     }
 
+    const touch = event.pointerType !== 'mouse';
     const target = event.target as Element;
     const nodeEl = target.closest<SVGGElement>('[data-node]');
     const groupEl = target.closest<SVGGElement>('[data-ghandle],[data-glabel]')?.closest<SVGGElement>('[data-group]');
+    if (touch) {
+      // Con el dedo no se arrastran cajas: se mueve el mapa y, si no hubo movimiento, se toca la caja.
+      dragRef.current = {
+        kind: 'pan',
+        startClient: { x: event.clientX, y: event.clientY },
+        cam0: { ...camRef.current },
+        moved: false,
+        tapNode: nodeEl?.dataset.node,
+        touch: true,
+      };
+      svg.classList.add('is-panning');
+      return;
+    }
     const start = toWorld(event.clientX, event.clientY);
     livePos.current = { ...latest.current.positions };
     const snapshot = (ids: string[]) => {
@@ -490,7 +575,7 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
       const ids = group?.nodes ?? [];
       dragRef.current = { kind: 'group', ids, start, origin: snapshot(ids), moved: false };
     } else {
-      dragRef.current = { kind: 'pan', startClient: { x: event.clientX, y: event.clientY }, cam0: { ...camRef.current }, moved: false };
+      dragRef.current = { kind: 'pan', startClient: { x: event.clientX, y: event.clientY }, cam0: { ...camRef.current }, moved: false, touch: false };
       svg.classList.add('is-panning');
     }
   };
@@ -509,6 +594,11 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
       const my = (p1.y + p2.y) / 2 - (r?.top ?? 0);
       const wanted = Math.max(0.2, Math.min(3, drag.s0 * (dist / drag.dist0)));
       zoomAt(wanted / camRef.current.s, mx, my);
+      // El punto medio también desplaza el mapa.
+      const midNow = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+      camRef.current = { ...camRef.current, x: camRef.current.x + midNow.x - drag.mid.x, y: camRef.current.y + midNow.y - drag.mid.y };
+      drag.mid = midNow;
+      applyCam();
       return;
     }
     if (drag.kind === 'pan') {
@@ -549,7 +639,23 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
     dragRef.current = null;
     svg?.classList.remove('is-panning');
     if (drag.kind === 'pan') {
-      if (!drag.moved) select(null);
+      if (drag.moved) return;
+      if (drag.tapNode) {
+        select(sel === drag.tapNode ? null : drag.tapNode);
+        return;
+      }
+      select(null);
+      if (drag.touch) {
+        // Doble toque sobre el fondo: acerca en ese punto.
+        const now = performance.now();
+        const previous = lastTap.current;
+        lastTap.current = { t: now, x: event.clientX, y: event.clientY };
+        if (previous && now - previous.t < 300 && Math.hypot(event.clientX - previous.x, event.clientY - previous.y) < 24) {
+          const r = svg?.getBoundingClientRect();
+          zoomAt(1.6, event.clientX - (r?.left ?? 0), event.clientY - (r?.top ?? 0), true);
+          lastTap.current = null;
+        }
+      }
       return;
     }
     if (drag.moved) {
@@ -567,23 +673,81 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
   const onPointerOver = (event: ReactPointerEvent<SVGSVGElement>) => {
     // Durante un arrastre el puntero está capturado por el svg: un cambio de hover
     // re-renderizaría con las posiciones viejas y la caja saltaría atrás un frame.
-    if (dragRef.current) return;
+    if (dragRef.current || event.pointerType !== 'mouse') return;
     const id = (event.target as Element).closest<SVGGElement>('[data-node]')?.dataset.node ?? null;
     setHover(id);
   };
+
+  /* ── Panel deslizable (celular): arrastre de la manija y alturas ── */
+  const sheetHeights = useCallback(() => {
+    const h = shellRef.current?.clientHeight ?? window.innerHeight;
+    return { peek: SHEET_PEEK_PX, half: Math.round(h * SHEET_HALF_RATIO), full: Math.round(h * 0.88) };
+  }, []);
+
+  const toggleSheet = useCallback(() => {
+    setSheet((current) => (current === 'peek' ? 'half' : current === 'half' ? 'full' : 'peek'));
+  }, []);
+
+  const onSheetPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const el = sheetRef.current;
+    if (!el) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    sheetDrag.current = { startY: event.clientY, startH: el.getBoundingClientRect().height, moved: false };
+    el.classList.add('is-dragging');
+  };
+  const onSheetPointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = sheetDrag.current;
+    const el = sheetRef.current;
+    if (!drag || !el) return;
+    const dy = drag.startY - event.clientY;
+    if (Math.abs(dy) > 4) drag.moved = true;
+    const { peek, full } = sheetHeights();
+    el.style.height = `${Math.max(peek, Math.min(full, drag.startH + dy))}px`;
+  };
+  const onSheetPointerUp = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = sheetDrag.current;
+    const el = sheetRef.current;
+    sheetDrag.current = null;
+    if (!drag || !el) return;
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch {
+      /* ya liberado */
+    }
+    const height = el.getBoundingClientRect().height;
+    el.style.height = '';
+    el.classList.remove('is-dragging');
+    if (!drag.moved) {
+      setSheet((current) => (current === 'peek' ? 'half' : 'peek'));
+      return;
+    }
+    const { peek, half, full } = sheetHeights();
+    const next: SheetState = height < (peek + half) / 2 ? 'peek' : height < (half + full) / 2 ? 'half' : 'full';
+    setSheet(next);
+  };
+
+  const showPinchHint = useCallback(() => {
+    if (!latest.current.compact) return;
+    setHint(true);
+    window.clearTimeout(hintTimer.current);
+    hintTimer.current = window.setTimeout(() => setHint(false), 3000);
+  }, []);
 
   /* ── Recorrido ── */
   const goTour = useCallback(
     (index: number | null) => {
       const steps = latest.current.view.tour;
+      const isCompact = latest.current.compact;
       if (index === null || index < 0 || index >= steps.length) {
         setTourIdx(null);
-        fit(true);
+        if (isCompact) setSheet('peek');
+        else fit(true);
         return;
       }
       setTourIdx(index);
       setSel(null);
-      focusOn(steps[index].nodes);
+      if (isCompact) setSheet('half');
+      focusOn(steps[index].nodes, true, isCompact ? 'half' : undefined);
     },
     [focusOn, fit],
   );
@@ -592,8 +756,8 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
     setPosState({ view: view.id, map: {} });
     setSel(null);
     setTourIdx(null);
-    window.setTimeout(() => fit(), 0);
-  }, [view.id, fit]);
+    window.setTimeout(() => home(), 0);
+  }, [view.id, home]);
 
   /* ── Teclado ── */
   useEffect(() => {
@@ -708,8 +872,10 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
     }
   };
 
+  const sheetClass = compact ? ` is-compact is-sheet-${sheet}${hint ? ' is-hint' : ''}` : '';
+
   return (
-    <div className="dg-shell" data-lenis-prevent>
+    <div ref={shellRef} className={`dg-shell${sheetClass}`} data-lenis-prevent>
       <div className="dg-bar">
         <div className="dg-tabs" role="tablist" aria-label={ui.tabsAria}>
           {views.map((v, index) => (
@@ -888,10 +1054,55 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
             <Minus size={16} />
           </button>
         </div>
-        <p className="dg-hint">{ui.hint}</p>
+        <p className="dg-hint">{compact ? ui.pinchHint : ui.hint}</p>
       </div>
 
-      <aside className="dg-side">
+      <aside ref={sheetRef} className="dg-side">
+        <div className="dg-sheet-bar">
+          <button
+            type="button"
+            className="dg-sheet-handle"
+            aria-label={sheet === 'peek' ? ui.sheetExpand : ui.sheetCollapse}
+            onPointerDown={onSheetPointerDown}
+            onPointerMove={onSheetPointerMove}
+            onPointerUp={onSheetPointerUp}
+            onPointerCancel={onSheetPointerUp}
+          >
+            <span className="dg-sheet-grip" />
+          </button>
+          <div className="dg-sheet-row">
+            {step ? (
+              <>
+                <button type="button" className="dg-btn is-icon" onClick={() => goTour((tourIdx ?? 0) - 1)} disabled={tourIdx === 0} aria-label={ui.prev}>
+                  <ArrowLeft size={16} />
+                </button>
+                <span className="dg-sheet-step">{fill(ui.stepShort, { i: (tourIdx ?? 0) + 1, n: view.tour.length })}</span>
+                <button
+                  type="button"
+                  className="dg-btn is-icon is-primary"
+                  onClick={() => goTour((tourIdx ?? 0) + 1)}
+                  aria-label={tourIdx === view.tour.length - 1 ? ui.finish : ui.next}
+                >
+                  <ArrowRight size={16} />
+                </button>
+                <button type="button" className="dg-btn dg-sheet-exit" onClick={() => goTour(null)}>
+                  {ui.exit}
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="dg-sheet-view">{view.name}</span>
+                <button type="button" className="dg-btn is-primary" onClick={() => goTour(0)}>
+                  <Play size={14} />
+                  {ui.tourStart}
+                </button>
+              </>
+            )}
+            <button type="button" className="dg-btn is-icon dg-sheet-toggle" onClick={toggleSheet} aria-label={sheet === 'peek' ? ui.sheetExpand : ui.sheetCollapse}>
+              {sheet === 'full' ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+            </button>
+          </div>
+        </div>
         {sideHeader}
         <div className="dg-side-body" aria-live="polite">
         {step ? (
@@ -983,6 +1194,27 @@ export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagram
             <p className="dg-muted">{ui.clickHint}</p>
           </>
         )}
+        </div>
+        <div className="dg-sheet-tools">
+          <button
+            type="button"
+            className="dg-btn"
+            onClick={() => {
+              fit(true);
+              showPinchHint();
+            }}
+          >
+            <Scan size={15} />
+            {ui.overview}
+          </button>
+          <button type="button" className="dg-btn" onClick={reset}>
+            <RotateCcw size={15} />
+            {ui.reset}
+          </button>
+          <button type="button" className="dg-btn" onClick={exportSvg}>
+            <Download size={15} />
+            {ui.exportSvg}
+          </button>
         </div>
         {sideFooter}
       </aside>

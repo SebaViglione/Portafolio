@@ -35,6 +35,11 @@ export const diagramUi: Record<Locale, SystemDiagramUi> = {
     switchAria: 'Ver el diagrama en inglés',
     backCase: 'Volver al case study',
     ctaTalk: 'Hablemos del proyecto',
+    overview: 'Vista general',
+    pinchHint: 'Pellizcá para acercar · arrastrá para moverte',
+    sheetExpand: 'Mostrar el panel',
+    sheetCollapse: 'Ocultar el panel',
+    stepShort: '{i}/{n}',
   },
   en: {
     hint: 'Drag the boxes to arrange them (every view opens tidy). Click a box to see its details. Ctrl + wheel or the buttons to zoom; drag the background to pan. Esc clears, F fits.',
@@ -68,5 +73,10 @@ export const diagramUi: Record<Locale, SystemDiagramUi> = {
     switchAria: 'View the diagram in Spanish',
     backCase: 'Back to the case study',
     ctaTalk: "Let's talk about the project",
+    overview: 'Overview',
+    pinchHint: 'Pinch to zoom · drag to pan',
+    sheetExpand: 'Show the panel',
+    sheetCollapse: 'Hide the panel',
+    stepShort: '{i}/{n}',
   },
 };

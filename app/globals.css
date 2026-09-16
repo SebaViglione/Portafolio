@@ -1608,6 +1608,21 @@ button {
   }
 }
 
+/* Fila de mando y herramientas del panel deslizable: solo existen en celular */
+
+.dg-sheet-bar,
+.dg-sheet-tools {
+  display: none;
+}
+
+/* Tablets: barra lateral más angosta para que el lienzo no quede apretado */
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .dg-shell {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+
 /* Panel lateral */
 
 .dg-side {
@@ -1845,42 +1860,219 @@ button {
 }
 
 @media (max-width: 900px) {
+  /* Dos filas: barra de una línea y lienzo; el panel se superpone al lienzo. */
   .dg-shell {
+    --dg-sheet-h: calc(96px + env(safe-area-inset-bottom, 0px));
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 52dvh) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
     grid-template-areas:
       "bar"
-      "stage"
-      "side";
+      "stage";
   }
 
+  .dg-shell.is-sheet-half {
+    --dg-sheet-h: 42dvh;
+  }
+
+  .dg-shell.is-sheet-full {
+    --dg-sheet-h: 88dvh;
+  }
+
+  .dg-bar {
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 8px 10px;
+  }
+
+  .dg-tabs {
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dg-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dg-tab {
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 0 12px 0 8px;
+    scroll-snap-align: start;
+  }
+
+  .dg-tools {
+    display: none;
+  }
+
+  .dg-btn {
+    min-height: 40px;
+  }
+
+  .dg-btn.is-icon {
+    width: 40px;
+  }
+
+  .dg-zoom {
+    top: 10px;
+    left: 10px;
+  }
+
+  /* El hint solo aparece tras «Vista general», sobre el panel */
+  .dg-hint {
+    display: none;
+  }
+
+  .dg-shell.is-hint .dg-hint {
+    display: block;
+    left: 12px;
+    right: 12px;
+    bottom: calc(var(--dg-sheet-h) + 12px);
+    max-width: none;
+    text-align: center;
+  }
+
+  /* Sin sombra en las cajas: el desplazamiento con el dedo tiene que ser fluido */
+  .dg-node .dg-box {
+    filter: none;
+  }
+
+  /* Panel deslizable */
   .dg-side {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    height: var(--dg-sheet-h);
     border-left: none;
     border-top: 1px solid #2B3038;
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transition: height 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .dg-side.is-dragging {
+    transition: none;
+  }
+
+  .dg-sheet-bar {
+    display: block;
+    flex: none;
+  }
+
+  .dg-sheet-handle {
+    display: block;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 0 4px;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .dg-sheet-handle:focus-visible {
+    outline: 2px solid #B8FF2C;
+    outline-offset: -2px;
+  }
+
+  .dg-sheet-grip {
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: #3A424D;
+  }
+
+  .dg-sheet-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 12px 8px;
+  }
+
+  .dg-sheet-view {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-family: var(--font-space-grotesk), system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #F5F7FA;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dg-sheet-step {
+    flex: 1 1 auto;
+    text-align: center;
+    font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #B8FF2C;
+  }
+
+  .dg-sheet-toggle {
+    flex: none;
+  }
+
+  .dg-sheet-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 16px 12px;
+  }
+
+  /* Qué se ve en cada altura */
+  .dg-shell.is-sheet-peek .dg-side-head,
+  .dg-shell.is-sheet-peek .dg-side-body,
+  .dg-shell.is-sheet-peek .dg-side-foot,
+  .dg-shell.is-sheet-peek .dg-sheet-tools,
+  .dg-shell.is-sheet-half .dg-side-foot,
+  .dg-shell.is-sheet-half .dg-sheet-tools {
+    display: none;
+  }
+
+  .dg-side-head {
+    gap: 4px;
+    padding: 4px 16px 10px;
+  }
+
+  .dg-side-top {
+    margin-bottom: 0;
+  }
+
+  .dg-side-title {
+    font-size: 17px;
   }
 
   .dg-side-intro {
     display: none;
   }
 
-  .dg-side-head {
-    padding: 12px 16px 10px;
-  }
-
   .dg-side-body {
-    padding: 12px 16px 14px;
+    padding: 12px 16px 16px;
+    overscroll-behavior: contain;
   }
 
   .dg-side-foot {
     padding: 10px 16px 12px;
   }
 
-  .dg-hint {
-    display: none;
+  .dg-tourtext {
+    font-size: 15px;
   }
 
-  .dg-tools {
-    margin-left: 0;
+  /* En el recorrido la fila de mando ya tiene los botones: en el cuerpo sobra la botonera */
+  .dg-shell.is-compact .dg-tourbox .dg-nav {
+    display: none;
   }
 }
 
