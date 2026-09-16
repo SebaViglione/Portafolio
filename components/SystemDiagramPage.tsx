@@ -12,6 +12,10 @@ import { diagramSlug, getSystemDiagram, type DiagramProject } from '@/lib/diagra
 
 gsap.registerPlugin(useGSAP);
 
+/**
+ * La página ES el diagrama: ocupa toda la pantalla y el título, el idioma, el
+ * volver al case study y el contacto viven dentro de la barra lateral.
+ */
 export function SystemDiagramPage({ locale, project }: { locale: Locale; project: DiagramProject }) {
   const dict = getDictionary(locale);
   const diagram = getSystemDiagram(project, locale);
@@ -29,69 +33,48 @@ export function SystemDiagramPage({ locale, project }: { locale: Locale; project
   useGSAP(
     () => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      gsap
-        .timeline({ defaults: { ease: 'power3.out' } })
-        .from('.case-topbar', { y: -18, opacity: 0, duration: 0.5 })
-        .from('.dg-head > *', { y: 18, opacity: 0, duration: 0.55, stagger: 0.07 }, '-=0.2')
-        .from('.dg-frame', { y: 16, opacity: 0, duration: 0.6 }, '-=0.3');
+      gsap.from('.dg-side-head > *', { y: 14, opacity: 0, duration: 0.5, stagger: 0.06, ease: 'power3.out', clearProps: 'all' });
     },
     { scope: rootRef, dependencies: [locale, project] },
   );
 
   return (
-    <main ref={rootRef} className="min-h-screen bg-bg-primary text-text-primary">
+    <main ref={rootRef} className="dg-page bg-bg-primary text-text-primary">
       <CustomCursor />
-
-      <header className="case-topbar fixed inset-x-0 top-0 z-50 border-b border-border/70 supports-[backdrop-filter]:backdrop-blur-xl">
-        <div className="flex h-16 w-full items-center justify-between px-5 md:px-8">
-          <Link href={caseHref} className="inline-flex items-center gap-2 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary">
-            <ArrowLeft size={18} className="flex-none" />
-            <span className="sm:hidden">{ui.back}</span>
-            <span className="hidden sm:inline">{ui.backFull}</span>
-          </Link>
-          <div className="flex items-center gap-5">
-            <Link
-              href={switchHref}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary"
-              aria-label={ui.switchAria}
-            >
-              <Languages size={16} />
-              {ui.switchLabel}
-            </Link>
-            <Link href={home} className="font-display text-base font-semibold text-text-primary" aria-label="Seba Viglione">
-              Seba Viglione
-            </Link>
+      <SystemDiagram
+        diagram={diagram}
+        sideHeader={
+          <div className="dg-side-head">
+            <div className="dg-side-top">
+              <Link href={home} className="font-display text-sm font-semibold text-text-primary" aria-label="Seba Viglione">
+                Seba Viglione
+              </Link>
+              <Link href={switchHref} className="dg-side-switch" aria-label={ui.switchAria}>
+                <Languages size={14} />
+                {ui.switchLabel}
+              </Link>
+            </div>
+            <p className="section-label">{header.kicker}</p>
+            <h1 className="dg-side-title">{header.title}</h1>
+            <p className="dg-side-intro">{header.intro}</p>
           </div>
-        </div>
-      </header>
-
-      {/* El lienzo va a todo el ancho y completa el alto de la pantalla: la cabecera
-          es corta y el marco crece hasta llenar lo que queda del viewport. */}
-      <div className="flex min-h-[100dvh] flex-col pt-16">
-        <section className="dg-head w-full px-5 pt-6 pb-4 md:px-8">
-          <p className="section-label">{header.kicker}</p>
-          <h1 className="mt-2 font-display text-2xl font-bold leading-[1.05] text-text-primary md:text-3xl">{header.title}</h1>
-          <p className="mt-2 max-w-3xl text-[14px] leading-[1.55] text-text-secondary">{header.intro}</p>
-        </section>
-
-        <div className="dg-frame">
-          <SystemDiagram diagram={diagram} />
-        </div>
-      </div>
-
-      <footer className="w-full px-5 pt-8 pb-14 md:px-8">
-        <p className="max-w-2xl text-[13px] leading-[1.6] text-text-muted">{header.footNote}</p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link href={caseHref} className="direct-action">
-            <ArrowLeft size={18} />
-            {ui.backCase}
-          </Link>
-          <Link href={`${home}#contacto`} className="btn-primary">
-            {ui.ctaTalk}
-            <ArrowRight size={18} />
-          </Link>
-        </div>
-      </footer>
+        }
+        sideFooter={
+          <div className="dg-side-foot">
+            <div className="dg-side-actions">
+              <Link href={caseHref} className="dg-btn">
+                <ArrowLeft size={14} />
+                {ui.backCase}
+              </Link>
+              <Link href={`${home}#contacto`} className="dg-btn is-primary">
+                {ui.ctaTalk}
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+            <p className="dg-side-note">{header.footNote}</p>
+          </div>
+        }
+      />
     </main>
   );
 }

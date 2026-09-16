@@ -1212,22 +1212,21 @@ button {
 
 /* ── Diagrama interactivo (/cotizador/diagrama) ─────────────── */
 
-.dg-frame {
+/* La página es el diagrama: ocupa toda la pantalla. */
+.dg-page {
   position: relative;
-  flex: 1 1 auto;
-  min-height: 640px;
-  border-top: 1px solid #2B3038;
-  border-bottom: 1px solid #2B3038;
+  height: 100dvh;
+  min-height: 520px;
+  overflow: hidden;
   background: #0F1115;
 }
 
-/* Absoluto dentro del marco: toma el alto real que le dio el flex, sin depender
-   de un alto definido en cascada. */
 .dg-shell {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  height: 100%;
+  grid-template-columns: minmax(0, 1fr) 380px;
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
     "bar bar"
@@ -1615,14 +1614,92 @@ button {
   grid-area: side;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid #2B3038;
+  background: #171A20;
+}
+
+.dg-side-head {
+  display: grid;
+  gap: 8px;
+  border-bottom: 1px solid #2B3038;
+  padding: 16px 20px 14px;
+}
+
+.dg-side-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.dg-side-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #2B3038;
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #A8B0BD;
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.dg-side-switch:hover {
+  border-color: rgba(184, 255, 44, 0.55);
+  color: #F5F7FA;
+}
+
+.dg-side-title {
+  margin: 0;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: #F5F7FA;
+  text-wrap: balance;
+}
+
+.dg-side-intro {
+  margin: 0;
+  color: #A8B0BD;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.dg-side-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   gap: 14px;
   min-height: 0;
   overflow: auto;
-  border-left: 1px solid #2B3038;
-  background: #171A20;
-  padding: 18px 20px 24px;
+  padding: 16px 20px 20px;
   scrollbar-width: thin;
   scrollbar-color: #2B3038 transparent;
+}
+
+.dg-side-foot {
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid #2B3038;
+  padding: 14px 20px 16px;
+}
+
+.dg-side-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dg-side-note {
+  margin: 0;
+  color: #8990A0;
+  font-size: 11.5px;
+  line-height: 1.5;
 }
 
 .dg-eyebrow {
@@ -1768,15 +1845,9 @@ button {
 }
 
 @media (max-width: 900px) {
-  .dg-frame {
-    flex: none;
-    min-height: 0;
-  }
-
   .dg-shell {
-    position: static;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 58dvh auto;
+    grid-template-rows: auto minmax(0, 52dvh) minmax(0, 1fr);
     grid-template-areas:
       "bar"
       "stage"
@@ -1784,9 +1855,24 @@ button {
   }
 
   .dg-side {
-    max-height: 42dvh;
     border-left: none;
     border-top: 1px solid #2B3038;
+  }
+
+  .dg-side-intro {
+    display: none;
+  }
+
+  .dg-side-head {
+    padding: 12px 16px 10px;
+  }
+
+  .dg-side-body {
+    padding: 12px 16px 14px;
+  }
+
+  .dg-side-foot {
+    padding: 10px 16px 12px;
   }
 
   .dg-hint {

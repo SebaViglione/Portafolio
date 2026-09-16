@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
 import gsap from 'gsap';
 import { ArrowLeft, ArrowRight, Download, Minus, Play, Plus, RotateCcw, Scan, Square } from 'lucide-react';
@@ -219,7 +219,15 @@ const fill = (template: string, values: Record<string, string | number>) =>
 
 /* ───────────────────────────── Componente ──────────────────────────────── */
 
-export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary }) {
+type SystemDiagramProps = {
+  diagram: SystemDiagramDictionary;
+  /** Cabecera fija de la barra lateral (título de la página, marca, idioma). */
+  sideHeader?: ReactNode;
+  /** Pie fijo de la barra lateral (volver al case study, contacto). */
+  sideFooter?: ReactNode;
+};
+
+export function SystemDiagram({ diagram, sideHeader, sideFooter }: SystemDiagramProps) {
   const { ui, typeNames, views, project } = diagram;
 
   const [viewId, setViewId] = useState(views[0].id);
@@ -259,16 +267,65 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
     applyCam();
   });
 
-  const fit = useCallback(() => {
+  /** Cámara que encuadra `box` con `pad` px de aire, sin pasar de `maxScale`. */
+  const cameraFor = useCallback((box: Rect, pad: number, maxScale: number): Cam | null => {
     const svg = svgRef.current;
-    if (!svg) return;
-    const { measured: m, positions: p } = latest.current;
-    const box = bbox(computeRects(m, p).values());
+    if (!svg) return null;
     const r = svg.getBoundingClientRect();
-    const s = Math.max(0.25, Math.min(1.5, Math.min((r.width - 40) / box.w, (r.height - 40) / box.h)));
-    camRef.current = { s, x: (r.width - box.w * s) / 2 - box.x * s, y: (r.height - box.h * s) / 2 - box.y * s };
-    applyCam();
-  }, [applyCam]);
+    if (r.width < 2 || r.height < 2) return null;
+    const s = Math.max(0.2, Math.min(maxScale, Math.min((r.width - 2 * pad) / box.w, (r.height - 2 * pad) / box.h)));
+    return { s, x: (r.width - box.w * s) / 2 - box.x * s, y: (r.height - box.h * s) / 2 - box.y * s };
+  }, []);
+
+  const animateTo = useCallback(
+    (target: Cam) => {
+      const cam = camRef.current;
+      gsap.killTweensOf(cam);
+      if (reduceMotion()) {
+        Object.assign(cam, target);
+        applyCam();
+        return;
+      }
+      gsap.to(cam, { ...target, duration: 0.7, ease: 'power3.out', onUpdate: applyCam });
+    },
+    [applyCam],
+  );
+
+  /** Encuadra la vista entera. Con `animate`, se desliza hasta ahí. */
+  const fit = useCallback(
+    (animate = false) => {
+      const { measured: m, positions: p } = latest.current;
+      const target = cameraFor(bbox(computeRects(m, p).values()), 20, 1.5);
+      if (!target) return;
+      gsap.killTweensOf(camRef.current);
+      if (animate) animateTo(target);
+      else {
+        camRef.current = target;
+        applyCam();
+      }
+    },
+    [cameraFor, animateTo, applyCam],
+  );
+
+  /** Encuadra las cajas de un paso del recorrido: más cerca que la vista general, nunca más de 1,4×. */
+  const focusOn = useCallback(
+    (ids: string[]) => {
+      const svg = svgRef.current;
+      if (!svg) return;
+      const { measured: m, positions: p } = latest.current;
+      const all = computeRects(m, p);
+      const targets = ids.map((id) => all.get(id)).filter((r): r is Rect => Boolean(r));
+      if (!targets.length) return;
+      const box = bbox(targets);
+      const overview = cameraFor(bbox(all.values()), 20, 1.5);
+      const step = cameraFor(box, 70, 1.4);
+      if (!overview || !step) return;
+      const s = Math.max(step.s, overview.s);
+      const r = svg.getBoundingClientRect();
+      animateTo({ s, x: r.width / 2 - (box.x + box.w / 2) * s, y: r.height / 2 - (box.y + box.h / 2) * s });
+    },
+    [cameraFor, animateTo],
+  );
 
   const zoomAt = useCallback(
     (factor: number, cx?: number, cy?: number) => {
@@ -287,33 +344,6 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
     [applyCam],
   );
 
-  const centerOn = useCallback(
-    (ids: string[]) => {
-      const svg = svgRef.current;
-      if (!svg) return;
-      const { measured: m, positions: p } = latest.current;
-      const all = computeRects(m, p);
-      const targets = ids.map((id) => all.get(id)).filter((r): r is Rect => Boolean(r));
-      if (!targets.length) return;
-      const x = Math.min(...targets.map((r) => r.x));
-      const y = Math.min(...targets.map((r) => r.y));
-      const right = Math.max(...targets.map((r) => r.x + r.w));
-      const bottom = Math.max(...targets.map((r) => r.y + r.h));
-      const r = svg.getBoundingClientRect();
-      const cam = camRef.current;
-      const target = { x: r.width / 2 - ((x + right) / 2) * cam.s, y: r.height / 2 - ((y + bottom) / 2) * cam.s };
-      gsap.killTweensOf(cam);
-      if (reduceMotion()) {
-        cam.x = target.x;
-        cam.y = target.y;
-        applyCam();
-        return;
-      }
-      gsap.to(cam, { x: target.x, y: target.y, duration: 0.55, ease: 'power3.out', onUpdate: applyCam });
-    },
-    [applyCam],
-  );
-
   /* ── Cambio de vista: cada vista abre con su disposición original y encuadrada ── */
   const changeView = useCallback(
     (id: string) => {
@@ -323,14 +353,14 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
       setHover(null);
       setTourIdx(null);
       // Se encuadra cuando el nuevo layout ya está en el DOM.
-      window.requestAnimationFrame(fit);
+      window.requestAnimationFrame(() => fit());
     },
     [fit],
   );
 
   // Al montar: encuadrar la vista inicial (fuera del render síncrono).
   useEffect(() => {
-    const frame = window.requestAnimationFrame(fit);
+    const frame = window.requestAnimationFrame(() => fit());
     return () => window.cancelAnimationFrame(frame);
   }, [fit]);
 
@@ -345,7 +375,7 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
       if (Math.abs(next.w - last.w) < 2 && Math.abs(next.h - last.h) < 2) return;
       last = next;
       window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(fit);
+      frame = window.requestAnimationFrame(() => fit());
     });
     observer.observe(svg);
     return () => {
@@ -548,20 +578,21 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
       const steps = latest.current.view.tour;
       if (index === null || index < 0 || index >= steps.length) {
         setTourIdx(null);
+        fit(true);
         return;
       }
       setTourIdx(index);
       setSel(null);
-      centerOn(steps[index].nodes);
+      focusOn(steps[index].nodes);
     },
-    [centerOn],
+    [focusOn, fit],
   );
 
   const reset = useCallback(() => {
     setPosState({ view: view.id, map: {} });
     setSel(null);
     setTourIdx(null);
-    window.setTimeout(fit, 0);
+    window.setTimeout(() => fit(), 0);
   }, [view.id, fit]);
 
   /* ── Teclado ── */
@@ -573,7 +604,7 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
         if (tourIdx !== null) goTour(null);
         else setSel(null);
       } else if (event.key === 'f' || event.key === 'F') {
-        fit();
+        fit(true);
       } else if (tourIdx !== null && (event.key === 'ArrowRight' || event.key === 'ArrowLeft')) {
         event.preventDefault();
         goTour(tourIdx + (event.key === 'ArrowRight' ? 1 : -1));
@@ -700,7 +731,7 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
             {tourIdx === null ? <Play size={14} /> : <Square size={13} />}
             {tourIdx === null ? ui.tourStart : ui.tourExit}
           </button>
-          <button type="button" className="dg-btn" onClick={fit} title={ui.fitTitle}>
+          <button type="button" className="dg-btn" onClick={() => fit(true)} title={ui.fitTitle}>
             <Scan size={15} />
             {ui.fit}
           </button>
@@ -860,7 +891,9 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
         <p className="dg-hint">{ui.hint}</p>
       </div>
 
-      <aside className="dg-side" aria-live="polite">
+      <aside className="dg-side">
+        {sideHeader}
+        <div className="dg-side-body" aria-live="polite">
         {step ? (
           <>
             <p className="dg-eyebrow">{view.name}</p>
@@ -950,6 +983,8 @@ export function SystemDiagram({ diagram }: { diagram: SystemDiagramDictionary })
             <p className="dg-muted">{ui.clickHint}</p>
           </>
         )}
+        </div>
+        {sideFooter}
       </aside>
     </div>
   );
