@@ -48,7 +48,6 @@ const LINE_TITLE = 17;
 const LINE_SUB = 15;
 const GROUP_PAD = 22;
 const GROUP_TOP = 40;
-const STORAGE = 'sebaviglione:diagrama:v1:';
 const EMPTY_POS: Record<string, Pos> = {};
 
 /* ───────────────────────── Medición determinista ────────────────────────── */
@@ -118,10 +117,26 @@ function edgeGeometry(a: Rect, b: Rect, separate: boolean): { d: string; mid: Po
   const cb = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
   const dx = cb.x - ca.x;
   const dy = cb.y - ca.y;
-  const horizontal = Math.abs(dx) > Math.abs(dy);
+  // Cajas una encima de la otra (sin solaparse en vertical) y con el centro de
+  // una dentro del ancho de la otra: la flecha cae recta por ese x. Así una
+  // caja ancha suelta una flecha vertical a cada bloque que alimenta.
+  const stacked = a.y + a.h <= b.y || b.y + b.h <= a.y;
+  const aCovers = cb.x >= a.x && cb.x <= a.x + a.w;
+  const bCovers = ca.x >= b.x && ca.x <= b.x + b.w;
+  const sharedX = stacked && (aCovers || bCovers) ? (aCovers ? cb.x : ca.x) : null;
+  let horizontal = Math.abs(dx) > Math.abs(dy);
   let p1: Pos;
   let p2: Pos;
-  if (horizontal) {
+  if (sharedX !== null) {
+    horizontal = false;
+    if (dy > 0) {
+      p1 = { x: sharedX, y: a.y + a.h };
+      p2 = { x: sharedX, y: b.y };
+    } else {
+      p1 = { x: sharedX, y: a.y };
+      p2 = { x: sharedX, y: b.y + b.h };
+    }
+  } else if (horizontal) {
     if (dx > 0) {
       p1 = { x: a.x + a.w, y: ca.y };
       p2 = { x: b.x, y: cb.y };
@@ -197,33 +212,6 @@ function computeRects(measured: Measured[], positions: Record<string, Pos>): Map
   return rects;
 }
 
-/* ─────────────────────────── Persistencia local ─────────────────────────── */
-
-function readStorage<T>(key: string): T | null {
-  try {
-    const raw = window.localStorage.getItem(STORAGE + key);
-    return raw ? (JSON.parse(raw) as T) : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeStorage(key: string, value: unknown) {
-  try {
-    window.localStorage.setItem(STORAGE + key, JSON.stringify(value));
-  } catch {
-    /* sin almacenamiento: la sesión sigue igual */
-  }
-}
-
-function removeStorage(key: string) {
-  try {
-    window.localStorage.removeItem(STORAGE + key);
-  } catch {
-    /* nada */
-  }
-}
-
 const reduceMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -266,8 +254,6 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
     worldRef.current?.setAttribute('transform', `translate(${cam.x} ${cam.y}) scale(${cam.s})`);
   }, []);
 
-  const persistCam = useCallback(() => writeStorage(`cam:${latest.current.view.id}`, camRef.current), []);
-
   // El atributo `transform` se renderiza estático (identidad) y la cámara real se
   // aplica por ref después de cada commit: así el HTML del export estático y el
   // cliente coinciden, y el arrastre no re-renderiza.
@@ -284,8 +270,7 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
     const s = Math.max(0.25, Math.min(1.5, Math.min((r.width - 40) / box.w, (r.height - 40) / box.h)));
     camRef.current = { s, x: (r.width - box.w * s) / 2 - box.x * s, y: (r.height - box.h * s) / 2 - box.y * s };
     applyCam();
-    persistCam();
-  }, [applyCam, persistCam]);
+  }, [applyCam]);
 
   const zoomAt = useCallback(
     (factor: number, cx?: number, cy?: number) => {
@@ -300,9 +285,8 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
       const wy = (py - cam.y) / cam.s;
       camRef.current = { s: s2, x: px - wx * s2, y: py - wy * s2 };
       applyCam();
-      persistCam();
     },
-    [applyCam, persistCam],
+    [applyCam],
   );
 
   const centerOn = useCallback(
@@ -325,52 +309,32 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
         cam.x = target.x;
         cam.y = target.y;
         applyCam();
-        persistCam();
         return;
       }
-      gsap.to(cam, { x: target.x, y: target.y, duration: 0.55, ease: 'power3.out', onUpdate: applyCam, onComplete: persistCam });
+      gsap.to(cam, { x: target.x, y: target.y, duration: 0.55, ease: 'power3.out', onUpdate: applyCam });
     },
-    [applyCam, persistCam],
+    [applyCam],
   );
 
-  /* ── Cambio de vista: posiciones y cámara guardadas ── */
-  const restoreCamera = useCallback(
-    (id: string) => {
-      const cam = readStorage<Cam>(`cam:${id}`);
-      if (cam && Number.isFinite(cam.s) && cam.s > 0) {
-        camRef.current = cam;
-        applyCam();
-      } else {
-        fit();
-      }
-    },
-    [applyCam, fit],
-  );
-
+  /* ── Cambio de vista: cada vista abre con su disposición original y encuadrada ── */
   const changeView = useCallback(
     (id: string) => {
       setViewId(id);
-      setPosState({ view: id, map: readStorage<Record<string, Pos>>(`pos:${id}`) ?? {} });
+      setPosState({ view: id, map: {} });
       setSel(null);
       setHover(null);
       setTourIdx(null);
-      // La cámara se encuadra cuando el nuevo layout ya está en el DOM.
-      window.requestAnimationFrame(() => restoreCamera(id));
+      // Se encuadra cuando el nuevo layout ya está en el DOM.
+      window.requestAnimationFrame(fit);
     },
-    [restoreCamera],
+    [fit],
   );
 
-  // Al montar: la disposición y la cámara guardadas de la vista inicial. Se aplica
-  // en el siguiente frame (nunca de forma síncrona dentro del efecto).
+  // Al montar: encuadrar la vista inicial (fuera del render síncrono).
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      const id = latest.current.view.id;
-      const stored = readStorage<Record<string, Pos>>(`pos:${id}`);
-      if (stored && Object.keys(stored).length) setPosState({ view: id, map: stored });
-      window.requestAnimationFrame(() => restoreCamera(id));
-    });
+    const frame = window.requestAnimationFrame(fit);
     return () => window.cancelAnimationFrame(frame);
-  }, [restoreCamera]);
+  }, [fit]);
 
   /* ── Al cambiar el tamaño del lienzo (ventana, orientación) se vuelve a encuadrar ── */
   useEffect(() => {
@@ -558,7 +522,6 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
     svg?.classList.remove('is-panning');
     if (drag.kind === 'pan') {
       if (!drag.moved) select(null);
-      else persistCam();
       return;
     }
     if (drag.moved) {
@@ -567,9 +530,7 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
         frameRef.current = 0;
       }
       paint();
-      const map = { ...livePos.current };
-      setPosState({ view: latest.current.view.id, map });
-      writeStorage(`pos:${latest.current.view.id}`, map);
+      setPosState({ view: latest.current.view.id, map: { ...livePos.current } });
     } else if (drag.kind === 'node') {
       select(sel === drag.id ? null : drag.id);
     }
@@ -599,8 +560,6 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
   );
 
   const reset = useCallback(() => {
-    removeStorage(`pos:${view.id}`);
-    removeStorage(`cam:${view.id}`);
     setPosState({ view: view.id, map: {} });
     setSel(null);
     setTourIdx(null);
@@ -629,9 +588,7 @@ export function SystemDiagram({ locale }: { locale: Locale }) {
           x: current.x + (event.key === 'ArrowRight' ? step : event.key === 'ArrowLeft' ? -step : 0),
           y: current.y + (event.key === 'ArrowDown' ? step : event.key === 'ArrowUp' ? -step : 0),
         };
-        const map = { ...positions, [sel]: next };
-        setPosState({ view: view.id, map });
-        writeStorage(`pos:${view.id}`, map);
+        setPosState({ view: view.id, map: { ...positions, [sel]: next } });
       } else if (/^[1-9]$/.test(event.key)) {
         const target = views[Number(event.key) - 1];
         if (target) changeView(target.id);
