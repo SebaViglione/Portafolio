@@ -7,13 +7,42 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
-import { ArrowLeft, ArrowRight, Languages, MoveRight, Workflow } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Languages, Lock, MoveRight, PlayCircle, Workflow } from 'lucide-react';
+import { GitHubIcon } from '@/components/BrandIcons';
 import { BackgroundGrid } from '@/components/BackgroundGrid';
 import { CustomCursor } from '@/components/CustomCursor';
-import { getDictionary, localizedHref, type CaseStudy, type CaseStudySlug, type Locale } from '@/lib/content';
+import { getDictionary, localizedHref, type CaseStudy, type CaseStudyItem, type CaseStudySlug, type Locale } from '@/lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+function SectionHeading({ label, heading }: { label: string; heading: string }) {
+  return (
+    <div className="section-heading max-w-3xl">
+      <p className="section-label">{label}</p>
+      <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">{heading}</h2>
+    </div>
+  );
+}
+
+function CardGrid({ items, variant = 'default' }: { items: CaseStudyItem[]; variant?: 'default' | 'discarded' }) {
+  return (
+    <div className="decision-grid mt-12 grid gap-4 md:grid-cols-2">
+      {items.map((item) => (
+        <article className={`decision-card${variant === 'discarded' ? ' is-discarded' : ''}`} key={item.title}>
+          <h3 className="font-display text-xl font-semibold text-text-primary">{item.title}</h3>
+          <p className="mt-3 text-[15px] leading-[1.7] text-text-secondary">{item.text}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Template único de los tres case studies. La estructura fija son cinco puntos
+ * numerados (problema, restricciones, decisiones, descartes, resultado); el
+ * resto de secciones (qué se construyó, admin, diagrama, arquitectura,
+ * seguridad, demo, capturas) se muestran solo si el contenido las trae.
+ */
 export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStudySlug }) {
   const dict = getDictionary(locale);
   const c: CaseStudy = dict[slug];
@@ -142,20 +171,34 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
               <span className="block text-xs uppercase tracking-[0.04em] text-text-muted/70">{c.yearLabel}</span>
               <span className="text-text-secondary">{c.year}</span>
             </span>
+            <span className="max-w-xs">
+              <span className="block text-xs uppercase tracking-[0.04em] text-text-muted/70">{c.code.label}</span>
+              <span className="inline-flex items-center gap-1.5 text-text-secondary">
+                {c.code.href ? <GitHubIcon size={14} /> : <Lock size={13} />}
+                {c.code.note}
+              </span>
+            </span>
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <Link href={`${home}#contacto`} className="btn-primary">
-              {c.repoBtn}
-              <ArrowRight size={18} />
-            </Link>
+          <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2">
+            {c.code.href ? (
+              <Link href={c.code.href} className="btn-primary" target="_blank" rel="noopener noreferrer">
+                <GitHubIcon size={18} />
+                {c.code.cta}
+              </Link>
+            ) : null}
             {c.diagram ? (
-              <Link href={diagramHref} className="btn-secondary">
+              <Link href={diagramHref} className={c.code.href ? 'btn-secondary' : 'btn-primary'}>
                 <Workflow size={18} />
                 {c.diagram.cta}
               </Link>
             ) : null}
-            <span className="text-xs text-text-muted">{c.privateNote}</span>
+            {c.demo ? (
+              <Link href="#demo" className="btn-secondary">
+                <PlayCircle size={18} />
+                {c.demo.label}
+              </Link>
+            ) : null}
           </div>
 
           <div className="mt-9 flex flex-wrap gap-2">
@@ -178,7 +221,8 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
           {c.summary}
         </p>
 
-        <section className="case-block mt-20 grid gap-8 md:grid-cols-[160px_1fr] md:gap-12">
+        {/* 01 · Problema de negocio */}
+        <section className="case-block mt-20 grid gap-8 md:grid-cols-[200px_1fr] md:gap-12">
           <p className="section-label md:pt-2">{c.problemLabel}</p>
           <div className="max-w-2xl space-y-5">
             {c.problem.map((paragraph) => (
@@ -189,13 +233,15 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
           </div>
         </section>
 
+        {/* 02 · Restricciones */}
         <section className="case-block mt-20">
-          <div className="section-heading max-w-3xl">
-            <p className="section-label">{c.insightLabel}</p>
-            <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">
-              {c.insightHeading}
-            </h2>
-          </div>
+          <SectionHeading label={c.constraintsLabel} heading={c.constraintsHeading} />
+          <CardGrid items={c.constraints} />
+        </section>
+
+        {/* La decisión clave (narrativa) */}
+        <section className="case-block mt-20">
+          <SectionHeading label={c.insightLabel} heading={c.insightHeading} />
           <div className="mt-8 max-w-3xl space-y-5">
             {c.insight.map((paragraph) => (
               <p className="text-[17px] leading-[1.75] text-text-secondary" key={paragraph}>
@@ -224,13 +270,21 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
           ) : null}
         </section>
 
+        {/* 03 · Decisiones técnicas y por qué */}
         <section className="case-block mt-20">
-          <div className="section-heading max-w-3xl">
-            <p className="section-label">{c.solutionLabel}</p>
-            <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">
-              {c.solutionHeading}
-            </h2>
-          </div>
+          <SectionHeading label={c.decisionsLabel} heading={c.decisionsHeading} />
+          <CardGrid items={c.decisions} />
+        </section>
+
+        {/* 04 · Qué se descartó */}
+        <section className="case-block mt-20">
+          <SectionHeading label={c.discardedLabel} heading={c.discardedHeading} />
+          <CardGrid items={c.discarded} variant="discarded" />
+        </section>
+
+        {/* Qué se construyó */}
+        <section className="case-block mt-20">
+          <SectionHeading label={c.solutionLabel} heading={c.solutionHeading} />
           <ol className="mt-10 grid gap-4 sm:grid-cols-2">
             {c.solution.map((item, index) => (
               <li className="solution-step" key={item.title}>
@@ -251,20 +305,8 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
 
         {c.admin && c.adminLabel && c.adminHeading ? (
           <section className="case-block mt-20">
-            <div className="section-heading max-w-3xl">
-              <p className="section-label">{c.adminLabel}</p>
-              <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">
-                {c.adminHeading}
-              </h2>
-            </div>
-            <div className="decision-grid mt-12 grid gap-4 md:grid-cols-2">
-              {c.admin.map((item) => (
-                <article className="decision-card" key={item.title}>
-                  <h3 className="font-display text-xl font-semibold text-text-primary">{item.title}</h3>
-                  <p className="mt-3 text-[15px] leading-[1.7] text-text-secondary">{item.text}</p>
-                </article>
-              ))}
-            </div>
+            <SectionHeading label={c.adminLabel} heading={c.adminHeading} />
+            <CardGrid items={c.admin} />
             {c.adminNote ? (
               <p className="mt-7 max-w-3xl rounded-md border border-border bg-bg-card p-5 text-[15px] leading-[1.7] text-text-secondary">
                 {c.adminNote}
@@ -299,12 +341,7 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
         ) : null}
 
         <section className="case-block mt-20">
-          <div className="section-heading max-w-3xl">
-            <p className="section-label">{c.archLabel}</p>
-            <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">
-              {c.archHeading}
-            </h2>
-          </div>
+          <SectionHeading label={c.archLabel} heading={c.archHeading} />
           <div className="arch-flow mt-12 max-w-3xl">
             {c.architecture.map((node) => (
               <div className="arch-step" key={node.step}>
@@ -321,38 +358,42 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
           ) : null}
         </section>
 
-        <section className="case-block mt-20">
-          <div className="section-heading max-w-3xl">
-            <p className="section-label">{c.securityLabel}</p>
-            <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">
-              {c.securityHeading}
-            </h2>
-          </div>
-          <div className="decision-grid mt-12 grid gap-4 md:grid-cols-2">
-            {c.security.map((item) => (
-              <article className="decision-card" key={item.title}>
-                <h3 className="font-display text-xl font-semibold text-text-primary">{item.title}</h3>
-                <p className="mt-3 text-[15px] leading-[1.7] text-text-secondary">{item.text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+        {c.security && c.securityLabel && c.securityHeading ? (
+          <section className="case-block mt-20">
+            <SectionHeading label={c.securityLabel} heading={c.securityHeading} />
+            <CardGrid items={c.security} />
+          </section>
+        ) : null}
 
+        {/* 05 · Resultado medible */}
         <section className="case-block mt-20">
-          <div className="section-heading max-w-3xl">
-            <p className="section-label">{c.qualityLabel}</p>
-            <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">
-              {c.qualityHeading}
-            </h2>
-          </div>
-          <dl className="mt-10 max-w-3xl">
-            {c.quality.map((row) => (
-              <div className="quality-row" key={row.metric}>
-                <dt className="text-[15px] leading-[1.5] text-text-secondary">{row.metric}</dt>
-                <dd className="font-display text-lg font-semibold text-accent">{row.value}</dd>
+          <SectionHeading label={c.resultsLabel} heading={c.resultsHeading} />
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {c.results.map((result) => (
+              <div className="arce-stat" key={result.label}>
+                <span className="font-display text-3xl font-bold text-accent md:text-4xl">{result.value}</span>
+                <p className="mt-3 text-[15px] leading-[1.5] text-text-secondary">{result.label}</p>
               </div>
             ))}
-          </dl>
+          </div>
+          {c.quality && c.qualityLabel && c.qualityHeading ? (
+            <>
+              <div className="mt-14 max-w-3xl">
+                <p className="section-label">{c.qualityLabel}</p>
+                <h3 className="mt-4 font-display text-2xl font-semibold leading-tight text-text-primary md:text-3xl">
+                  {c.qualityHeading}
+                </h3>
+              </div>
+              <dl className="mt-8 max-w-3xl">
+                {c.quality.map((row) => (
+                  <div className="quality-row" key={row.metric}>
+                    <dt className="text-[15px] leading-[1.5] text-text-secondary">{row.metric}</dt>
+                    <dd className="font-display text-lg font-semibold text-accent">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </>
+          ) : null}
           {c.qualityNote ? (
             <p className="mt-7 max-w-3xl rounded-md border border-border bg-bg-card p-5 text-[15px] leading-[1.7] text-text-secondary">
               {c.qualityNote}
@@ -360,13 +401,19 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
           ) : null}
         </section>
 
+        {c.demo ? (
+          <section id="demo" className="case-block mt-20 scroll-mt-24">
+            <SectionHeading label={c.demo.label} heading={c.demo.heading} />
+            <div className="mt-10 overflow-hidden rounded-md border border-border bg-bg-secondary">
+              <video className="h-full w-full object-cover" autoPlay loop muted playsInline preload="metadata" aria-label={c.demo.aria}>
+                <source src={c.demo.src} type="video/webm" />
+              </video>
+            </div>
+          </section>
+        ) : null}
+
         <section className="case-block mt-20">
-          <div className="section-heading max-w-3xl">
-            <p className="section-label">{c.shotsLabel}</p>
-            <h2 className="mt-4 font-display text-3xl font-semibold leading-tight text-text-primary md:text-4xl">
-              {c.shotsHeading}
-            </h2>
-          </div>
+          <SectionHeading label={c.shotsLabel} heading={c.shotsHeading} />
           <div className="mt-10 space-y-8">
             {c.gallery.map((shot) => (
               <figure className="arce-shot" key={shot.src}>
@@ -433,9 +480,18 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link href={`${home}#contacto`} className="btn-primary">
-              {c.ctaTalk}
+              {c.ctaContact}
               <ArrowRight size={18} />
             </Link>
+            <Link href={`${home}#trabajos`} className="btn-secondary">
+              {c.ctaMore}
+            </Link>
+            {c.code.href ? (
+              <Link href={c.code.href} className="btn-secondary" target="_blank" rel="noopener noreferrer">
+                <GitHubIcon size={18} />
+                {c.code.cta}
+              </Link>
+            ) : null}
           </div>
         </section>
       </div>

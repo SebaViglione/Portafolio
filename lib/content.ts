@@ -3,15 +3,20 @@ import {
   Briefcase,
   BriefcaseBusiness,
   Clock3,
+  Database,
+  FlaskConical,
   GraduationCap,
   Languages,
   MapPin,
   MessageSquareText,
   MonitorSmartphone,
   RefreshCw,
+  Ruler,
+  Server,
   UserRound,
   WalletCards,
 } from 'lucide-react';
+import { arceMedia } from './site';
 
 export type Locale = 'es' | 'en';
 export const locales: Locale[] = ['es', 'en'];
@@ -33,6 +38,8 @@ export type Project = {
 
 export type CaseStudyItem = { title: string; text: string };
 export type CaseStudyArchStep = { step: string; title: string; text: string };
+export type CaseStudyResult = { value: string; label: string };
+export type CaseStudyCode = { label: string; note: string; href?: string; cta?: string };
 export type CaseStudyGalleryItem = {
   kind: string;
   src: string;
@@ -43,8 +50,10 @@ export type CaseStudyGalleryItem = {
   loop: boolean;
 };
 
-// Shape compartido por los case studies data-driven (cotizador, stock).
-// Los campos opcionales habilitan secciones que no todos los proyectos usan.
+// Shape compartido por los tres case studies (cotizador, stock, arce).
+// La estructura fija son cinco puntos numerados: problema de negocio,
+// restricciones, decisiones técnicas y por qué, qué se descartó y resultado
+// medible. Los campos opcionales habilitan secciones que no todos usan.
 export type CaseStudy = {
   title: string;
   back: string;
@@ -57,8 +66,7 @@ export type CaseStudy = {
   yearLabel: string;
   clientLabel: string;
   client: string;
-  repoBtn: string;
-  privateNote: string;
+  code: CaseStudyCode;
   stack: string[];
   tagline: string;
   summary: string;
@@ -66,6 +74,9 @@ export type CaseStudy = {
   metricText: string;
   problemLabel: string;
   problem: string[];
+  constraintsLabel: string;
+  constraintsHeading: string;
+  constraints: CaseStudyItem[];
   insightLabel: string;
   insightHeading: string;
   insight: string[];
@@ -74,6 +85,12 @@ export type CaseStudy = {
   beforeValue?: string;
   afterLabel?: string;
   afterValue?: string;
+  decisionsLabel: string;
+  decisionsHeading: string;
+  decisions: CaseStudyItem[];
+  discardedLabel: string;
+  discardedHeading: string;
+  discarded: CaseStudyItem[];
   solutionLabel: string;
   solutionHeading: string;
   solution: CaseStudyItem[];
@@ -87,37 +104,41 @@ export type CaseStudy = {
   architecture: CaseStudyArchStep[];
   archNote?: string;
   diagram?: { cta: string; label: string; heading: string; text: string };
-  securityLabel: string;
-  securityHeading: string;
-  security: CaseStudyItem[];
-  qualityLabel: string;
-  qualityHeading: string;
-  quality: { metric: string; value: string }[];
+  securityLabel?: string;
+  securityHeading?: string;
+  security?: CaseStudyItem[];
+  resultsLabel: string;
+  resultsHeading: string;
+  results: CaseStudyResult[];
+  qualityLabel?: string;
+  qualityHeading?: string;
+  quality?: { metric: string; value: string }[];
   qualityNote?: string;
+  demo?: { label: string; heading: string; aria: string; src: string };
   shotsLabel: string;
   shotsHeading: string;
   learningsLabel: string;
   learnings: string[];
   ctaHeading: string;
   ctaText: string;
-  ctaTalk: string;
+  ctaContact: string;
+  ctaMore: string;
   gallery: CaseStudyGalleryItem[];
 };
 
-export type CaseStudySlug = 'cotizador' | 'stock';
+export type CaseStudySlug = 'cotizador' | 'stock' | 'arce';
 
 const es = {
   htmlLang: 'es',
 
   nav: {
     items: [
-      { label: 'Trabajos', href: '#trabajos' },
-      { label: 'Servicios', href: '#servicios' },
+      { label: 'Proyectos', href: '#trabajos' },
+      { label: 'Experiencia', href: '#experiencia' },
       { label: 'Sobre mí', href: '#sobre-mi' },
-      { label: 'Contacto', href: '#contacto' },
     ],
-    cta: 'Hablemos',
-    status: 'disponible',
+    cta: 'Contacto',
+    status: 'abierto a posiciones',
     timeSr: 'hora local en Montevideo, Uruguay',
     menuOpen: 'Abrir menú',
     menuClose: 'Cerrar menú',
@@ -126,113 +147,106 @@ const es = {
   },
 
   hero: {
-    kicker: 'disponible para proyectos',
-    status: 'disponible para proyectos · montevideo, uy',
+    status: 'abierto a posiciones de desarrollo · montevideo, uy',
     title: {
-      sr: 'Hago software que ordena tu operación.',
-      l1: 'Hago software',
-      l2: 'que ordena',
-      l3pre: 'tu',
-      highlight: 'operación.',
+      sr: 'Desarrollador backend. Construyo sistemas de gestión para operaciones reales.',
+      l1: 'Desarrollador backend.',
+      l2: 'Sistemas de gestión',
+      l3pre: 'para operaciones',
+      highlight: 'reales.',
     },
-    copy: 'Desde el sitio web hasta el sistema interno que te ahorra horas de trabajo manual. Sin equipos grandes, sin procesos eternos.',
-    credential: 'Developer & Systems Technician en Grupo CPS · Estudiante de Ingeniería en Sistemas · Inglés C1',
-    ctaContact: 'Hablemos',
-    ctaWork: 'Ver trabajos',
-    ctaCv: 'Descargar CV',
-    portraitCaption: 'Software a medida para empresas',
-    scroll: 'scroll',
+    copy: 'Stock, costeo, compras, cotización e integraciones. Tres sistemas en producción en Grupo CPS, construidos de punta a punta: modelo de datos y reglas de negocio en PostgreSQL, API e interfaz en TypeScript y Node.js, deploy en servidor propio.',
+    ctaWork: 'Ver proyectos',
+    ctaGithub: 'GitHub',
+    ctaLinkedin: 'LinkedIn',
     portraitAlt: 'Sebastián Viglione',
   },
 
   bento: {
     estadoLabel: 'estado',
     estado: [
-      { label: 'disponibilidad', value: 'abierta', live: true },
+      { label: 'estado', value: 'abierto a posiciones', live: true },
       { label: 'base', value: 'Montevideo, UY', live: false },
       { label: 'idiomas', value: 'español · inglés C1', live: false },
       { label: 'formación', value: 'Ing. en Sistemas · UM', live: false },
     ],
-    stackLabel: 'stack principal',
-    stack: ['typescript', 'react / next.js', 'python', 'postgresql', 'supabase', 'n8n', 'docker / linux', 'ia local / ollama'],
+    stackLabel: 'stack a diario',
+    stack: ['typescript', 'node.js', 'next.js / react', 'postgresql', 'sql', 'supabase'],
     terminalTitle: 'cómo trabajo',
     values: [
-      { title: 'Trato directo', text: 'hablás conmigo, no con una agencia.' },
-      { title: 'Lenguaje claro', text: 'me contás el problema en tus palabras, yo lo traduzco a software.' },
-      { title: 'Sin vueltas', text: 'si algo no funciona, se corrige rápido.' },
+      { title: 'Reglas en la base', text: 'la lógica de negocio vive en PostgreSQL, no en qué botones muestra la interfaz.' },
+      { title: 'Medir antes de afirmar', text: 'un número validado contra el sistema real vale más que una corazonada.' },
+      { title: 'Nada se borra', text: 'kardex y pedidos son inmutables: corregir es asentar, no editar.' },
     ],
-    serviciosLabel: 'qué puedo hacer por tu empresa',
+    projectsLabel: 'en producción · grupo cps',
     portraitName: 'Sebastián Viglione',
-    portraitRole: 'developer · grupo cps',
+    portraitRole: 'backend · grupo cps',
   },
 
   about: {
     label: 'sobre mí',
-    heading: 'Autodidacta desde los 12. Hoy construyo software en producción.',
+    heading: 'Sistemas internos, de la base de datos al deploy.',
     intro:
-      'Mi perfil está orientado a la Ingeniería en Sistemas, con una base autodidacta que empecé a los 12 años. Lo que me define es la curiosidad técnica y la iniciativa: desarrollo proyectos integrales (full stack, IA local y automatización) para validar mis habilidades resolviendo problemas en entornos productivos reales.',
+      'Trabajo como Developer & Systems Technician en Grupo CPS, una empresa de construcción y aberturas de aluminio. Ahí diseñé y construí los tres sistemas de esta página, solo y de punta a punta: modelo de datos, reglas de negocio, API, interfaz y deploy en el servidor de la empresa.',
     body:
-      'Hoy trabajo como Developer & Systems Technician en Grupo CPS, donde construyo soluciones internas, integro APIs y automatizo procesos del negocio. Me muevo cómodo de la base de datos al frontend, y de un script suelto al sistema completo.',
+      'Lo que más me interesa es el backend: modelar bien el dominio, poner las reglas donde no se puedan saltear y medir antes de dar un número por bueno. Estudio Ingeniería en Sistemas en la Universidad de Montevideo y tengo inglés C1.',
     facts: [
       { label: 'Estudiante de Ingeniería en Sistemas · Universidad de Montevideo', icon: GraduationCap },
       { label: 'Developer & Systems Technician · Grupo CPS', icon: Briefcase },
       { label: 'Español nativo · Inglés C1 (CAE)', icon: Languages },
       { label: 'Montevideo, Uruguay', icon: MapPin },
     ],
-    stackLabel: 'stack',
-    cvButton: 'Descargar CV',
+    stackLabel: 'stack, por nivel de dominio',
   },
 
-  stackGroups: [
-    { title: 'Desarrollo web', items: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Tailwind', 'Three.js'] },
-    { title: 'Lenguajes', items: ['Python', 'SQL'] },
-    { title: 'Backend / APIs', items: ['REST APIs', 'Supabase', 'JSON', 'Webhooks', 'Jest'] },
-    { title: 'Datos', items: ['PostgreSQL', 'ETL'] },
-    { title: 'Automatización & IA', items: ['n8n', 'Ollama', 'OpenAI API', 'IA local'] },
-    { title: 'Infraestructura', items: ['Linux', 'Docker', 'Bash', 'Git', 'GitHub'] },
-  ],
-
-  services: {
-    label: 'qué puedo hacer por tu empresa',
-    heading: 'Soluciones a medida, sin vueltas.',
-    more: 'Más info',
+  experience: {
+    label: 'experiencia',
+    heading: 'Qué hice y qué resultó.',
     items: [
       {
-        title: 'Desarrollo web',
-        text: 'Tu primer punto de contacto con clientes. Que cuando alguien te googlee, encuentre algo que genere confianza y sepa cómo hablarte.',
-        icon: MonitorSmartphone,
+        role: 'Developer & Systems Technician',
+        company: 'Grupo CPS',
+        period: '12/2024 – actualidad',
+        place: 'Montevideo, UY',
+        bullets: [
+          'Diseñé y construí Depósitos CPS, el sistema de stock de la empresa: kardex inmutable, costeo promedio ponderado y RPCs transaccionales en PostgreSQL, con ~160 aserciones de test sobre el núcleo SQL y 32 migraciones aplicadas por CI.',
+          'Desarrollé el motor de cálculo del cotizador de aberturas: reverse engineering de 2.641 recetas de fábrica que bajó el error de material de 2,44× a ~1%, con 68+ tests automáticos.',
+          'Automaticé el monitoreo de licitaciones públicas con n8n, Puppeteer e IA local: ~10 horas semanales de revisión manual eliminadas para el equipo comercial.',
+          'Opero la infraestructura de esos sistemas en el VPS de la empresa: Supabase self-hosted, Docker y Coolify, con deploy automático en cada push, migraciones por CI y backups diarios.',
+        ],
       },
-      {
-        title: 'Software de gestión',
-        text: 'Cuando la operación queda repartida entre mensajes, planillas y tareas manuales, armamos un sistema que ponga todo en su lugar.',
-        icon: BriefcaseBusiness,
-      },
-      {
-        title: 'Automatización',
-        text: 'Procesos repetitivos que hoy hacés a mano y podrían resolverse solos, con reglas claras y control humano cuando hace falta.',
-        icon: RefreshCw,
-      },
-      {
-        title: 'IA aplicada',
-        text: 'IA cuando suma de verdad: para responder consultas, ordenar información o revisar datos internos sin venderte una caja negra.',
-        icon: Bot,
-      },
+    ],
+    educationLabel: 'formación',
+    education: [
+      { title: 'Ingeniería en Sistemas', place: 'Universidad de Montevideo', period: 'en curso' },
+      { title: 'Bachillerato Tecnológico en Informática', place: 'UTU Brazo Oriental', period: 'egresado' },
+      { title: 'Inglés C1', place: 'Cambridge Advanced (CAE)', period: '' },
     ],
   },
 
+  stackLevels: [
+    {
+      title: 'Trabajo a diario',
+      note: 'Lo que puedo defender línea por línea.',
+      items: ['TypeScript', 'Node.js', 'Next.js / React', 'PostgreSQL', 'SQL', 'Supabase'],
+    },
+    {
+      title: 'Usado en producción',
+      note: 'Aplicado en sistemas reales; no es el día a día.',
+      items: ['Python', 'n8n', 'Docker', 'Linux', 'Ollama', 'Puppeteer', 'Jest', 'Three.js', 'Tailwind', 'Coolify'],
+    },
+    {
+      title: 'Aprendiendo',
+      note: 'En curso.',
+      items: ['.NET / C#'],
+    },
+  ],
+
   work: {
-    label: 'trabajos recientes',
-    heading: 'Cosas que hice que ya están funcionando.',
-    swipe: 'Deslizá para ver más trabajos',
-    moreKicker: 'próximamente',
-    moreTitle: 'y más...',
-    moreText: 'Hay más trabajos y sistemas que puedo mostrarte según lo que necesites resolver.',
-    moreCta: 'Hablemos',
-    toolsLabel: 'Herramientas & sistemas',
-    sitesLabel: 'Sitios web',
-    monoLabel: '[ trabajos ] — en producción ahora',
+    heading: 'Tres sistemas en producción, construidos de punta a punta.',
+    monoLabel: '[ proyectos ] — en producción ahora',
     statusChip: 'todo operativo',
-    sitesRowLabel: '[ sitios web ] — {n} en línea',
+    sitesLine: 'También hice cuatro sitios institucionales:',
     cursorLabel: 'VER',
     tools: [
       {
@@ -241,7 +255,7 @@ const es = {
         url: '/cotizador',
         description: 'Web B2B donde el cliente arma su pedido de aberturas y recibe un precio creíble. El núcleo es un motor de cálculo calibrado con reverse engineering sobre 2.641 recetas reales de fábrica.',
         label: 'COTIZADOR',
-        kind: 'Herramienta comercial · Full-stack',
+        kind: 'Motor de cálculo · Full-stack',
         year: '2026',
         cta: 'Ver case study',
         image: '/assets/projects/cotizador/imagen_hero.png',
@@ -253,7 +267,7 @@ const es = {
         url: '/stock',
         description: 'Sistema interno de stock para depósitos y obras: compras, transferencias, vales y herramientas por número de serie sobre un kardex inmutable, con costeo promedio ponderado y alertas.',
         label: 'STOCK',
-        kind: 'Herramienta interna · Grupo CPS',
+        kind: 'Sistema de stock · Grupo CPS',
         year: '2026',
         cta: 'Ver case study',
         image: '/assets/projects/depositos_cps/dashboard_inicial.png',
@@ -320,6 +334,88 @@ const es = {
     ] as Project[],
   },
 
+  practices: {
+    label: 'cómo trabajo',
+    heading: 'Decisiones que se repiten en todo lo que construyo.',
+    items: [
+      {
+        number: 1,
+        title: 'Las reglas viven en la base',
+        text: 'Restricciones, transacciones y RLS en PostgreSQL. Ocultar un botón es ergonomía; la barrera real está en la base de datos.',
+        icon: Database,
+      },
+      {
+        number: 2,
+        title: 'Medir antes de afirmar',
+        text: 'Antes de dar un número por bueno, lo comparo contra el sistema real. Una corazonada no es un resultado.',
+        icon: Ruler,
+      },
+      {
+        number: 3,
+        title: 'Testeo donde vive la lógica',
+        text: 'Si la regla está en SQL, el test corre en SQL dentro de una transacción que se revierte. Si el motor es puro, se prueba sin base de datos.',
+        icon: FlaskConical,
+      },
+      {
+        number: 4,
+        title: 'Deploy reproducible',
+        text: 'Docker, migraciones versionadas aplicadas por CI y backups diarios. Si la verificación no sale en verde, producción no se toca.',
+        icon: Server,
+      },
+    ],
+  },
+
+  contact: {
+    label: 'contacto',
+    title: {
+      sr: '¿Hablamos?',
+      l1: '¿Hablamos?',
+      l2: '',
+    },
+    copy: 'Escribime si querés hablar de una posición o de alguno de estos proyectos. Respondo por mail o por LinkedIn.',
+    mail: 'Mail',
+    social: 'También en:',
+    formName: 'Tu nombre',
+    formEmail: 'Tu email',
+    formMessage: 'Mensaje',
+    formSubmit: 'Enviar',
+    formSending: 'Enviando',
+    formDirectPre: 'Si preferís ir directo, escribime a',
+  },
+
+  footer: {
+    tagline: 'hecho por mí, obviamente.',
+  },
+
+  // Contenido comercial: vive en /servicios, sin enlace desde la home.
+  services: {
+    label: 'qué puedo hacer por tu empresa',
+    heading: 'Soluciones a medida, sin vueltas.',
+    more: 'Más info',
+    items: [
+      {
+        title: 'Desarrollo web',
+        text: 'Tu primer punto de contacto con clientes. Que cuando alguien te googlee, encuentre algo que genere confianza y sepa cómo hablarte.',
+        icon: MonitorSmartphone,
+      },
+      {
+        title: 'Software de gestión',
+        text: 'Cuando la operación queda repartida entre mensajes, planillas y tareas manuales, armamos un sistema que ponga todo en su lugar.',
+        icon: BriefcaseBusiness,
+      },
+      {
+        title: 'Automatización',
+        text: 'Procesos repetitivos que hoy hacés a mano y podrían resolverse solos, con reglas claras y control humano cuando hace falta.',
+        icon: RefreshCw,
+      },
+      {
+        title: 'IA aplicada',
+        text: 'IA cuando suma de verdad: para responder consultas, ordenar información o revisar datos internos sin venderte una caja negra.',
+        icon: Bot,
+      },
+    ],
+  },
+
   reasons: {
     label: 'cómo trabajo',
     heading: 'Sin agencias en el medio. Hablás directo conmigo.',
@@ -351,132 +447,56 @@ const es = {
     ],
   },
 
-  contact: {
-    label: 'contacto',
-    title: {
-      sr: '¿Tenés un proyecto en mente?',
-      l1: '¿Tenés un proyecto',
-      l2: 'en mente?',
-    },
-    copy: 'Contame qué necesitás. Sin compromisos, sin tecnicismos. Si puedo ayudarte, te lo digo. Si no, también.',
-    mail: 'Mail',
-    social: 'También en redes:',
-    formName: 'Tu nombre',
-    formEmail: 'Tu email',
-    formMessage: '¿En qué puedo ayudarte?',
-    formSubmit: 'Mandar mensaje',
-    formSending: 'Enviando',
-    formDirectPre: 'Si preferís ir directo, escribime a',
-  },
-
-  footer: {
-    tagline: 'hecho por mí, obviamente.',
-  },
-
-  arce: {
+  servicesPage: {
     back: 'Volver',
-    backFull: 'Volver a trabajos',
-    caseLabel: 'case study',
-    category: 'Automatización & IA',
-    year: '2025',
-    roleLabel: 'Rol',
-    role: 'Diseño, desarrollo e infraestructura, de punta a punta',
-    yearLabel: 'Año',
-    clientLabel: 'Origen',
-    client: 'Grupo CPS, por una necesidad real del equipo comercial',
-    repoBtn: 'Ver repositorio',
-    demoBtn: 'Ver demo',
-    tagline: 'Monitoreo y análisis de licitaciones públicas con IA local.',
-    stack: ['n8n', 'Node.js', 'Puppeteer', 'PostgreSQL', 'Ollama', 'IA local', 'Docker', 'Linux', 'Web scraping'],
-    summary:
-      'Arce monitorea las publicaciones del portal de compras estatales (ARCE), extrae cada llamado, lo estructura, lo analiza con un modelo de IA que corre en local y deja en un dashboard solo las oportunidades relevantes para el equipo comercial.',
-    problemLabel: 'El problema',
-    problem: [
-      'Detectar oportunidades significaba revisar a mano el portal de compras estatales (ARCE): un proceso lento, repetitivo y fácil de descuidar entre el resto del trabajo. Eran unas 2 horas diarias, 5 días a la semana.',
-      'La información llegaba como texto no estructurado, difícil de comparar y filtrar. Cuando un llamado relevante aparecía y nadie lo veía a tiempo, era una oportunidad perdida.',
-    ],
-    solutionLabel: 'La solución',
-    solution: [
-      'Arce automatiza todo ese recorrido: n8n consulta el feed RSS de ARCE cada 15 minutos, un scraper con Puppeteer extrae el detalle de cada llamado nuevo y todo se guarda estructurado y sin duplicados en PostgreSQL.',
-      'Los pliegos adjuntos se procesan en cualquier formato (PDF, DOC, DOCX, XLS, ZIP) con chunking automático para documentos grandes. Un modelo Llama 3.1 corriendo en local evalúa la relevancia con un prompt especializado en el rubro, y además detecta fechas de visitas técnicas, lugares y contactos.',
-      'El tema de interés es configurable: en mi caso filtra por aluminio, el rubro de mi empresa, pero se adapta a cualquier otro sin tocar el código.',
-      'El equipo deja de revisar el portal: abre un dashboard y ve únicamente las oportunidades que importan, ya filtradas y ordenadas.',
-    ],
-    archLabel: 'arquitectura',
-    archHeading: 'Cómo fluyen los datos, de la fuente al dashboard.',
-    architecture: [
-      { step: '01', title: 'ARCE (compras estatales)', text: 'Las últimas publicaciones del portal de compras del Estado son el punto de entrada.' },
-      { step: '02', title: 'Scraping automatizado', text: 'n8n consulta el RSS cada 15 minutos y un scraper con Puppeteer extrae el detalle de cada llamado nuevo.' },
-      { step: '03', title: 'Extracción multi-formato', text: 'Los pliegos (PDF, DOC, DOCX, XLS, ZIP) se convierten a texto estructurado, con chunking automático para documentos grandes.' },
-      { step: '04', title: 'PostgreSQL', text: 'Los llamados se almacenan deduplicados y con histórico consultable, sin reprocesar todo cada vez.' },
-      { step: '05', title: 'IA local (Ollama)', text: 'Llama 3.1 con un prompt especializado clasifica cada licitación por relevancia y detecta visitas técnicas, fechas y contactos.' },
-      { step: '06', title: 'Dashboard', text: 'El equipo ve solo las oportunidades relevantes, listas para actuar.' },
-    ],
-    orchestration:
-      'Todo el flujo está orquestado en n8n: ajustar fuentes, reglas o frecuencia se hace sobre el workflow, sin reescribir el sistema.',
-    diagram: {
-      cta: 'Ver el diagrama interactivo',
-      label: 'el sistema, en un diagrama',
-      heading: 'Cómo encaja todo, en un diagrama que se puede tocar.',
-      text: 'Cuatro vistas con cajas que se pueden mover y un recorrido explicado paso a paso: el circuito completo del portal al dashboard, el workflow real de n8n nodo por nodo, cómo se analiza cada pliego con IA local y cómo el equipo usa el dashboard y corrige a la IA.',
-    },
-    decisionsLabel: 'decisiones técnicas',
-    decisionsHeading: 'Por qué está construido así.',
-    decisions: [
-      { title: 'IA local, no en la nube', text: 'Usar Ollama con modelos locales mantiene los datos dentro de la infraestructura, elimina el costo por consulta y saca de la ecuación los límites de las APIs externas.' },
-      { title: 'n8n para orquestar', text: 'Coordinar el flujo en n8n permite cambiar reglas, fuentes o frecuencia tocando el workflow, en vez de reescribir y redeployar código.' },
-      { title: 'PostgreSQL como base', text: 'Guardar los llamados estructurados en Postgres habilita consultar, comparar y mantener un histórico, en lugar de procesar todo desde cero en cada corrida.' },
-      { title: 'Todo en Docker', text: 'El sistema corre containerizado sobre Linux: reproducible, aislado y desplegable en un servidor propio sin dependencias frágiles.' },
-    ],
-    demoLabel: 'demo',
-    demoHeading: 'El dashboard en funcionamiento.',
-    demoAria: 'Demo del dashboard de Arce',
-    shotsLabel: 'capturas',
-    shotsHeading: 'Por dentro.',
-    shotsPending: 'Captura en camino',
-    resultsLabel: 'resultados',
-    results: [
-      { value: '~10 hs', label: 'de búsqueda manual ahorradas cada semana (antes: 5 días × 2 hs revisando a mano).' },
-      { value: '0', label: 'tiempo dedicado a revisar el portal de ARCE manualmente.' },
-      { value: 'Configurable', label: 'el rubro de interés se cambia sin tocar el sistema (en mi caso, aluminio).' },
-    ],
-    gallery: [
-      { src: '/assets/projects/arce/dashboard.png', alt: 'Vista principal del dashboard de Arce', caption: 'Dashboard principal: cada llamado con su urgencia y el score de relevancia que le asigna la IA.', width: 1920, height: 1082, available: true },
-      { src: '/assets/projects/arce/licitacion-detalle.png', alt: 'Detalle de una licitación en Arce', caption: 'Detalle de un llamado: datos estructurados, archivos adjuntos, análisis de la IA y feedback humano.', width: 1920, height: 1082, available: true },
-      { src: '/assets/projects/arce/n8n-workflow.png', alt: 'Workflow de Arce en n8n', caption: 'El flujo en n8n: RSS, parseo XML→JSON, scraping, filtrado por relevancia y carga a PostgreSQL.', width: 1326, height: 1009, available: true },
-    ],
-    ctaHeading: '¿Tenés un proceso que se podría automatizar así?',
-    ctaText: 'Si algo de esto se parece a un problema tuyo, hablémoslo.',
-    ctaTalk: 'Hablemos',
-    ctaCode: 'Ver el código',
-    ctaGithub: 'Más en GitHub',
+    backFull: 'Volver al inicio',
+    kicker: 'servicios',
+    heading: 'Software a medida para empresas.',
+    intro:
+      'Sitios web, sistemas de gestión, automatización e IA aplicada para empresas que quieren ordenar su operación. Del sitio web al sistema interno que ahorra horas de trabajo manual, sin equipos grandes ni procesos eternos.',
+    systemsLabel: 'sistemas en producción',
+    systemsHeading: 'Lo que ya está funcionando.',
+    systemsCta: 'Ver case study',
+    sitesLabel: 'sitios web',
+    sitesHeading: 'Cuatro sitios institucionales y comerciales en línea.',
+    contactHeading: '¿Tenés un proyecto en mente?',
+    contactText: 'Contame qué necesitás. Sin compromisos, sin tecnicismos. Si puedo ayudarte, te lo digo. Si no, también.',
+    contactCta: 'Hablemos',
+    contactMail: 'Escribirme por mail',
   },
 
   cotizador: {
     title: 'Cotizador de Aberturas',
     back: 'Volver',
-    backFull: 'Volver a trabajos',
+    backFull: 'Volver a proyectos',
     caseLabel: 'case study',
-    category: 'Herramienta comercial · Full-stack',
+    category: 'Motor de cálculo · Full-stack',
     year: '2026',
     roleLabel: 'Rol',
-    role: 'Desarrollador full-stack único: producto, motor de cálculo, backend, base de datos y seguridad',
+    role: 'Desarrollador único: producto, motor de cálculo, backend, base de datos y seguridad',
     yearLabel: 'Año',
     clientLabel: 'Cliente',
     client: 'Grupo CPS, industria de aberturas (aluminio + vidrio)',
-    repoBtn: 'Hablemos del proyecto',
-    privateNote: 'El código es privado por tratarse de un proyecto de cliente.',
+    code: { label: 'Código', note: 'Privado · propiedad de Grupo CPS' },
     stack: ['Next.js 16', 'React', 'TypeScript', 'TailwindCSS 4', 'Three.js', 'Supabase', 'PostgreSQL', 'RLS', 'Jest'],
     tagline: 'Un cotizador de aberturas que da precios creíbles, no números inventados.',
     summary:
       'Una web donde el cliente arma su pedido de ventanas de aluminio y vidrio y recibe un precio estimado. El desafío no era la pantalla, sino calcular bien el precio: lo que parecía una fórmula simple en realidad dependía de cuánto aluminio y vidrio usa cada ventana de verdad. Para acertar, estudié las 2.641 recetas reales del software de fábrica y saqué de ahí los números que mueven el costo.',
     metricValue: '2,44× → ~1%',
     metricText: 'Cuánto bajó el error al calcular el aluminio, comparado con el sistema de fábrica. No lo arreglé con un número de ajuste a dedo, sino entendiendo de dónde venía la diferencia.',
-    problemLabel: 'El problema',
+    problemLabel: '01 · problema de negocio',
     problem: [
-      'Grupo CPS fabrica aberturas de aluminio y vidrio. Cotizar a mano cada pedido es lento y depende de personal técnico. Querían una web sencilla donde el cliente se registre, arme un carrito con sus ventanas, envíe el pedido y le hagan seguimiento.',
-      'El problema estaba en la palabra "sencilla". El precio de una ventana no sale de multiplicar el área por un precio por metro cuadrado: depende de cuánto perfil de aluminio lleva cada tipo de ventana (el marco, la hoja que se abre, el contravidrio que sujeta el vidrio, los travesaños) y de la medida real del vidrio, además de herrajes, mano de obra, margen e IVA.',
-      'La empresa ya calculaba todo esto con precisión en su software de fábrica, WinMaker, que guarda una "receta" por cada tipo de ventana: 2.641 archivos en un formato cerrado, imposible de usar directo en una web. Mi primer cálculo simple se quedaba muy corto: contaba 2,44 veces menos aluminio del que la ventana usa en realidad.',
+      'Grupo CPS fabrica aberturas de aluminio y vidrio. Cotizar a mano cada pedido es lento y depende de personal técnico: cada consulta de un cliente ocupaba tiempo de alguien de fábrica antes de saber siquiera si el pedido iba en serio.',
+      'Querían una web sencilla donde el cliente se registre, arme un carrito con sus ventanas, envíe el pedido y le hagan seguimiento. El problema estaba en la palabra "sencilla": el precio de una ventana no sale de multiplicar el área por un precio por metro cuadrado. Depende de cuánto perfil de aluminio lleva cada tipo de ventana (marco, hoja, contravidrio, travesaños), de la medida real del vidrio, de herrajes, mano de obra, margen e IVA.',
+      'La empresa ya calculaba todo esto con precisión en su software de fábrica, WinMaker, que guarda una "receta" por cada tipo de ventana: 2.641 archivos en un formato cerrado, imposible de usar directo en una web. Mi primer cálculo simple contaba 2,44 veces menos aluminio del que la ventana usa en realidad.',
+    ],
+    constraintsLabel: '02 · restricciones',
+    constraintsHeading: 'Con qué había que convivir.',
+    constraints: [
+      { title: 'Sin acceso al software de fábrica desde la web', text: 'WinMaker es un sistema de escritorio con formato propio. No expone API ni se puede consultar en vivo: lo que necesitara de él tenía que extraerse una vez y quedar en mi modelo.' },
+      { title: 'Costos internos que no pueden salir', text: 'El cliente tiene que ver un precio final, nunca el costo, el margen ni el precio por metro cuadrado. Cualquier diseño donde el navegador calcule quedaba descartado de entrada.' },
+      { title: 'Datos que mantienen los técnicos, no el programador', text: 'Recetas, catálogos, colores y parámetros cambian con la fábrica. Tenían que poder cargarse desde un panel, sin tocar código.' },
+      { title: 'Un solo desarrollador', text: 'Producto, motor, backend, base de datos y seguridad, en paralelo con otros sistemas de la empresa. Cada capa tenía que ser simple de mantener.' },
     ],
     insightLabel: 'la decisión clave',
     insightHeading: 'Sacar de las recetas solo los números que mueven el precio, sin copiar todo el software de fábrica.',
@@ -491,7 +511,25 @@ const es = {
     beforeValue: '4,32 m',
     afterLabel: 'Aluminio que usa de verdad',
     afterValue: '~7,7 m',
-    solutionLabel: 'la solución',
+    decisionsLabel: '03 · decisiones técnicas y por qué',
+    decisionsHeading: 'Cada decisión no trivial, con su razón.',
+    decisions: [
+      { title: 'Motor de cálculo puro, sin I/O', text: 'Todo el pricing son funciones puras, testeables sin base de datos. Por eso tiene 68+ tests Jest y se pudo validar contra la fábrica sin levantar ningún servicio.' },
+      { title: 'Geometría separada del costeo', text: 'Las recetas cambian cuánto material se cuenta; el costeo (costo por metro, costo por m², herrajes, margen, IVA) no se tocó. Traer los números de la fábrica no rompió nada de lo que ya funcionaba.' },
+      { title: 'Parser propio y evaluador AST para el formato .PRO', text: 'En vez de ejecutar las recetas, un parser estático extrae por tipología solo las constantes geométricas (74, 126, 82/148 mm según el tipo) y cada una queda citada a su archivo de origen.' },
+      { title: 'Snapshot inmutable por pedido', text: 'Cada pedido congela precios y nombres del momento, con folio asignado de forma atómica en la base (FOR UPDATE). Dos pedidos simultáneos nunca comparten número y un precio enviado no cambia por detrás.' },
+      { title: 'Todo el cálculo del lado del servidor', text: 'Los endpoints devuelven DTOs sin datos sensibles. La service role vive solo en el servidor y RLS está habilitado sin políticas públicas.' },
+      { title: 'Fallback explícito, nunca silencioso', text: 'Lo que no tiene receta cargada cotiza por estimación con el modelo genérico y queda marcado como tal. Un semáforo por receta muestra qué falta para cotizar con costo real.' },
+    ],
+    discardedLabel: '04 · qué se descartó',
+    discardedHeading: 'Alternativas consideradas y por qué no.',
+    discarded: [
+      { title: 'Fórmula área × precio por m²', text: 'Rápida, pero contaba 2,44 veces menos aluminio del real. Un factor de ajuste a dedo habría escondido el error en vez de corregirlo.' },
+      { title: 'Portar WinMaker entero a la web', text: 'Preciso, pero inviable: 2.641 recetas en un formato cerrado y un motor de fabricación completo, para lo que tenía que ser un cotizador de entrada.' },
+      { title: 'Links de resumen con ID secuencial', text: 'Permitían enumerar pedidos ajenos cambiando un número. Se reemplazaron por tokens UUID imposibles de adivinar.' },
+      { title: 'Calcular en el navegador', text: 'Habría expuesto costos y márgenes a cualquiera que abriera las herramientas de desarrollo. Todo el motor corre en el servidor.' },
+    ],
+    solutionLabel: 'qué se construyó',
     solutionHeading: 'Una app full-stack con un motor de cálculo en el núcleo.',
     solution: [
       { title: 'Registro e inicio de sesión', text: 'Cada cliente tiene su cuenta propia.' },
@@ -502,7 +540,7 @@ const es = {
       { title: 'Seguimiento', text: 'En "Mis pedidos" ve el estado de cada uno, y puede compartir un resumen por un link privado.' },
     ],
     solutionNote:
-      'El cotizador no viene a reemplazar a WinMaker, el sistema con el que la fábrica cotiza desde siempre: es la puerta de entrada para el cliente. Un primer acercamiento intuitivo y atractivo, donde puede armar su abertura, probar combinaciones y sacarse las dudas por su cuenta. Y para Grupo CPS, una forma de recibir cada presupuesto que se pide y darle un seguimiento ordenado. Detrás, el cliente nunca ve costos internos ni margen: todo el cálculo ocurre en el servidor y al navegador solo llega el precio final.',
+      'El cotizador no reemplaza a WinMaker, el sistema con el que la fábrica cotiza desde siempre: es la puerta de entrada para el cliente. Detrás, el cliente nunca ve costos internos ni margen: todo el cálculo ocurre en el servidor y al navegador solo llega el precio final.',
     adminLabel: 'el otro lado: administración',
     adminHeading: 'Un panel interno donde los técnicos cargan la realidad de la fábrica.',
     admin: [
@@ -553,8 +591,16 @@ const es = {
       { title: 'Pedidos congelados y auditables', text: 'Cada pedido guarda un snapshot inmutable de precios y nombres, con folio asignado de forma atómica en la base: dos pedidos simultáneos jamás comparten número, y nada cambia después por detrás.' },
       { title: 'Moneda con red de seguridad', text: 'Los costos conviven en dólares y pesos con una convención explícita de conversión. Si la tasa falta, el sistema degrada a un factor neutro definido en vez de romper a mitad del cálculo.' },
     ],
+    resultsLabel: '05 · resultado medible',
+    resultsHeading: 'Medir antes de afirmar.',
+    results: [
+      { value: '2,44× → ~1%', label: 'error de material frente al sistema de fábrica, resuelto de forma estructural y no con un coeficiente.' },
+      { value: '2.641', label: 'recetas reales de fábrica analizadas por reverse engineering.' },
+      { value: '68+', label: 'tests automáticos: unitarios, de integración y el "modo sombra" contra WinMaker.' },
+      { value: 'En producción', label: 'en cotizador.grupocps.com.uy, la puerta de entrada de los clientes de Grupo CPS.' },
+    ],
     qualityLabel: 'calidad e ingeniería',
-    qualityHeading: 'Medir antes de afirmar.',
+    qualityHeading: 'Cómo sé que los números están bien.',
     quality: [
       { metric: 'Recetas de fábrica analizadas', value: '2.641' },
       { metric: 'Formato cerrado .PRO descifrado', value: 'Parser propio + evaluador AST seguro' },
@@ -567,17 +613,17 @@ const es = {
       'El "modo sombra": una herramienta que compara, ventana por ventana, lo que calcula mi sistema contra el desglose real de piezas del software de fábrica. Sirve para medir cuánto me desvío antes de dar un precio por bueno. La diferencia entre "creo que está bien" y "lo medí".',
     shotsLabel: 'demo',
     shotsHeading: 'El cotizador en acción.',
-    learningsLabel: 'por qué este proyecto me representa',
+    learningsLabel: 'aprendizajes',
     learnings: [
       'El problema difícil rara vez es el que se ve: la pantalla era lo fácil, el valor estaba en calcular bien y validar los números.',
       'No copié las 2.641 recetas a la fuerza: saqué solo lo que mueve el costo y dejé el resto como investigación aparte.',
       'Medir antes de afirmar: el "modo sombra" convirtió una corazonada ("el precio no cierra") en un número (2,44×) y después en una validación (~1%).',
-      'Seguridad y trazabilidad desde el día uno, no como parche.',
       'El sistema completo incluye a quien lo mantiene: el panel interno y su semáforo de carga hacen que los técnicos, no el programador, sean los dueños de los datos.',
     ],
-    ctaHeading: '¿Tenés un cálculo o una operación que no cierra con una fórmula simple?',
-    ctaText: 'Es el tipo de problema que me gusta. El código de este proyecto es privado, pero podemos hablarlo.',
-    ctaTalk: 'Hablemos del proyecto',
+    ctaHeading: '¿Querés hablar de este proyecto?',
+    ctaText: 'El código es privado, pero las decisiones técnicas se pueden discutir. Escribime si querés hablar de esto o de una posición.',
+    ctaContact: 'Contacto',
+    ctaMore: 'Ver más proyectos',
     gallery: [
       { kind: 'video', src: '/assets/projects/cotizador/video_recorrido_sistema.mp4', alt: 'Recorrido en video por el cotizador, del armado de la ventana al pedido enviado', caption: 'Recorrido por el sistema: del armado de la abertura en 3D al pedido enviado.', width: 1280, height: 720, loop: false },
       { kind: 'video', src: '/assets/projects/cotizador/ventana_rotando.mp4', alt: 'Ventana cotizada renderizada en 3D girando sobre su eje', caption: 'Visualización 3D: la ventana cotizada gira para verse desde cualquier ángulo.', width: 1280, height: 720, loop: true },
@@ -590,17 +636,16 @@ const es = {
   stock: {
     title: 'Depósitos CPS',
     back: 'Volver',
-    backFull: 'Volver a trabajos',
+    backFull: 'Volver a proyectos',
     caseLabel: 'case study',
-    category: 'Herramienta interna · Full-stack',
+    category: 'Sistema de stock · Full-stack',
     year: '2026',
     roleLabel: 'Rol',
-    role: 'Desarrollador full-stack único: modelo de datos, núcleo SQL, backend, frontend y deploy',
+    role: 'Desarrollador único: modelo de datos, núcleo SQL, backend, frontend y deploy',
     yearLabel: 'Año',
     clientLabel: 'Cliente',
     client: 'Grupo CPS, construcción y aberturas de aluminio',
-    repoBtn: 'Hablemos del proyecto',
-    privateNote: 'El código es privado por tratarse de una herramienta interna de la empresa.',
+    code: { label: 'Código', note: 'Privado · herramienta interna de Grupo CPS' },
     stack: ['Next.js', 'TypeScript', 'Tailwind 4', 'shadcn/ui', 'Supabase', 'PostgreSQL', 'RLS', 'Coolify'],
     tagline: 'El stock de toda la empresa en un solo lugar: qué hay, dónde está y a qué obra se fue.',
     summary:
@@ -608,11 +653,19 @@ const es = {
     metricValue: '100% trazable',
     metricText:
       'El stock nunca se corrige "a dedo": cada cambio nace de un comprobante numerado, con usuario y fecha. El número que ves es la suma de su historia. Y el stock negativo es imposible por diseño, incluso con operaciones simultáneas.',
-    problemLabel: 'El problema',
+    problemLabel: '01 · problema de negocio',
     problem: [
       'Grupo CPS mueve materiales y herramientas entre varios depósitos y obras en simultáneo. Ese movimiento se seguía con planillas, mensajes y memoria: saber cuánto había de un artículo y dónde estaba implicaba llamar, contar y confiar.',
       'Las consecuencias eran siempre las mismas: faltantes que aparecían con la obra arrancada, material "en viaje" que no figuraba en ningún lado, compras de apuro sin registro, y ningún número confiable de cuánto capital había inmovilizado en stock ni cuánto había consumido cada obra.',
       'Y había un problema más fino: las herramientas. Una amoladora no es "3 amoladoras": es esta amoladora, con su número de serie, que está en tal obra, volvió rota o se perdió. Y alguien tiene que responder por ella.',
+    ],
+    constraintsLabel: '02 · restricciones',
+    constraintsHeading: 'Con qué había que convivir.',
+    constraints: [
+      { title: 'Varios depósitos y obras operando a la vez', text: 'Movimientos concurrentes desde distintos lugares. El saldo no puede depender de que dos personas no carguen al mismo tiempo.' },
+      { title: 'Usuarios no técnicos, con roles distintos', text: 'Logística opera; jefes de obra y dirección consultan y piden. Cada uno tenía que ver y poder hacer solo lo suyo, sin que eso dependiera de la buena voluntad.' },
+      { title: 'Servidor propio, sin nube de terceros', text: 'Los datos de la empresa quedan en su VPS. Eso fijó Supabase self-hosted, Docker y Coolify, y me dejó a cargo también de la operación.' },
+      { title: 'Números que tienen que poder defenderse', text: 'El stock valorizado y el gasto por obra se usan para decidir compras y cerrar obras. Una estimación no sirve: cada número tiene que explicarse con comprobantes.' },
     ],
     insightLabel: 'la decisión clave',
     insightHeading: 'El stock no se edita: se registra. Todo lo demás se deriva de ahí.',
@@ -621,7 +674,25 @@ const es = {
       'El saldo por depósito lo mantiene la propia base de datos, con una restricción que hace imposible el stock negativo incluso con operaciones concurrentes. Y lo que está viajando o en el service también es stock: los depósitos virtuales "En tránsito" y "Reparación" garantizan que la suma de todos los saldos siempre iguale el stock real de la empresa.',
       'Sobre esa base, el costeo usa precio promedio ponderado congelado en cada movimiento: las transferencias no alteran el promedio y las devoluciones reingresan al costo del vale original. Por eso el "stock valorizado" del dashboard es un número defendible, no una estimación.',
     ],
-    solutionLabel: 'la solución',
+    decisionsLabel: '03 · decisiones técnicas y por qué',
+    decisionsHeading: 'Cada decisión no trivial, con su razón.',
+    decisions: [
+      { title: 'Kardex append-only', text: 'Los movimientos solo se insertan; corregir es contra-asentar. Con esa sola decisión salieron gratis la auditoría, las anulaciones, el kardex por período y la valorización: todo es una consulta sobre la misma tabla.' },
+      { title: 'El saldo lo mantiene la base, no la app', text: 'Un trigger actualiza el saldo por depósito en cada asiento y una restricción lo impide bajar de cero. Dos operaciones simultáneas sobre el mismo artículo no pueden dejar stock negativo, sin locks en la aplicación.' },
+      { title: 'Costeo promedio ponderado congelado en cada movimiento', text: 'El costo unitario queda fijado al asentar: las transferencias no alteran el promedio y las devoluciones reingresan al costo del vale original. Así la valorización no cambia retroactivamente.' },
+      { title: 'RPCs transaccionales como única puerta de escritura', text: 'Cada operación es una función SECURITY DEFINER que valida rol y reglas de negocio dentro de una transacción. Las tablas de movimientos no tienen políticas de escritura: aunque alguien hable directo con la API, no puede saltarse las reglas.' },
+      { title: 'Depósitos virtuales "En tránsito" y "Reparación"', text: 'Lo que viaja o está en el service también es stock, en un depósito propio. Así la suma de todos los saldos siempre iguala el stock real y nada queda "en ningún lado".' },
+      { title: 'Herramientas como unidades, no como cantidades', text: 'Cada herramienta tiene número de serie y ciclo de vida propio: disponible → en obra → en reparación → rota o perdida. Las rotas o perdidas se imputan a la obra que las tenía.' },
+    ],
+    discardedLabel: '04 · qué se descartó',
+    discardedHeading: 'Alternativas consideradas y por qué no.',
+    discarded: [
+      { title: 'Editar cantidades directamente', text: 'Es lo que hacían las planillas. Sin la historia detrás del número, no hay forma de explicar un faltante, anular sin borrar ni valorizar el stock.' },
+      { title: 'Reglas de negocio en la capa de aplicación', text: 'Cualquier cliente que hable con la API podría saltárselas, y cada regla habría que repetirla en cada pantalla. En PostgreSQL hay una sola puerta y no tiene atajo.' },
+      { title: 'Supabase en la nube', text: 'Más cómodo, pero los datos de la empresa saldrían de su servidor. El control y el costo pesaron más que la comodidad; el precio fue hacerme cargo de la operación.' },
+      { title: 'Un sistema solo de materiales', text: 'Sin herramientas por número de serie, la mitad del problema (quién tiene qué, en qué obra, y quién responde) seguía viviendo en mensajes.' },
+    ],
+    solutionLabel: 'qué se construyó',
     solutionHeading: 'Todo el circuito del material, del pedido a la obra.',
     solution: [
       { title: 'Pedidos y órdenes de compra', text: 'Cualquier usuario, también los jefes de obra, pide lo que necesita con destino y fecha límite. Logística arma las órdenes, que pueden mezclar proveedores por renglón y alimentan un histórico de precios por artículo y proveedor.' },
@@ -659,32 +730,164 @@ const es = {
       { title: 'Quién hizo qué, siempre', text: 'Emitir, recibir, cancelar, rendir: cada acción queda registrada con usuario y fecha, visible en todas las pantallas para todos los usuarios.' },
       { title: 'Anular no es borrar', text: 'Las anulaciones generan el asiento inverso y la historia queda completa. No existe la corrección silenciosa.' },
     ],
+    resultsLabel: '05 · resultado medible',
+    resultsHeading: 'Lo que se puede verificar.',
+    results: [
+      { value: '100%', label: 'de los saldos trazables: cada número es la suma de comprobantes con usuario y fecha.' },
+      { value: '0', label: 'stock negativo posible, por restricción de la base, incluso con operaciones concurrentes.' },
+      { value: '~160', label: 'aserciones sobre el núcleo SQL, corriendo en una transacción que se revierte.' },
+      { value: '32', label: 'migraciones versionadas, aplicadas por CI sobre una base limpia antes de cada deploy.' },
+    ],
     qualityLabel: 'calidad e ingeniería',
     qualityHeading: 'El núcleo se prueba donde vive: en SQL.',
     quality: [
       { metric: 'Suite de tests del núcleo SQL', value: '1.500+ líneas · ~160 aserciones' },
       { metric: 'Qué cubre', value: 'Numeración, costeo PPP, recepciones parciales, rendiciones, herramientas por serie, RLS y roles' },
       { metric: 'Stock negativo', value: 'Imposible por diseño, incluso en concurrencia' },
-      { metric: 'Esquema versionado', value: '19 migraciones, aplicadas automáticamente por CI' },
+      { metric: 'Esquema versionado', value: '32 migraciones, aplicadas automáticamente por CI' },
     ],
     qualityNote:
       'La suite corre dentro de una transacción que se revierte al final: prueba el núcleo real contra la base real, sin ensuciarla. Si la regla vive en PostgreSQL, el test también.',
     shotsLabel: 'capturas',
     shotsHeading: 'El sistema por dentro.',
-    learningsLabel: 'por qué este proyecto me representa',
+    learningsLabel: 'aprendizajes',
     learnings: [
       'Un sistema de stock es un sistema de confianza: si la gente no le cree al número, vuelve a la planilla. La trazabilidad total es lo que sostiene esa confianza.',
       'Modelar movimientos en vez de cantidades simplificó todo lo demás: kardex, auditoría, anulaciones y valorización salieron del mismo diseño.',
       'Poner las reglas de negocio en la base de datos, y testearlas ahí, hace que la seguridad no dependa de qué botones muestra la interfaz.',
       'El circuito físico también es software: la orden de compra en PDF con lugar para firmas importa tanto como la tabla que la genera.',
     ],
-    ctaHeading: '¿Tu operación también vive en planillas y mensajes?',
-    ctaText: 'Este es el tipo de sistema que más disfruto construir. El código es interno de la empresa, pero podemos hablar del problema.',
-    ctaTalk: 'Hablemos del proyecto',
+    ctaHeading: '¿Querés hablar de este proyecto?',
+    ctaText: 'El código es interno de la empresa, pero el diseño se puede discutir en detalle. Escribime si querés hablar de esto o de una posición.',
+    ctaContact: 'Contacto',
+    ctaMore: 'Ver más proyectos',
     gallery: [
       { kind: 'image', src: '/assets/projects/depositos_cps/dashboard_inicial.png', alt: 'Dashboard de inicio del sistema de depósitos de Grupo CPS', caption: 'El dashboard de inicio: stock valorizado, movimientos de los últimos 30 días, stock por depósito, gasto por obra y alertas de pedidos vencidos, transferencias demoradas y stock bajo mínimo.', width: 1920, height: 1079, loop: false },
       { kind: 'image', src: '/assets/projects/depositos_cps/kardex_deposito.png', alt: 'Kardex por depósito con saldos y movimientos del período', caption: 'El kardex por depósito u obra: saldos del período, cada movimiento con su comprobante y su usuario, y anulaciones como contra-asiento. Nada se borra.', width: 1920, height: 1079, loop: false },
       { kind: 'image', src: '/assets/projects/depositos_cps/orden_compra_pdf.png', alt: 'Orden de compra generada en PDF lista para firmar', caption: 'Orden de compra en PDF, lista para imprimir y firmar con el proveedor: el circuito físico también sale del sistema.', width: 1920, height: 1079, loop: false },
+    ],
+  },
+
+  arce: {
+    title: 'Arce',
+    back: 'Volver',
+    backFull: 'Volver a proyectos',
+    caseLabel: 'case study',
+    category: 'Automatización & IA',
+    year: '2025',
+    roleLabel: 'Rol',
+    role: 'Diseño, desarrollo e infraestructura, de punta a punta',
+    yearLabel: 'Año',
+    clientLabel: 'Origen',
+    client: 'Grupo CPS, por una necesidad real del equipo comercial',
+    code: { label: 'Código', note: 'Público en GitHub', href: arceMedia.repo, cta: 'Ver repositorio' },
+    stack: ['n8n', 'Node.js', 'Puppeteer', 'PostgreSQL', 'Ollama', 'IA local', 'Docker', 'Linux', 'Web scraping'],
+    tagline: 'Monitoreo y análisis de licitaciones públicas con IA local.',
+    summary:
+      'Arce monitorea las publicaciones del portal de compras estatales (ARCE), extrae cada llamado, lo estructura, lo analiza con un modelo de IA que corre en local y deja en un dashboard solo las oportunidades relevantes para el equipo comercial.',
+    metricValue: '~10 hs',
+    metricText: 'de revisión manual ahorradas por semana al equipo comercial. Antes: 2 horas diarias, 5 días a la semana, mirando el portal a mano. Ahora el portal se consulta solo cada 15 minutos.',
+    problemLabel: '01 · problema de negocio',
+    problem: [
+      'Detectar oportunidades significaba revisar a mano el portal de compras estatales (ARCE): un proceso lento, repetitivo y fácil de descuidar entre el resto del trabajo. Eran unas 2 horas diarias, 5 días a la semana, de una persona del equipo comercial.',
+      'La información llegaba como texto no estructurado, difícil de comparar y filtrar. Cuando un llamado relevante aparecía y nadie lo veía a tiempo, era una oportunidad perdida: una licitación no se puede presentar fuera de plazo.',
+    ],
+    constraintsLabel: '02 · restricciones',
+    constraintsHeading: 'Con qué había que convivir.',
+    constraints: [
+      { title: 'Datos no estructurados, en cualquier formato', text: 'Los pliegos llegan como PDF, DOC, DOCX, XLS o ZIP, a veces enormes. Todo tenía que convertirse a texto antes de poder evaluarlo.' },
+      { title: 'Sin depender de una API de IA paga', text: 'Analizar cada pliego con un servicio externo no cerraba ni en costo ni en control de datos. La evaluación tenía que correr en hardware propio.' },
+      { title: 'El rubro cambia, el sistema no', text: 'Aluminio hoy, otro rubro mañana. El criterio de relevancia tenía que ser configurable sin tocar código.' },
+      { title: 'Usuarios comerciales, no técnicos', text: 'El resultado tenía que ser un dashboard simple, con la posibilidad de corregir a la IA cuando se equivoca.' },
+    ],
+    insightLabel: 'la decisión clave',
+    insightHeading: 'Correr la IA en local y orquestar con n8n, para que el criterio cambie sin reescribir el sistema.',
+    insight: [
+      'La parte de IA es la más visible pero la más chica. La decisión que ordenó el proyecto fue separar tres cosas: el pipeline de datos (que trae, limpia y deduplica cada llamado), el criterio de relevancia (un prompt de rubro que se cambia desde configuración) y la orquestación (un workflow en n8n que se edita sin tocar código).',
+      'Con eso, el modelo puede cambiar, el rubro puede cambiar y la frecuencia puede cambiar, y ninguno de los tres cambios exige redeployar nada. El equipo comercial ve un dashboard; todo lo demás corre solo cada 15 minutos.',
+    ],
+    beforeLabel: 'Revisión manual del portal',
+    beforeValue: '2 hs/día',
+    afterLabel: 'Hoy',
+    afterValue: '0',
+    beforeAfterText: 'El portal se revisaba a mano dos horas por día, cinco días por semana. Hoy nadie lo abre: n8n lo consulta cada 15 minutos y el dashboard muestra solo lo que importa.',
+    decisionsLabel: '03 · decisiones técnicas y por qué',
+    decisionsHeading: 'Por qué está construido así.',
+    decisions: [
+      { title: 'IA local, no en la nube', text: 'Ollama con Llama 3.1 8B mantiene los pliegos dentro de la infraestructura, elimina el costo por consulta y saca de la ecuación los límites de las APIs externas. Un modelo de 8B con un buen prompt de rubro alcanza para esta tarea.' },
+      { title: 'n8n para orquestar', text: 'Coordinar el flujo en n8n permite cambiar reglas, fuentes o frecuencia tocando el workflow, en vez de reescribir y redeployar código. También lo puede ajustar alguien que no sea yo.' },
+      { title: 'PostgreSQL como base, deduplicado', text: 'Guardar los llamados estructurados en Postgres habilita consultar, comparar y mantener un histórico, en lugar de procesar todo desde cero en cada corrida.' },
+      { title: 'Chunking y fallback por metadatos', text: 'Los documentos grandes se parten en chunks para que entren en el contexto del modelo. Si un archivo no se puede extraer, se analiza por metadatos en vez de descartar el llamado.' },
+      { title: 'Feedback humano guardado', text: 'El equipo marca desde el dashboard cuándo la IA acertó o se equivocó, y eso queda junto al análisis. Sirve para ajustar el prompt con casos reales.' },
+      { title: 'Todo en Docker', text: 'El sistema corre containerizado sobre Linux: reproducible, aislado y desplegable en un servidor propio sin dependencias frágiles.' },
+    ],
+    discardedLabel: '04 · qué se descartó',
+    discardedHeading: 'Alternativas consideradas y por qué no.',
+    discarded: [
+      { title: 'API de OpenAI u otra nube', text: 'Costo por consulta, límites de uso y pliegos con datos de la empresa saliendo de la infraestructura. Para un proceso que corre cada 15 minutos, no cerraba.' },
+      { title: 'Un cron con scripts sueltos', text: 'Funciona hasta que hay que cambiar una fuente, una frecuencia o agregar un paso. En n8n eso se hace sobre el workflow, con el historial de cada ejecución a la vista.' },
+      { title: 'Filtrar solo por palabras clave en el título', text: 'Sin leer el pliego, una palabra clave no dice si el llamado es del rubro ni cuándo es la visita técnica. El modelo evalúa el documento completo.' },
+    ],
+    solutionLabel: 'qué se construyó',
+    solutionHeading: 'Un pipeline que va del portal al dashboard sin que nadie lo toque.',
+    solution: [
+      { title: 'RSS cada 15 minutos', text: 'n8n consulta el feed de ARCE y detecta los llamados nuevos.' },
+      { title: 'Scraping del detalle', text: 'Un scraper con Puppeteer extrae cada llamado nuevo y sus adjuntos.' },
+      { title: 'Extracción multi-formato', text: 'PDF, DOC, DOCX, XLS y ZIP se convierten a texto, con chunking automático para documentos grandes.' },
+      { title: 'Análisis con IA local', text: 'Llama 3.1 en Ollama evalúa la relevancia con un prompt de rubro y detecta fechas de visitas técnicas, lugares y contactos.' },
+      { title: 'PostgreSQL deduplicado', text: 'Cada llamado queda estructurado, sin duplicados y con histórico consultable.' },
+      { title: 'Dashboard con feedback', text: 'El equipo ve solo las oportunidades relevantes, ordenadas por urgencia, y corrige a la IA cuando se equivoca.' },
+    ],
+    solutionNote:
+      'El tema de interés es configurable: en mi caso filtra por aluminio, el rubro de mi empresa, pero se adapta a cualquier otro sin tocar el código.',
+    diagram: {
+      cta: 'Ver el diagrama interactivo',
+      label: 'el sistema, en un diagrama',
+      heading: 'Cómo encaja todo, en un diagrama que se puede tocar.',
+      text: 'Cuatro vistas con cajas que se pueden mover y un recorrido explicado paso a paso: el circuito completo del portal al dashboard, el workflow real de n8n nodo por nodo, cómo se analiza cada pliego con IA local y cómo el equipo usa el dashboard y corrige a la IA.',
+    },
+    archLabel: 'arquitectura',
+    archHeading: 'Cómo fluyen los datos, de la fuente al dashboard.',
+    architecture: [
+      { step: '01', title: 'ARCE (compras estatales)', text: 'Las últimas publicaciones del portal de compras del Estado son el punto de entrada.' },
+      { step: '02', title: 'Scraping automatizado', text: 'n8n consulta el RSS cada 15 minutos y un scraper con Puppeteer extrae el detalle de cada llamado nuevo.' },
+      { step: '03', title: 'Extracción multi-formato', text: 'Los pliegos (PDF, DOC, DOCX, XLS, ZIP) se convierten a texto estructurado, con chunking automático para documentos grandes.' },
+      { step: '04', title: 'PostgreSQL', text: 'Los llamados se almacenan deduplicados y con histórico consultable, sin reprocesar todo cada vez.' },
+      { step: '05', title: 'IA local (Ollama)', text: 'Llama 3.1 con un prompt especializado clasifica cada licitación por relevancia y detecta visitas técnicas, fechas y contactos.' },
+      { step: '06', title: 'Dashboard', text: 'El equipo ve solo las oportunidades relevantes, listas para actuar.' },
+    ],
+    archNote:
+      'Todo el flujo está orquestado en n8n: ajustar fuentes, reglas o frecuencia se hace sobre el workflow, sin reescribir el sistema.',
+    resultsLabel: '05 · resultado medible',
+    resultsHeading: 'Lo que cambió para el equipo.',
+    results: [
+      { value: '~10 hs', label: 'de búsqueda manual ahorradas cada semana (antes: 5 días × 2 hs revisando a mano).' },
+      { value: '15 min', label: 'entre publicación y detección: ningún llamado nuevo espera más que eso.' },
+      { value: '0', label: 'tiempo dedicado a revisar el portal de ARCE manualmente.' },
+      { value: 'Configurable', label: 'el rubro de interés se cambia sin tocar el sistema (en mi caso, aluminio).' },
+    ],
+    demo: {
+      label: 'demo',
+      heading: 'El dashboard en funcionamiento.',
+      aria: 'Demo del dashboard de Arce',
+      src: arceMedia.video,
+    },
+    shotsLabel: 'capturas',
+    shotsHeading: 'Por dentro.',
+    learningsLabel: 'aprendizajes',
+    learnings: [
+      'La IA es la parte chica: el valor está en el pipeline que la alimenta con datos limpios, deduplicados y en texto plano.',
+      'Orquestar con una herramienta visual hizo que el sistema lo pueda ajustar alguien que no soy yo, sin abrir el código.',
+      'Guardar el feedback humano junto al análisis convierte cada error de la IA en un caso para mejorar el prompt.',
+    ],
+    ctaHeading: '¿Querés hablar de este proyecto?',
+    ctaText: 'El código es público. Escribime si querés discutir el diseño o hablar de una posición.',
+    ctaContact: 'Contacto',
+    ctaMore: 'Ver más proyectos',
+    gallery: [
+      { kind: 'image', src: '/assets/projects/arce/dashboard.png', alt: 'Vista principal del dashboard de Arce', caption: 'Dashboard principal: cada llamado con su urgencia y el score de relevancia que le asigna la IA.', width: 1920, height: 1082, loop: false },
+      { kind: 'image', src: '/assets/projects/arce/licitacion-detalle.png', alt: 'Detalle de una licitación en Arce', caption: 'Detalle de un llamado: datos estructurados, archivos adjuntos, análisis de la IA y feedback humano.', width: 1920, height: 1082, loop: false },
+      { kind: 'image', src: '/assets/projects/arce/n8n-workflow.png', alt: 'Workflow de Arce en n8n', caption: 'El flujo en n8n: RSS, parseo XML→JSON, scraping, filtrado por relevancia y carga a PostgreSQL.', width: 1326, height: 1009, loop: false },
     ],
   },
 
@@ -701,13 +904,12 @@ const en: typeof es = {
 
   nav: {
     items: [
-      { label: 'Work', href: '#trabajos' },
-      { label: 'Services', href: '#servicios' },
+      { label: 'Projects', href: '#trabajos' },
+      { label: 'Experience', href: '#experiencia' },
       { label: 'About', href: '#sobre-mi' },
-      { label: 'Contact', href: '#contacto' },
     ],
-    cta: "Let's talk",
-    status: 'available',
+    cta: 'Contact',
+    status: 'open to roles',
     timeSr: 'local time in Montevideo, Uruguay',
     menuOpen: 'Open menu',
     menuClose: 'Close menu',
@@ -716,113 +918,106 @@ const en: typeof es = {
   },
 
   hero: {
-    kicker: 'available for projects',
-    status: 'available for projects · montevideo, uy',
+    status: 'open to developer roles · montevideo, uy',
     title: {
-      sr: 'I build software that organizes your operation.',
-      l1: 'I build software',
-      l2: 'that organizes',
-      l3pre: 'your',
-      highlight: 'operation.',
+      sr: 'Backend developer. I build management systems for real operations.',
+      l1: 'Backend developer.',
+      l2: 'Management systems',
+      l3pre: 'for real',
+      highlight: 'operations.',
     },
-    copy: 'From the website to the internal system that saves you hours of manual work. No big teams, no endless processes.',
-    credential: 'Developer & Systems Technician at Grupo CPS · Systems Engineering student · C1 English',
-    ctaContact: "Let's talk",
-    ctaWork: 'See work',
-    ctaCv: 'Download CV',
-    portraitCaption: 'Custom software for companies',
-    scroll: 'scroll',
+    copy: 'Stock, costing, purchasing, quoting and integrations. Three systems in production at Grupo CPS, built end to end: data model and business rules in PostgreSQL, API and interface in TypeScript and Node.js, deployed on the company’s own server.',
+    ctaWork: 'View projects',
+    ctaGithub: 'GitHub',
+    ctaLinkedin: 'LinkedIn',
     portraitAlt: 'Sebastián Viglione',
   },
 
   bento: {
     estadoLabel: 'status',
     estado: [
-      { label: 'availability', value: 'open', live: true },
+      { label: 'status', value: 'open to roles', live: true },
       { label: 'based in', value: 'Montevideo, UY', live: false },
       { label: 'languages', value: 'Spanish · English C1', live: false },
       { label: 'education', value: 'Systems Eng. · UM', live: false },
     ],
-    stackLabel: 'core stack',
-    stack: ['typescript', 'react / next.js', 'python', 'postgresql', 'supabase', 'n8n', 'docker / linux', 'local ai / ollama'],
+    stackLabel: 'daily stack',
+    stack: ['typescript', 'node.js', 'next.js / react', 'postgresql', 'sql', 'supabase'],
     terminalTitle: 'how I work',
     values: [
-      { title: 'Direct contact', text: 'you talk to me, not an agency.' },
-      { title: 'Clear language', text: 'you tell me the problem in your words, I translate it into software.' },
-      { title: 'No runaround', text: "if something doesn't work, it gets fixed fast." },
+      { title: 'Rules in the database', text: 'business logic lives in PostgreSQL, not in which buttons the UI shows.' },
+      { title: 'Measure before claiming', text: 'a number validated against the real system beats a hunch.' },
+      { title: 'Nothing gets deleted', text: 'ledgers and orders are immutable: correcting means posting, not editing.' },
     ],
-    serviciosLabel: 'what I can do for your company',
+    projectsLabel: 'in production · grupo cps',
     portraitName: 'Sebastián Viglione',
-    portraitRole: 'developer · grupo cps',
+    portraitRole: 'backend · grupo cps',
   },
 
   about: {
     label: 'about me',
-    heading: 'Self-taught since 12. Today I build software in production.',
+    heading: 'Internal systems, from the database to the deploy.',
     intro:
-      'My focus is on Systems Engineering, with a self-taught foundation I started at age 12. What defines me is technical curiosity and initiative: I build end-to-end projects (full stack, local AI and automation) to prove my skills by solving problems in real production environments.',
+      'I work as a Developer & Systems Technician at Grupo CPS, a construction and aluminum joinery company. There I designed and built the three systems on this page, alone and end to end: data model, business rules, API, interface and deployment on the company’s server.',
     body:
-      'Today I work as a Developer & Systems Technician at Grupo CPS, where I build internal tools, integrate APIs and automate business processes. I move comfortably from the database to the frontend, and from a quick script to a full system.',
+      'What interests me most is the backend: modeling the domain well, putting the rules where they cannot be bypassed, and measuring before calling a number good. I am studying Systems Engineering at Universidad de Montevideo and I speak English at C1 level.',
     facts: [
       { label: 'Systems Engineering student · Universidad de Montevideo', icon: GraduationCap },
       { label: 'Developer & Systems Technician · Grupo CPS', icon: Briefcase },
       { label: 'Native Spanish · C1 English (CAE)', icon: Languages },
       { label: 'Montevideo, Uruguay', icon: MapPin },
     ],
-    stackLabel: 'stack',
-    cvButton: 'Download CV',
+    stackLabel: 'stack, by level of proficiency',
   },
 
-  stackGroups: [
-    { title: 'Web development', items: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Tailwind', 'Three.js'] },
-    { title: 'Languages', items: ['Python', 'SQL'] },
-    { title: 'Backend / APIs', items: ['REST APIs', 'Supabase', 'JSON', 'Webhooks', 'Jest'] },
-    { title: 'Data', items: ['PostgreSQL', 'ETL'] },
-    { title: 'Automation & AI', items: ['n8n', 'Ollama', 'OpenAI API', 'Local AI'] },
-    { title: 'Infrastructure', items: ['Linux', 'Docker', 'Bash', 'Git', 'GitHub'] },
-  ],
-
-  services: {
-    label: 'what I can do for your company',
-    heading: 'Custom solutions, no fuss.',
-    more: 'Learn more',
+  experience: {
+    label: 'experience',
+    heading: 'What I did and what came of it.',
     items: [
       {
-        title: 'Web development',
-        text: 'Your first point of contact with clients. So when someone googles you, they find something that builds trust and shows them how to reach you.',
-        icon: MonitorSmartphone,
+        role: 'Developer & Systems Technician',
+        company: 'Grupo CPS',
+        period: '12/2024 – present',
+        place: 'Montevideo, UY',
+        bullets: [
+          'Designed and built Depósitos CPS, the company’s stock system: immutable ledger, weighted-average costing and transactional RPCs in PostgreSQL, with ~160 test assertions on the SQL core and 32 migrations applied by CI.',
+          'Developed the pricing engine of the joinery quoter: reverse engineering of 2,641 factory recipes that brought the material error down from 2.44× to ~1%, with 68+ automated tests.',
+          'Automated public tender monitoring with n8n, Puppeteer and local AI: ~10 hours of manual review per week removed for the sales team.',
+          'Operate the infrastructure behind those systems on the company VPS: self-hosted Supabase, Docker and Coolify, with automatic deploys on every push, CI-applied migrations and daily backups.',
+        ],
       },
-      {
-        title: 'Management software',
-        text: 'When your operation is scattered across messages, spreadsheets and manual tasks, we build a system that puts everything in its place.',
-        icon: BriefcaseBusiness,
-      },
-      {
-        title: 'Automation',
-        text: 'Repetitive processes you do by hand today that could run on their own, with clear rules and human control when needed.',
-        icon: RefreshCw,
-      },
-      {
-        title: 'Applied AI',
-        text: 'AI when it really adds value: to answer queries, organize information or review internal data without selling you a black box.',
-        icon: Bot,
-      },
+    ],
+    educationLabel: 'education',
+    education: [
+      { title: 'Systems Engineering', place: 'Universidad de Montevideo', period: 'in progress' },
+      { title: 'Technological Baccalaureate in Informatics', place: 'UTU Brazo Oriental', period: 'completed' },
+      { title: 'English C1', place: 'Cambridge Advanced (CAE)', period: '' },
     ],
   },
 
+  stackLevels: [
+    {
+      title: 'Daily',
+      note: 'What I can defend line by line.',
+      items: ['TypeScript', 'Node.js', 'Next.js / React', 'PostgreSQL', 'SQL', 'Supabase'],
+    },
+    {
+      title: 'Used in production',
+      note: 'Applied in real systems; not the day-to-day.',
+      items: ['Python', 'n8n', 'Docker', 'Linux', 'Ollama', 'Puppeteer', 'Jest', 'Three.js', 'Tailwind', 'Coolify'],
+    },
+    {
+      title: 'Learning',
+      note: 'In progress.',
+      items: ['.NET / C#'],
+    },
+  ],
+
   work: {
-    label: 'recent work',
-    heading: 'Things I built that are already running.',
-    swipe: 'Swipe to see more work',
-    moreKicker: 'coming soon',
-    moreTitle: 'and more...',
-    moreText: 'There are more projects and systems I can show you depending on what you need to solve.',
-    moreCta: "Let's talk",
-    toolsLabel: 'Tools & systems',
-    sitesLabel: 'Websites',
-    monoLabel: '[ work ] — in production now',
+    heading: 'Three systems in production, built end to end.',
+    monoLabel: '[ projects ] — in production now',
     statusChip: 'all systems running',
-    sitesRowLabel: '[ websites ] — {n} live',
+    sitesLine: 'I also built four institutional websites:',
     cursorLabel: 'VIEW',
     tools: [
       {
@@ -831,7 +1026,7 @@ const en: typeof es = {
         url: '/cotizador',
         description: 'A B2B web app where the client builds their order of aluminum-and-glass joinery and gets a credible price. The core is a pricing engine calibrated by reverse engineering 2,641 real factory recipes.',
         label: 'COTIZADOR',
-        kind: 'Commercial tool · Full-stack',
+        kind: 'Pricing engine · Full-stack',
         year: '2026',
         cta: 'View case study',
         image: '/assets/projects/cotizador/imagen_hero.png',
@@ -843,7 +1038,7 @@ const en: typeof es = {
         url: '/stock',
         description: 'Internal stock system for warehouses and construction sites: purchases, transfers, consumption vouchers and serial-numbered tools on an immutable ledger, with weighted-average costing and alerts.',
         label: 'STOCK',
-        kind: 'Internal tool · Grupo CPS',
+        kind: 'Stock system · Grupo CPS',
         year: '2026',
         cta: 'View case study',
         image: '/assets/projects/depositos_cps/dashboard_inicial.png',
@@ -910,6 +1105,87 @@ const en: typeof es = {
     ] as Project[],
   },
 
+  practices: {
+    label: 'how I work',
+    heading: 'Decisions that repeat in everything I build.',
+    items: [
+      {
+        number: 1,
+        title: 'Rules live in the database',
+        text: 'Constraints, transactions and RLS in PostgreSQL. Hiding a button is ergonomics; the real barrier is in the database.',
+        icon: Database,
+      },
+      {
+        number: 2,
+        title: 'Measure before claiming',
+        text: 'Before calling a number good, I compare it against the real system. A hunch is not a result.',
+        icon: Ruler,
+      },
+      {
+        number: 3,
+        title: 'Test where the logic lives',
+        text: 'If the rule is in SQL, the test runs in SQL inside a transaction that rolls back. If the engine is pure, it is tested with no database at all.',
+        icon: FlaskConical,
+      },
+      {
+        number: 4,
+        title: 'Reproducible deploys',
+        text: 'Docker, versioned migrations applied by CI and daily backups. If verification is not green, production is not touched.',
+        icon: Server,
+      },
+    ],
+  },
+
+  contact: {
+    label: 'contact',
+    title: {
+      sr: 'Get in touch.',
+      l1: 'Get in touch.',
+      l2: '',
+    },
+    copy: 'Write to me if you want to talk about a role or about any of these projects. I reply by email or LinkedIn.',
+    mail: 'Mail',
+    social: 'Also on:',
+    formName: 'Your name',
+    formEmail: 'Your email',
+    formMessage: 'Message',
+    formSubmit: 'Send',
+    formSending: 'Sending',
+    formDirectPre: 'If you prefer, write me directly at',
+  },
+
+  footer: {
+    tagline: 'built by me, obviously.',
+  },
+
+  services: {
+    label: 'what I can do for your company',
+    heading: 'Custom solutions, no fuss.',
+    more: 'Learn more',
+    items: [
+      {
+        title: 'Web development',
+        text: 'Your first point of contact with clients. So when someone googles you, they find something that builds trust and shows them how to reach you.',
+        icon: MonitorSmartphone,
+      },
+      {
+        title: 'Management software',
+        text: 'When your operation is scattered across messages, spreadsheets and manual tasks, we build a system that puts everything in its place.',
+        icon: BriefcaseBusiness,
+      },
+      {
+        title: 'Automation',
+        text: 'Repetitive processes you do by hand today that could run on their own, with clear rules and human control when needed.',
+        icon: RefreshCw,
+      },
+      {
+        title: 'Applied AI',
+        text: 'AI when it really adds value: to answer queries, organize information or review internal data without selling you a black box.',
+        icon: Bot,
+      },
+    ],
+  },
+
   reasons: {
     label: 'how I work',
     heading: 'No agencies in between. You talk directly with me.',
@@ -941,132 +1217,56 @@ const en: typeof es = {
     ],
   },
 
-  contact: {
-    label: 'contact',
-    title: {
-      sr: 'Got a project in mind?',
-      l1: 'Got a project',
-      l2: 'in mind?',
-    },
-    copy: "Tell me what you need. No commitments, no jargon. If I can help, I'll tell you. If I can't, I'll tell you that too.",
-    mail: 'Mail',
-    social: 'Also on:',
-    formName: 'Your name',
-    formEmail: 'Your email',
-    formMessage: 'How can I help you?',
-    formSubmit: 'Send message',
-    formSending: 'Sending',
-    formDirectPre: 'If you prefer, write me directly at',
-  },
-
-  footer: {
-    tagline: 'built by me, obviously.',
-  },
-
-  arce: {
+  servicesPage: {
     back: 'Back',
-    backFull: 'Back to work',
-    caseLabel: 'case study',
-    category: 'Automation & AI',
-    year: '2025',
-    roleLabel: 'Role',
-    role: 'Design, development and infrastructure, end to end',
-    yearLabel: 'Year',
-    clientLabel: 'Origin',
-    client: 'Grupo CPS, out of a real need of the sales team',
-    repoBtn: 'View repository',
-    demoBtn: 'View demo',
-    tagline: 'Monitoring and analysis of public tenders with local AI.',
-    stack: ['n8n', 'Node.js', 'Puppeteer', 'PostgreSQL', 'Ollama', 'Local AI', 'Docker', 'Linux', 'Web scraping'],
-    summary:
-      'Arce monitors the publications of the state procurement portal (ARCE), extracts each tender, structures it, analyzes it with an AI model running locally and surfaces only the relevant opportunities for the sales team in a dashboard.',
-    problemLabel: 'The problem',
-    problem: [
-      'Spotting opportunities meant manually reviewing the state procurement portal (ARCE): a slow, repetitive process, easy to neglect among everything else. It was about 2 hours a day, 5 days a week.',
-      'The information came as unstructured text, hard to compare and filter. When a relevant tender showed up and nobody saw it in time, it was a missed opportunity.',
-    ],
-    solutionLabel: 'The solution',
-    solution: [
-      'Arce automates that whole journey: n8n polls the ARCE RSS feed every 15 minutes, a Puppeteer scraper extracts the detail of each new tender, and everything is stored structured and deduplicated in PostgreSQL.',
-      'Attached tender documents are processed in any format (PDF, DOC, DOCX, XLS, ZIP) with automatic chunking for large files. A Llama 3.1 model running locally scores relevance with a prompt specialized in the field, and also detects site-visit dates, places and contacts.',
-      'The topic of interest is configurable: in my case it filters by aluminum, my company’s field, but it adapts to any other without touching the code.',
-      'The team stops checking the portal: they open a dashboard and see only the opportunities that matter, already filtered and sorted.',
-    ],
-    archLabel: 'architecture',
-    archHeading: 'How data flows, from source to dashboard.',
-    architecture: [
-      { step: '01', title: 'ARCE (state procurement)', text: 'The latest publications of the state procurement portal are the entry point.' },
-      { step: '02', title: 'Automated scraping', text: 'n8n polls the RSS feed every 15 minutes and a Puppeteer scraper extracts the detail of each new tender.' },
-      { step: '03', title: 'Multi-format extraction', text: 'Tender documents (PDF, DOC, DOCX, XLS, ZIP) are converted to structured text, with automatic chunking for large files.' },
-      { step: '04', title: 'PostgreSQL', text: 'Tenders are stored deduplicated with a queryable history, without reprocessing everything each time.' },
-      { step: '05', title: 'Local AI (Ollama)', text: 'Llama 3.1 with a specialized prompt scores each tender by relevance and detects site visits, dates and contacts.' },
-      { step: '06', title: 'Dashboard', text: 'The team sees only the relevant opportunities, ready to act on.' },
-    ],
-    orchestration:
-      'The whole flow is orchestrated in n8n: adjusting sources, rules or frequency is done on the workflow, without rewriting the system.',
-    diagram: {
-      cta: 'Open the interactive diagram',
-      label: 'the system, in a diagram',
-      heading: 'How it all fits together, in a diagram you can move around.',
-      text: 'Four views with draggable boxes and a step-by-step walkthrough: the full circuit from the portal to the dashboard, the real n8n workflow node by node, how every tender document is analyzed with local AI and how the team uses the dashboard and corrects the AI.',
-    },
-    decisionsLabel: 'technical decisions',
-    decisionsHeading: 'Why it is built this way.',
-    decisions: [
-      { title: 'Local AI, not cloud', text: 'Using Ollama with local models keeps data inside the infrastructure, removes per-query cost and takes external API limits out of the equation.' },
-      { title: 'n8n to orchestrate', text: 'Coordinating the flow in n8n means changing rules, sources or frequency by touching the workflow, instead of rewriting and redeploying code.' },
-      { title: 'PostgreSQL as the base', text: 'Storing the structured tenders in Postgres enables querying, comparing and keeping a history, instead of processing everything from scratch on each run.' },
-      { title: 'Everything in Docker', text: 'The system runs containerized on Linux: reproducible, isolated and deployable on a private server with no fragile dependencies.' },
-    ],
-    demoLabel: 'demo',
-    demoHeading: 'The dashboard in action.',
-    demoAria: 'Arce dashboard demo',
-    shotsLabel: 'screenshots',
-    shotsHeading: 'Under the hood.',
-    shotsPending: 'Screenshot on the way',
-    resultsLabel: 'results',
-    results: [
-      { value: '~10 hrs', label: 'of manual search saved every week (before: 5 days × 2 hrs reviewing by hand).' },
-      { value: '0', label: 'time spent reviewing the ARCE portal manually.' },
-      { value: 'Configurable', label: 'the field of interest changes without touching the system (in my case, aluminum).' },
-    ],
-    gallery: [
-      { src: '/assets/projects/arce/dashboard.png', alt: 'Main view of the Arce dashboard', caption: 'Main dashboard: each tender with its urgency and the relevance score assigned by the AI.', width: 1920, height: 1082, available: true },
-      { src: '/assets/projects/arce/licitacion-detalle.png', alt: 'Detail of a tender in Arce', caption: 'Tender detail: structured data, attachments, AI analysis and human feedback.', width: 1920, height: 1082, available: true },
-      { src: '/assets/projects/arce/n8n-workflow.png', alt: 'Arce workflow in n8n', caption: 'The n8n flow: RSS, XML→JSON parsing, scraping, relevance filtering and loading into PostgreSQL.', width: 1326, height: 1009, available: true },
-    ],
-    ctaHeading: 'Got a process that could be automated like this?',
-    ctaText: 'If any of this looks like a problem of yours, let us talk.',
-    ctaTalk: "Let's talk",
-    ctaCode: 'View the code',
-    ctaGithub: 'More on GitHub',
+    backFull: 'Back to home',
+    kicker: 'services',
+    heading: 'Custom software for companies.',
+    intro:
+      'Websites, management software, automation and applied AI for companies that want to organize their operations. From the website to the internal system that saves hours of manual work, with no big teams and no endless processes.',
+    systemsLabel: 'systems in production',
+    systemsHeading: 'What is already running.',
+    systemsCta: 'View case study',
+    sitesLabel: 'websites',
+    sitesHeading: 'Four institutional and commercial sites live.',
+    contactHeading: 'Got a project in mind?',
+    contactText: 'Tell me what you need. No commitments, no jargon. If I can help, I will tell you. If I cannot, I will tell you that too.',
+    contactCta: 'Let’s talk',
+    contactMail: 'Email me',
   },
 
   cotizador: {
     title: 'Aluminum Joinery Quoter',
     back: 'Back',
-    backFull: 'Back to work',
+    backFull: 'Back to projects',
     caseLabel: 'case study',
-    category: 'Commercial tool · Full-stack',
+    category: 'Pricing engine · Full-stack',
     year: '2026',
     roleLabel: 'Role',
-    role: 'Sole full-stack developer: product, pricing engine, backend, database and security',
+    role: 'Sole developer: product, pricing engine, backend, database and security',
     yearLabel: 'Year',
     clientLabel: 'Client',
     client: 'Grupo CPS, aluminum-and-glass joinery industry',
-    repoBtn: "Let's talk about the project",
-    privateNote: 'The code is private since it is a client project.',
+    code: { label: 'Code', note: 'Private · owned by Grupo CPS' },
     stack: ['Next.js 16', 'React', 'TypeScript', 'TailwindCSS 4', 'Three.js', 'Supabase', 'PostgreSQL', 'RLS', 'Jest'],
     tagline: 'An aluminum joinery quoter that gives credible prices, not made-up numbers.',
     summary:
       'A web app where the client builds their order of aluminum-and-glass windows and gets an estimated price. The challenge was not the screen, but getting the price right: what looked like a simple formula actually depended on how much aluminum and glass each window really uses. To get it right, I studied the 2,641 real recipes from the factory software and pulled out the numbers that drive the cost.',
     metricValue: '2.44× → ~1%',
     metricText: 'How much the error in calculating the aluminum dropped, compared to the factory system. I did not fix it with a hand-tuned fudge factor, but by understanding where the difference came from.',
-    problemLabel: 'The problem',
+    problemLabel: '01 · business problem',
     problem: [
-      'Grupo CPS manufactures aluminum-and-glass joinery. Quoting each order by hand is slow and depends on technical staff. They wanted a simple web app where the client signs up, builds a cart with their windows, sends the order and tracks it.',
-      'The problem was in the word "simple". The price of a window does not come from multiplying area by a price per square meter: it depends on how much aluminum profile each window type uses (the frame, the opening sash, the bead that holds the glass, the transoms) and on the real glass measurement, plus hardware, labor, margin and VAT.',
-      'The company already calculated all of this precisely in its factory software, WinMaker, which stores one "recipe" per window type: 2,641 files in a closed format, impossible to use directly on a website. My first simple calculation fell far short: it counted 2.44× less aluminum than the window actually uses.',
+      'Grupo CPS manufactures aluminum-and-glass joinery. Quoting each order by hand is slow and depends on technical staff: every client inquiry took up someone’s time at the factory before anyone even knew whether the order was serious.',
+      'They wanted a simple web app where the client signs up, builds a cart with their windows, sends the order and tracks it. The problem was in the word “simple”: the price of a window does not come from multiplying area by a price per square meter. It depends on how much aluminum profile each window type uses (frame, sash, glazing bead, transoms), on the real glass measurement, on hardware, labor, margin and VAT.',
+      'The company already calculated all of this precisely in its factory software, WinMaker, which stores one “recipe” per window type: 2,641 files in a closed format, impossible to use directly on a website. My first simple calculation counted 2.44× less aluminum than the window actually uses.',
+    ],
+    constraintsLabel: '02 · constraints',
+    constraintsHeading: 'What I had to live with.',
+    constraints: [
+      { title: 'No access to the factory software from the web', text: 'WinMaker is a desktop system with its own format. It exposes no API and cannot be queried live: whatever I needed from it had to be extracted once and live in my model.' },
+      { title: 'Internal costs that can never leak', text: 'The client must see a final price, never the cost, the margin or the price per square meter. Any design where the browser does the math was out from the start.' },
+      { title: 'Data maintained by technicians, not the programmer', text: 'Recipes, catalogs, colors and parameters change with the factory. They had to be editable from a panel, without touching code.' },
+      { title: 'A single developer', text: 'Product, engine, backend, database and security, in parallel with other company systems. Every layer had to be simple to maintain.' },
     ],
     insightLabel: 'the key decision',
     insightHeading: 'Pull from the recipes only the numbers that move the price, without copying the whole factory software.',
@@ -1081,7 +1281,25 @@ const en: typeof es = {
     beforeValue: '4.32 m',
     afterLabel: 'Aluminum it really uses',
     afterValue: '~7.7 m',
-    solutionLabel: 'the solution',
+    decisionsLabel: '03 · technical decisions and why',
+    decisionsHeading: 'Every non-trivial decision, with its reason.',
+    decisions: [
+      { title: 'Pure pricing engine, no I/O', text: 'All the pricing is pure functions, testable with no database. That is why it has 68+ Jest tests and could be validated against the factory without spinning up any service.' },
+      { title: 'Geometry separated from costing', text: 'Recipes change how much material is counted; the costing (cost per meter, cost per m², hardware, margin, VAT) was untouched. Bringing in the factory numbers broke nothing that already worked.' },
+      { title: 'Custom parser and AST evaluator for the .PRO format', text: 'Instead of executing the recipes, a static parser extracts per window type only the geometric constants (74, 126, 82/148 mm depending on the type), and each one is cited to its source file.' },
+      { title: 'Immutable snapshot per order', text: 'Each order freezes the prices and names of that moment, with its number assigned atomically in the database (FOR UPDATE). Two simultaneous orders never share a number and a sent price never changes behind the scenes.' },
+      { title: 'All the calculation on the server side', text: 'Endpoints return DTOs with no sensitive data. The service role lives only on the server and RLS is enabled with no public policies.' },
+      { title: 'Explicit fallback, never silent', text: 'Whatever has no recipe loaded quotes by estimation with the generic model and is flagged as such. A per-recipe traffic light shows what is missing to quote with real cost.' },
+    ],
+    discardedLabel: '04 · what was discarded',
+    discardedHeading: 'Alternatives considered and why not.',
+    discarded: [
+      { title: 'Area × price per m² formula', text: 'Fast, but it counted 2.44× less aluminum than real. A hand-tuned correction factor would have hidden the error instead of fixing it.' },
+      { title: 'Porting all of WinMaker to the web', text: 'Precise, but unfeasible: 2,641 recipes in a closed format and a full manufacturing engine, for what had to be an entry-level quoter.' },
+      { title: 'Summary links with sequential IDs', text: 'They allowed enumerating other people’s orders by changing a number. Replaced with UUID tokens impossible to guess.' },
+      { title: 'Calculating in the browser', text: 'It would have exposed costs and margins to anyone opening the dev tools. The whole engine runs on the server.' },
+    ],
+    solutionLabel: 'what was built',
     solutionHeading: 'A full-stack app with a pricing engine at its core.',
     solution: [
       { title: 'Sign up and log in', text: 'Each client has their own account.' },
@@ -1089,10 +1307,10 @@ const en: typeof es = {
       { title: 'Cart with several windows', text: 'They group several windows into one order and build their quote like a draft: adding, removing and adjusting until it is the way they want.' },
       { title: 'Quote as a PDF', text: 'With one click it generates a clean PDF with all the windows, their specs and the total, ready to save or share.' },
       { title: 'Order that gets frozen', text: 'On submit, the prices and names of that moment are saved. Nothing is recalculated behind the scenes afterward.' },
-      { title: 'Tracking', text: 'In "My orders" they see the status of each one, and can share a summary via a private link.' },
+      { title: 'Tracking', text: 'In “My orders” they see the status of each one, and can share a summary via a private link.' },
     ],
     solutionNote:
-      'The quoter does not come to replace WinMaker, the system the factory has always quoted with: it is the client’s front door. An intuitive, eye-catching first approach where they can build their window, try combinations and clear up their doubts on their own. And for Grupo CPS, a way to capture every quote requested and give it orderly follow-up. Behind it, the client never sees internal costs or margin: all the calculation happens on the server and only the final price reaches the browser.',
+      'The quoter does not replace WinMaker, the system the factory has always quoted with: it is the client’s front door. Behind it, the client never sees internal costs or margin: all the calculation happens on the server and only the final price reaches the browser.',
     adminLabel: 'the other side: administration',
     adminHeading: 'An internal panel where technicians load the factory’s reality.',
     admin: [
@@ -1102,7 +1320,7 @@ const en: typeof es = {
       },
       {
         title: 'Real-cost traffic light',
-        text: 'A "load status" view shows what each recipe is missing to quote with real cost: red if the recipe has no profiles loaded or any profile is missing its cost, yellow if labor is missing, green when the cost is complete. Nothing quotes right by accident.',
+        text: 'A “load status” view shows what each recipe is missing to quote with real cost: red if the recipe has no profiles loaded or any profile is missing its cost, yellow if labor is missing, green when the cost is complete. Nothing quotes right by accident.',
       },
       {
         title: 'Resolution with fallback',
@@ -1143,8 +1361,16 @@ const en: typeof es = {
       { title: 'Frozen, auditable orders', text: 'Each order stores an immutable snapshot of prices and names, with its number assigned atomically in the database: two simultaneous orders never share a number, and nothing changes behind the scenes afterward.' },
       { title: 'Currency with a safety net', text: 'Costs coexist in dollars and pesos with an explicit conversion convention. If the rate is missing, the system degrades to a defined neutral factor instead of breaking mid-calculation.' },
     ],
+    resultsLabel: '05 · measurable result',
+    resultsHeading: 'Measure before you claim.',
+    results: [
+      { value: '2.44× → ~1%', label: 'material error against the factory system, solved structurally and not with a coefficient.' },
+      { value: '2,641', label: 'real factory recipes analyzed by reverse engineering.' },
+      { value: '68+', label: 'automated tests: unit, integration and the “shadow mode” against WinMaker.' },
+      { value: 'In production', label: 'at cotizador.grupocps.com.uy, the front door for Grupo CPS clients.' },
+    ],
     qualityLabel: 'quality & engineering',
-    qualityHeading: 'Measure before you claim.',
+    qualityHeading: 'How I know the numbers are right.',
     quality: [
       { metric: 'Factory recipes analyzed', value: '2,641' },
       { metric: 'Proprietary .PRO format cracked', value: 'Custom parser + safe AST evaluator' },
@@ -1154,69 +1380,94 @@ const en: typeof es = {
       { metric: 'Code quality', value: 'Strict TypeScript, no type errors' },
     ],
     qualityNote:
-      'The "shadow mode": a tool that compares, window by window, what my system calculates against the real parts breakdown from the factory software. It measures how far off I am before calling a price good. The difference between "I think it’s right" and "I measured it".',
+      'The “shadow mode”: a tool that compares, window by window, what my system calculates against the real parts breakdown from the factory software. It measures how far off I am before calling a price good. The difference between “I think it’s right” and “I measured it”.',
     shotsLabel: 'demo',
     shotsHeading: 'The quoter in action.',
-    learningsLabel: 'why this project represents me',
+    learningsLabel: 'takeaways',
     learnings: [
       'The hard problem is rarely the visible one: the screen was the easy part, the value was in calculating well and validating the numbers.',
       'I did not brute-force copy the 2,641 recipes: I pulled out only what moves the cost and left the rest as separate research.',
-      'Measure before you claim: "shadow mode" turned a hunch ("the price doesn’t add up") into a number (2.44×) and then into a validation (~1%).',
-      'Security and traceability from day one, not as a patch.',
+      'Measure before you claim: “shadow mode” turned a hunch (“the price doesn’t add up”) into a number (2.44×) and then into a validation (~1%).',
       'A complete system includes whoever maintains it: the internal panel and its load-status traffic light make the technicians, not the programmer, the owners of the data.',
     ],
-    ctaHeading: 'Got a calculation or an operation that a simple formula can’t pin down?',
-    ctaText: 'That’s the kind of problem I enjoy. The code for this project is private, but we can talk about it.',
-    ctaTalk: "Let's talk about the project",
+    ctaHeading: 'Want to talk about this project?',
+    ctaText: 'The code is private, but the technical decisions are open for discussion. Write to me if you want to talk about this or about a role.',
+    ctaContact: 'Contact',
+    ctaMore: 'More projects',
     gallery: [
       { kind: 'video', src: '/assets/projects/cotizador/video_recorrido_sistema.mp4', alt: 'Video walkthrough of the quoter, from building the window to the submitted order', caption: 'System walkthrough: from building the window in 3D to the submitted order.', width: 1280, height: 720, loop: false },
       { kind: 'video', src: '/assets/projects/cotizador/ventana_rotando.mp4', alt: 'Quoted window rendered in 3D rotating on its axis', caption: '3D visualization: the quoted window rotates to be seen from any angle.', width: 1280, height: 720, loop: true },
       { kind: 'image', src: '/assets/projects/cotizador/pdf_generado_cotizacion.png', alt: 'Generated PDF with the assembled quote', caption: 'PDF generated automatically with the assembled quote, ready to save or share.', width: 990, height: 1041, loop: false },
       { kind: 'image', src: '/assets/projects/cotizador/panel_interno_1.png', alt: 'Internal technical-data panel of the quoter', caption: 'The internal panel: technical recipes and catalogs of profiles, stock lengths, glass, hardware, labor and the parameters that feed the engine.', width: 1920, height: 989, loop: false },
-      { kind: 'image', src: '/assets/projects/cotizador/panel_interno_2.png', alt: 'Recipe load status with real-cost traffic light', caption: 'The "load status" view: a per-recipe traffic light showing what is missing to quote with real cost, and which window types still quote by estimation.', width: 1920, height: 1018, loop: false },
+      { kind: 'image', src: '/assets/projects/cotizador/panel_interno_2.png', alt: 'Recipe load status with real-cost traffic light', caption: 'The “load status” view: a per-recipe traffic light showing what is missing to quote with real cost, and which window types still quote by estimation.', width: 1920, height: 1018, loop: false },
     ],
   },
 
   stock: {
     title: 'Depósitos CPS',
     back: 'Back',
-    backFull: 'Back to work',
+    backFull: 'Back to projects',
     caseLabel: 'case study',
-    category: 'Internal tool · Full-stack',
+    category: 'Stock system · Full-stack',
     year: '2026',
     roleLabel: 'Role',
-    role: 'Sole full-stack developer: data model, SQL core, backend, frontend and deployment',
+    role: 'Sole developer: data model, SQL core, backend, frontend and deployment',
     yearLabel: 'Year',
     clientLabel: 'Client',
     client: 'Grupo CPS, construction and aluminum joinery',
-    repoBtn: "Let's talk about the project",
-    privateNote: 'The code is private since it is an internal company tool.',
+    code: { label: 'Code', note: 'Private · internal Grupo CPS tool' },
     stack: ['Next.js', 'TypeScript', 'Tailwind 4', 'shadcn/ui', 'Supabase', 'PostgreSQL', 'RLS', 'Coolify'],
     tagline: 'The whole company’s stock in one place: what’s in stock, where it is and which site it went to.',
     summary:
       'Internal system for Grupo CPS to manage materials and tools across warehouses and construction sites: purchase requests and orders, transfers, consumption vouchers with reconciliation, repairs and adjustments. Every operation is recorded in an immutable stock ledger with weighted-average costing, and the team sees the stock valuation, alerts and reports live.',
     metricValue: '100% traceable',
     metricText:
-      'Stock is never corrected "by hand": every change is born from a numbered voucher, with user and date. The number you see is the sum of its history. And negative stock is impossible by design, even under concurrent operations.',
-    problemLabel: 'The problem',
+      'Stock is never corrected “by hand”: every change is born from a numbered voucher, with user and date. The number you see is the sum of its history. And negative stock is impossible by design, even under concurrent operations.',
+    problemLabel: '01 · business problem',
     problem: [
       'Grupo CPS moves materials and tools across several warehouses and construction sites at once. That movement was tracked with spreadsheets, messages and memory: knowing how much of an item there was, and where, meant calling, counting and trusting.',
-      'The consequences were always the same: shortages discovered with the site already running, material "on the road" that showed up nowhere, rushed purchases with no record, and no reliable number for how much capital sat in stock or how much each site had consumed.',
-      'And there was a subtler problem: tools. An angle grinder is not "3 angle grinders": it is this grinder, with its serial number, which is at that site, came back broken or got lost. And someone has to answer for it.',
+      'The consequences were always the same: shortages discovered with the site already running, material “on the road” that showed up nowhere, rushed purchases with no record, and no reliable number for how much capital sat in stock or how much each site had consumed.',
+      'And there was a subtler problem: tools. An angle grinder is not “3 angle grinders”: it is this grinder, with its serial number, which is at that site, came back broken or got lost. And someone has to answer for it.',
+    ],
+    constraintsLabel: '02 · constraints',
+    constraintsHeading: 'What I had to live with.',
+    constraints: [
+      { title: 'Several warehouses and sites operating at once', text: 'Concurrent movements from different places. The balance cannot depend on two people not posting at the same time.' },
+      { title: 'Non-technical users, with different roles', text: 'Logistics operates; site managers and management query and request. Each one had to see and do only their part, without that depending on goodwill.' },
+      { title: 'Own server, no third-party cloud', text: 'The company’s data stays on its VPS. That fixed self-hosted Supabase, Docker and Coolify, and left me in charge of operations too.' },
+      { title: 'Numbers that must hold up', text: 'Stock valuation and spending per site are used to decide purchases and close sites. An estimate is useless: every number must be explained by vouchers.' },
     ],
     insightLabel: 'the key decision',
     insightHeading: 'Stock is never edited: it is recorded. Everything else derives from that.',
     insight: [
-      'The decision that organizes the whole system: nobody writes "40 bags left". You record the movement that explains it (a received purchase, a transfer, a consumption voucher, an adjustment) as an entry in an immutable ledger: movements are insert-only, and correcting means posting the reversing entry, never deleting.',
-      'The balance per warehouse is maintained by the database itself, with a constraint that makes negative stock impossible even under concurrent operations. And what is on the road or at the repair shop is stock too: the virtual warehouses "In transit" and "Repair" guarantee that the sum of all balances always equals the company’s real stock.',
+      'The decision that organizes the whole system: nobody writes “40 bags left”. You record the movement that explains it (a received purchase, a transfer, a consumption voucher, an adjustment) as an entry in an immutable ledger: movements are insert-only, and correcting means posting the reversing entry, never deleting.',
+      'The balance per warehouse is maintained by the database itself, with a constraint that makes negative stock impossible even under concurrent operations. And what is on the road or at the repair shop is stock too: the virtual warehouses “In transit” and “Repair” guarantee that the sum of all balances always equals the company’s real stock.',
       'On that foundation, costing uses a weighted average price frozen into each movement: transfers do not alter the average, and returns re-enter at the cost frozen in the original voucher. That is why the stock valuation on the dashboard is a defensible number, not an estimate.',
     ],
-    solutionLabel: 'the solution',
+    decisionsLabel: '03 · technical decisions and why',
+    decisionsHeading: 'Every non-trivial decision, with its reason.',
+    decisions: [
+      { title: 'Append-only ledger', text: 'Movements are insert-only; correcting means posting a reversing entry. That single decision made auditing, voiding, period ledgers and valuation free: they are all queries over the same table.' },
+      { title: 'The balance is kept by the database, not the app', text: 'A trigger updates the balance per warehouse on every entry and a constraint stops it from going below zero. Two simultaneous operations on the same item cannot leave negative stock, with no locks in the application.' },
+      { title: 'Weighted-average cost frozen into each movement', text: 'The unit cost is fixed at posting time: transfers do not alter the average and returns re-enter at the original voucher’s cost. So the valuation never changes retroactively.' },
+      { title: 'Transactional RPCs as the only write path', text: 'Every operation is a SECURITY DEFINER function that validates role and business rules inside a transaction. The movement tables have no write policies: even talking straight to the API, nobody can skip the rules.' },
+      { title: 'Virtual “In transit” and “Repair” warehouses', text: 'What travels or sits at the repair shop is stock too, in its own warehouse. So the sum of all balances always equals the real stock and nothing ends up “nowhere”.' },
+      { title: 'Tools as units, not quantities', text: 'Each tool has a serial number and its own life cycle: available → on site → under repair → broken or lost. Broken or lost ones are charged to the site that had them.' },
+    ],
+    discardedLabel: '04 · what was discarded',
+    discardedHeading: 'Alternatives considered and why not.',
+    discarded: [
+      { title: 'Editing quantities directly', text: 'That is what the spreadsheets did. Without the history behind the number, there is no way to explain a shortage, void without deleting, or value the stock.' },
+      { title: 'Business rules in the application layer', text: 'Any client talking to the API could skip them, and every rule would have to be repeated on every screen. In PostgreSQL there is one door and it has no shortcut.' },
+      { title: 'Cloud-hosted Supabase', text: 'More convenient, but the company’s data would leave its server. Control and cost outweighed convenience; the price was taking on operations myself.' },
+      { title: 'A materials-only system', text: 'Without serial-numbered tools, half the problem (who has what, at which site, and who answers for it) would still live in messages.' },
+    ],
+    solutionLabel: 'what was built',
     solutionHeading: 'The whole material circuit, from request to construction site.',
     solution: [
       { title: 'Purchase requests and orders', text: 'Any user, site managers included, requests what they need with destination and deadline. Logistics builds the orders, which can mix suppliers per line and feed a price history per item and supplier.' },
       { title: 'Partial receptions', text: 'Purchases and transfers are received in batches. Closing with missing items is an explicit decision, with a reason: only then is what never arrived written off.' },
-      { title: '"In transit" transfers', text: 'Material moving between warehouses passes through a real intermediate state: while it travels it sits in neither warehouse, it is in transit, with a truck and people assigned to the trip.' },
+      { title: '“In transit” transfers', text: 'Material moving between warehouses passes through a real intermediate state: while it travels it sits in neither warehouse, it is in transit, with a truck and people assigned to the trip.' },
       { title: 'Consumption vouchers with reconciliation', text: 'What goes out to a site gets reconciled: what was used is charged to the site’s spending, and what comes back re-enters stock at the voucher’s frozen cost.' },
       { title: 'Tools by serial number', text: 'Each physical unit has its own life cycle: available → on site → under repair → broken or lost. They are reconciled per unit, and broken or lost ones are charged to the site that had them.' },
       { title: 'Per-user dashboard and alerts', text: 'Each user builds their own home screen with the widgets they need, and notifications fire on their own: overdue or expiring requests, delayed transfers and stock below minimum.' },
@@ -1249,32 +1500,164 @@ const en: typeof es = {
       { title: 'Who did what, always', text: 'Issuing, receiving, canceling, reconciling: every action is recorded with user and date, visible on every screen for every user.' },
       { title: 'Voiding is not deleting', text: 'Voiding posts the reversing entry and the history stays complete. There is no such thing as a silent correction.' },
     ],
+    resultsLabel: '05 · measurable result',
+    resultsHeading: 'What can be verified.',
+    results: [
+      { value: '100%', label: 'of balances traceable: every number is the sum of vouchers with user and date.' },
+      { value: '0', label: 'negative stock possible, enforced by a database constraint, even under concurrent operations.' },
+      { value: '~160', label: 'assertions on the SQL core, running inside a transaction that rolls back.' },
+      { value: '32', label: 'versioned migrations, applied by CI on a clean database before every deploy.' },
+    ],
     qualityLabel: 'quality & engineering',
     qualityHeading: 'The core is tested where it lives: in SQL.',
     quality: [
       { metric: 'SQL core test suite', value: '1,500+ lines · ~160 assertions' },
       { metric: 'What it covers', value: 'Numbering, weighted-average costing, partial receptions, reconciliations, serial-numbered tools, RLS and roles' },
       { metric: 'Negative stock', value: 'Impossible by design, even under concurrency' },
-      { metric: 'Versioned schema', value: '19 migrations, applied automatically by CI' },
+      { metric: 'Versioned schema', value: '32 migrations, applied automatically by CI' },
     ],
     qualityNote:
       'The suite runs inside a transaction that rolls back at the end: it tests the real core against the real database without dirtying it. If the rule lives in PostgreSQL, so does the test.',
     shotsLabel: 'screenshots',
     shotsHeading: 'The system from the inside.',
-    learningsLabel: 'why this project represents me',
+    learningsLabel: 'takeaways',
     learnings: [
       'A stock system is a trust system: if people do not believe the number, they go back to the spreadsheet. Total traceability is what sustains that trust.',
       'Modeling movements instead of quantities simplified everything else: ledger views, auditing, voiding and valuation all fell out of the same design.',
       'Putting business rules in the database, and testing them there, means security does not depend on which buttons the interface shows.',
       'The physical circuit is software too: the purchase order PDF with signature lines matters as much as the table that generates it.',
     ],
-    ctaHeading: 'Does your operation also live in spreadsheets and messages?',
-    ctaText: 'This is the kind of system I enjoy building most. The code is internal to the company, but we can talk about the problem.',
-    ctaTalk: "Let's talk about the project",
+    ctaHeading: 'Want to talk about this project?',
+    ctaText: 'The code is internal to the company, but the design can be discussed in detail. Write to me if you want to talk about this or about a role.',
+    ctaContact: 'Contact',
+    ctaMore: 'More projects',
     gallery: [
       { kind: 'image', src: '/assets/projects/depositos_cps/dashboard_inicial.png', alt: 'Home dashboard of the Grupo CPS warehouse system', caption: 'The home dashboard: stock valuation, movements of the last 30 days, stock per warehouse, spending per site and alerts for overdue requests, delayed transfers and stock below minimum.', width: 1920, height: 1079, loop: false },
       { kind: 'image', src: '/assets/projects/depositos_cps/kardex_deposito.png', alt: 'Warehouse ledger view with period balances and movements', caption: 'The ledger view per warehouse or site: period balances, every movement with its voucher and user, and voidings as reversing entries. Nothing gets deleted.', width: 1920, height: 1079, loop: false },
       { kind: 'image', src: '/assets/projects/depositos_cps/orden_compra_pdf.png', alt: 'Purchase order generated as a PDF ready to sign', caption: 'A purchase order as a PDF, ready to print and sign with the supplier: the physical circuit comes out of the system too.', width: 1920, height: 1079, loop: false },
+    ],
+  },
+
+  arce: {
+    title: 'Arce',
+    back: 'Back',
+    backFull: 'Back to projects',
+    caseLabel: 'case study',
+    category: 'Automation & AI',
+    year: '2025',
+    roleLabel: 'Role',
+    role: 'Design, development and infrastructure, end to end',
+    yearLabel: 'Year',
+    clientLabel: 'Origin',
+    client: 'Grupo CPS, out of a real need of the sales team',
+    code: { label: 'Code', note: 'Public on GitHub', href: arceMedia.repo, cta: 'View repository' },
+    stack: ['n8n', 'Node.js', 'Puppeteer', 'PostgreSQL', 'Ollama', 'Local AI', 'Docker', 'Linux', 'Web scraping'],
+    tagline: 'Monitoring and analysis of public tenders with local AI.',
+    summary:
+      'Arce monitors the publications of the state procurement portal (ARCE), extracts each tender, structures it, analyzes it with an AI model running locally and surfaces only the relevant opportunities for the sales team in a dashboard.',
+    metricValue: '~10 hrs',
+    metricText: 'of manual review saved per week for the sales team. Before: 2 hours a day, 5 days a week, checking the portal by hand. Now the portal is polled automatically every 15 minutes.',
+    problemLabel: '01 · business problem',
+    problem: [
+      'Spotting opportunities meant manually reviewing the state procurement portal (ARCE): a slow, repetitive process, easy to neglect among everything else. It took about 2 hours a day, 5 days a week, of one person on the sales team.',
+      'The information came as unstructured text, hard to compare and filter. When a relevant tender showed up and nobody saw it in time, it was a missed opportunity: a tender cannot be submitted after the deadline.',
+    ],
+    constraintsLabel: '02 · constraints',
+    constraintsHeading: 'What I had to live with.',
+    constraints: [
+      { title: 'Unstructured data, in any format', text: 'Tender documents arrive as PDF, DOC, DOCX, XLS or ZIP, sometimes huge. Everything had to be converted to text before it could be evaluated.' },
+      { title: 'No dependence on a paid AI API', text: 'Analyzing every document with an external service did not add up in cost or in data control. The evaluation had to run on our own hardware.' },
+      { title: 'The field changes, the system does not', text: 'Aluminum today, another field tomorrow. The relevance criterion had to be configurable without touching code.' },
+      { title: 'Sales users, not technical ones', text: 'The output had to be a simple dashboard, with a way to correct the AI when it gets it wrong.' },
+    ],
+    insightLabel: 'the key decision',
+    insightHeading: 'Run the AI locally and orchestrate with n8n, so the criterion can change without rewriting the system.',
+    insight: [
+      'The AI part is the most visible but the smallest. The decision that organized the project was separating three things: the data pipeline (which fetches, cleans and deduplicates every tender), the relevance criterion (a field-specific prompt changed from configuration) and the orchestration (an n8n workflow edited without touching code).',
+      'With that, the model can change, the field can change and the frequency can change, and none of those three changes requires a redeploy. The sales team sees a dashboard; everything else runs on its own every 15 minutes.',
+    ],
+    beforeLabel: 'Manual review of the portal',
+    beforeValue: '2 hrs/day',
+    afterLabel: 'Today',
+    afterValue: '0',
+    beforeAfterText: 'The portal used to be checked by hand two hours a day, five days a week. Today nobody opens it: n8n polls it every 15 minutes and the dashboard shows only what matters.',
+    decisionsLabel: '03 · technical decisions and why',
+    decisionsHeading: 'Why it is built this way.',
+    decisions: [
+      { title: 'Local AI, not cloud', text: 'Ollama with Llama 3.1 8B keeps the documents inside the infrastructure, removes per-query cost and takes external API limits out of the equation. An 8B model with a good field-specific prompt is enough for this task.' },
+      { title: 'n8n to orchestrate', text: 'Coordinating the flow in n8n means changing rules, sources or frequency by touching the workflow, instead of rewriting and redeploying code. Someone other than me can adjust it too.' },
+      { title: 'PostgreSQL as the base, deduplicated', text: 'Storing the structured tenders in Postgres enables querying, comparing and keeping a history, instead of processing everything from scratch on each run.' },
+      { title: 'Chunking and metadata fallback', text: 'Large documents are split into chunks so they fit the model’s context. If a file cannot be extracted, it is analyzed by metadata instead of discarding the tender.' },
+      { title: 'Human feedback stored', text: 'From the dashboard the team marks when the AI got it right or wrong, and that is kept next to the analysis. It serves to tune the prompt with real cases.' },
+      { title: 'Everything in Docker', text: 'The system runs containerized on Linux: reproducible, isolated and deployable on a private server with no fragile dependencies.' },
+    ],
+    discardedLabel: '04 · what was discarded',
+    discardedHeading: 'Alternatives considered and why not.',
+    discarded: [
+      { title: 'OpenAI or another cloud API', text: 'Per-query cost, usage limits and company documents leaving the infrastructure. For a process that runs every 15 minutes, it did not add up.' },
+      { title: 'A cron job with loose scripts', text: 'It works until a source, a frequency or a step has to change. In n8n that is done on the workflow, with the history of every run in plain sight.' },
+      { title: 'Filtering only by keywords in the title', text: 'Without reading the document, a keyword does not tell you whether the tender is in your field or when the site visit is. The model evaluates the full document.' },
+    ],
+    solutionLabel: 'what was built',
+    solutionHeading: 'A pipeline that goes from the portal to the dashboard with nobody touching it.',
+    solution: [
+      { title: 'RSS every 15 minutes', text: 'n8n polls the ARCE feed and detects new tenders.' },
+      { title: 'Detail scraping', text: 'A Puppeteer scraper extracts each new tender and its attachments.' },
+      { title: 'Multi-format extraction', text: 'PDF, DOC, DOCX, XLS and ZIP are converted to text, with automatic chunking for large documents.' },
+      { title: 'Local AI analysis', text: 'Llama 3.1 on Ollama scores relevance with a field-specific prompt and detects site-visit dates, places and contacts.' },
+      { title: 'Deduplicated PostgreSQL', text: 'Each tender is stored structured, without duplicates and with a queryable history.' },
+      { title: 'Dashboard with feedback', text: 'The team sees only the relevant opportunities, sorted by urgency, and corrects the AI when it is wrong.' },
+    ],
+    solutionNote:
+      'The topic of interest is configurable: in my case it filters by aluminum, my company’s field, but it adapts to any other without touching the code.',
+    diagram: {
+      cta: 'Open the interactive diagram',
+      label: 'the system, in a diagram',
+      heading: 'How it all fits together, in a diagram you can move around.',
+      text: 'Four views with draggable boxes and a step-by-step walkthrough: the full circuit from the portal to the dashboard, the real n8n workflow node by node, how every tender document is analyzed with local AI and how the team uses the dashboard and corrects the AI.',
+    },
+    archLabel: 'architecture',
+    archHeading: 'How data flows, from source to dashboard.',
+    architecture: [
+      { step: '01', title: 'ARCE (state procurement)', text: 'The latest publications of the state procurement portal are the entry point.' },
+      { step: '02', title: 'Automated scraping', text: 'n8n polls the RSS feed every 15 minutes and a Puppeteer scraper extracts the detail of each new tender.' },
+      { step: '03', title: 'Multi-format extraction', text: 'Tender documents (PDF, DOC, DOCX, XLS, ZIP) are converted to structured text, with automatic chunking for large files.' },
+      { step: '04', title: 'PostgreSQL', text: 'Tenders are stored deduplicated with a queryable history, without reprocessing everything each time.' },
+      { step: '05', title: 'Local AI (Ollama)', text: 'Llama 3.1 with a specialized prompt scores each tender by relevance and detects site visits, dates and contacts.' },
+      { step: '06', title: 'Dashboard', text: 'The team sees only the relevant opportunities, ready to act on.' },
+    ],
+    archNote:
+      'The whole flow is orchestrated in n8n: adjusting sources, rules or frequency is done on the workflow, without rewriting the system.',
+    resultsLabel: '05 · measurable result',
+    resultsHeading: 'What changed for the team.',
+    results: [
+      { value: '~10 hrs', label: 'of manual search saved every week (before: 5 days × 2 hrs reviewing by hand).' },
+      { value: '15 min', label: 'between publication and detection: no new tender waits longer than that.' },
+      { value: '0', label: 'time spent reviewing the ARCE portal manually.' },
+      { value: 'Configurable', label: 'the field of interest changes without touching the system (in my case, aluminum).' },
+    ],
+    demo: {
+      label: 'demo',
+      heading: 'The dashboard in action.',
+      aria: 'Arce dashboard demo',
+      src: arceMedia.video,
+    },
+    shotsLabel: 'screenshots',
+    shotsHeading: 'Under the hood.',
+    learningsLabel: 'takeaways',
+    learnings: [
+      'The AI is the small part: the value is in the pipeline that feeds it clean, deduplicated, plain-text data.',
+      'Orchestrating with a visual tool means someone other than me can adjust the system without opening the code.',
+      'Storing human feedback next to the analysis turns every AI mistake into a case for improving the prompt.',
+    ],
+    ctaHeading: 'Want to talk about this project?',
+    ctaText: 'The code is public. Write to me if you want to discuss the design or talk about a role.',
+    ctaContact: 'Contact',
+    ctaMore: 'More projects',
+    gallery: [
+      { kind: 'image', src: '/assets/projects/arce/dashboard.png', alt: 'Main view of the Arce dashboard', caption: 'Main dashboard: each tender with its urgency and the relevance score assigned by the AI.', width: 1920, height: 1082, loop: false },
+      { kind: 'image', src: '/assets/projects/arce/licitacion-detalle.png', alt: 'Detail of a tender in Arce', caption: 'Tender detail: structured data, attachments, AI analysis and human feedback.', width: 1920, height: 1082, loop: false },
+      { kind: 'image', src: '/assets/projects/arce/n8n-workflow.png', alt: 'Arce workflow in n8n', caption: 'The n8n flow: RSS, XML→JSON parsing, scraping, relevance filtering and loading into PostgreSQL.', width: 1326, height: 1009, loop: false },
     ],
   },
 

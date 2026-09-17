@@ -2168,3 +2168,86 @@ button {
     transition: none;
   }
 }
+
+/* ── Perfil de candidato (2026-09) ───────────────────────── */
+
+.decision-card.is-discarded {
+  border-style: dashed;
+  background: transparent;
+}
+
+.decision-card.is-discarded h3 {
+  color: #A8B0BD;
+  text-decoration: line-through;
+  text-decoration-color: rgba(184, 255, 44, 0.55);
+  text-decoration-thickness: 1.5px;
+}
+
+.xp-item {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+  border: 1px solid #2B3038;
+  border-radius: 8px;
+  background: #171A20;
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .xp-item {
+    grid-template-columns: 220px 1fr;
+    gap: 2.5rem;
+    padding: 1.9rem 2rem;
+  }
+}
+
+.xp-bullet {
+  position: relative;
+  padding-left: 1.25rem;
+  color: #A8B0BD;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.xp-bullet::before {
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 8px;
+  height: 1.5px;
+  content: "";
+  background: #B8FF2C;
+}
+
+.edu-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  border-top: 1px solid #2B3038;
+  padding: 0.85rem 0;
+}
+
+.edu-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.stack-level-note {
+  color: #8990A0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.sites-line a {
+  color: #F5F7FA;
+  text-decoration: underline;
+  text-decoration-color: rgba(184, 255, 44, 0.45);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 180ms ease;
+}
+
+.sites-line a:hover {
+  text-decoration-color: #B8FF2C;
+}

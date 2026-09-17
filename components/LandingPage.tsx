@@ -8,15 +8,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
-import {
-  ArrowDown,
-  ArrowRight,
-  Download,
-  ExternalLink,
-  Languages,
-  Mail,
-  Send,
-} from 'lucide-react';
+import { ArrowDown, ArrowRight, ExternalLink, Languages, Mail, Send } from 'lucide-react';
 import { GitHubIcon, LinkedInIcon } from '@/components/BrandIcons';
 import { CustomCursor } from '@/components/CustomCursor';
 import { contact } from '@/lib/site';
@@ -55,7 +47,7 @@ function ContactTitle({ title }: { title: ReturnType<typeof getDictionary>['cont
   return (
     <h2 className="contact-title font-display text-[2.5rem] font-bold leading-[1.02] tracking-normal text-text-primary sm:text-[3.4rem] xl:text-[4.3rem]">
       <span className="contact-line block">{title.l1}</span>
-      <span className="contact-line block">{title.l2}</span>
+      {title.l2 ? <span className="contact-line block">{title.l2}</span> : null}
     </h2>
   );
 }
@@ -218,16 +210,16 @@ export function LandingPage({ locale }: { locale: Locale }) {
         },
       });
 
-      gsap.from('.site-mini', {
-        y: 16,
+      gsap.from('.xp-item, .edu-block', {
+        y: 24,
         opacity: 0,
-        duration: 0.5,
-        stagger: 0.07,
+        duration: 0.65,
+        stagger: 0.12,
         clearProps: 'transform,opacity',
         ease: 'power3.out',
         scrollTrigger: {
-          trigger: '.sites-strip',
-          start: 'top 85%',
+          trigger: '#experiencia',
+          start: 'top 70%',
         },
       });
 
@@ -253,32 +245,6 @@ export function LandingPage({ locale }: { locale: Locale }) {
           trigger: '.stack-grid',
           start: 'top 82%',
         },
-      });
-
-      gsap.from('.service-card', {
-        y: 34,
-        opacity: 0,
-        duration: 0.72,
-        stagger: 0.13,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '#servicios',
-          start: 'top 64%',
-        },
-      });
-
-      gsap.utils.toArray<SVGPathElement>('.service-icon-path').forEach((path) => {
-        const length = path.getTotalLength();
-        gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
-        gsap.to(path, {
-          strokeDashoffset: 0,
-          duration: 0.9,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: path.closest('.service-card'),
-            start: 'top 78%',
-          },
-        });
       });
 
       gsap.from('.reason-item', {
@@ -463,26 +429,17 @@ export function LandingPage({ locale }: { locale: Locale }) {
               </p>
 
               <div className="hero-actions mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-                <Link href="#contacto" className="btn-primary">
-                  <Send size={18} />
-                  {dict.hero.ctaContact}
-                </Link>
-                <Link
-                  href={contact.cv[locale]}
-                  className="btn-secondary"
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Download size={18} />
-                  {dict.hero.ctaCv}
-                </Link>
-                <Link
-                  href="#trabajos"
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 text-sm font-semibold text-accent sm:ml-1 sm:justify-start"
-                >
+                <Link href="#trabajos" className="btn-primary">
                   {dict.hero.ctaWork}
-                  <ArrowDown size={16} />
+                  <ArrowDown size={18} />
+                </Link>
+                <Link href={contact.github} className="btn-secondary" target="_blank" rel="noopener noreferrer">
+                  <GitHubIcon size={18} />
+                  {dict.hero.ctaGithub}
+                </Link>
+                <Link href={contact.linkedin} className="btn-secondary" target="_blank" rel="noopener noreferrer">
+                  <LinkedInIcon size={18} />
+                  {dict.hero.ctaLinkedin}
                 </Link>
               </div>
             </div>
@@ -562,21 +519,19 @@ export function LandingPage({ locale }: { locale: Locale }) {
             </div>
 
             <div className="bento-tile flex flex-col p-6 lg:col-span-6">
-              <span className="tile-label">{dict.bento.serviciosLabel}</span>
-              <div className="mt-4 grid flex-1 gap-2.5 sm:grid-cols-2">
-                {dict.services.items.map((service) => {
-                  const Icon = service.icon;
-                  return (
-                    <Link className="svc-item group" href="#servicios" key={service.title}>
-                      <Icon className="text-accent" size={19} />
-                      <span className="font-display text-[15px] font-semibold text-text-primary">{service.title}</span>
-                      <ArrowRight
-                        className="ml-auto text-text-muted transition-transform duration-300 group-hover:translate-x-0.5"
-                        size={15}
-                      />
-                    </Link>
-                  );
-                })}
+              <span className="tile-label">{dict.bento.projectsLabel}</span>
+              <div className="mt-4 grid flex-1 gap-2.5">
+                {tools.map((tool) => (
+                  <Link className="svc-item group" href={localizedHref(locale, tool.url)} key={tool.name}>
+                    <span className="font-mono text-[11px] text-accent">{tool.label}</span>
+                    <span className="font-display text-[15px] font-semibold text-text-primary">{tool.name}</span>
+                    <span className="hidden font-mono text-[11px] lowercase text-text-muted sm:inline">{tool.kind}</span>
+                    <ArrowRight
+                      className="ml-auto text-text-muted transition-transform duration-300 group-hover:translate-x-0.5"
+                      size={15}
+                    />
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
@@ -630,81 +585,64 @@ export function LandingPage({ locale }: { locale: Locale }) {
             })}
           </div>
 
-          <h3 className="mt-12 font-mono text-[13px] font-medium text-accent">{dict.work.sitesRowLabel.replace('{n}', String(sites.length))}</h3>
-          <div className="sites-strip mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {sites.map((site) => (
-              <Link
-                className="site-mini group overflow-hidden rounded-md border border-border bg-bg-card"
-                href={site.url}
-                key={site.name}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cursor={dict.work.cursorLabel}
-              >
-                <div className="relative aspect-[16/10] overflow-hidden border-b border-border bg-bg-secondary">
-                  {site.image ? (
-                    <Image
-                      src={site.image}
-                      alt={site.name}
-                      fill
-                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 46vw, 92vw"
-                      className="object-cover object-top"
-                    />
-                  ) : (
-                    <div className="placeholder-pattern absolute inset-0" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/30 to-transparent" aria-hidden="true" />
-                </div>
-                <div className="flex items-center gap-3 p-4">
-                  <div>
-                    <span className="block font-display text-[16px] font-semibold text-text-primary">{site.name}</span>
-                    <span className="mt-0.5 block font-mono text-[11px] text-text-muted">{site.domain}</span>
-                  </div>
-                  <ExternalLink
-                    className="ml-auto shrink-0 text-text-muted transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    size={15}
-                  />
-                </div>
-              </Link>
+          <p className="sites-line mt-8 text-[15px] leading-[1.7] text-text-muted">
+            {dict.work.sitesLine}{' '}
+            {sites.map((site, index) => (
+              <Fragment key={site.name}>
+                <Link href={site.url} target="_blank" rel="noopener noreferrer">
+                  {site.name}
+                </Link>
+                {index < sites.length - 1 ? ' · ' : '.'}
+              </Fragment>
             ))}
-          </div>
+          </p>
         </div>
       </section>
 
-      <section id="servicios" className="bg-bg-secondary py-24 md:py-32">
+      <section id="experiencia" className="bg-bg-secondary py-24 md:py-32">
         <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="section-heading max-w-3xl">
-            <p className="section-label">{dict.services.label}</p>
+            <p className="section-label">{dict.experience.label}</p>
             <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              {dict.services.heading}
+              {dict.experience.heading}
             </h2>
           </div>
 
-          <div className="mt-14 grid gap-4 md:grid-cols-2">
-            {dict.services.items.map((service) => {
-              const Icon = service.icon;
-              return (
-                <motion.article
-                  className="service-card group relative min-h-[260px] overflow-hidden rounded-md border border-border bg-bg-card p-7 transition-colors duration-300"
-                  key={service.title}
-                  whileHover={{ y: -4 }}
-                  transition={{ duration: 0.22 }}
-                >
-                  <div className="absolute inset-y-0 left-0 w-1 scale-y-0 bg-accent transition-transform duration-300 group-hover:scale-y-100" />
-                  <div className="mb-9 flex h-12 w-12 items-center justify-center rounded-md border border-border bg-bg-secondary text-accent transition-transform duration-300 group-hover:rotate-[5deg] group-hover:scale-110">
-                    <Icon size={24} />
-                    <svg className="absolute h-12 w-12" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                      <path className="service-icon-path" d="M24 5 L43 24 L24 43 L5 24 Z" stroke="currentColor" strokeWidth="1.4" />
-                    </svg>
+          <div className="mt-14 grid gap-10 lg:grid-cols-[1.35fr_0.65fr] lg:gap-14">
+            <div className="grid gap-4">
+              {dict.experience.items.map((item) => (
+                <article className="xp-item" key={`${item.role}-${item.company}`}>
+                  <div>
+                    <p className="font-mono text-[12px] text-accent">{item.period}</p>
+                    <h3 className="mt-2 font-display text-xl font-semibold leading-tight text-text-primary">{item.role}</h3>
+                    <p className="mt-1 text-[15px] text-text-secondary">{item.company}</p>
+                    <p className="mt-1 font-mono text-[11.5px] text-text-muted">{item.place}</p>
                   </div>
-                  <h3 className="font-display text-2xl font-semibold text-text-primary">{service.title}</h3>
-                  <p className="mt-4 max-w-xl text-[17px] leading-[1.7] text-text-secondary">{service.text}</p>
-                  <Link href="#contacto" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-accent">
-                    {dict.services.more} <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={17} />
-                  </Link>
-                </motion.article>
-              );
-            })}
+                  <ul className="grid gap-3">
+                    {item.bullets.map((bullet) => (
+                      <li className="xp-bullet" key={bullet}>
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+
+            <div className="edu-block rounded-lg border border-border bg-bg-card p-6 md:p-7">
+              <p className="tile-label">{dict.experience.educationLabel}</p>
+              <div className="mt-4">
+                {dict.experience.education.map((row) => (
+                  <div className="edu-row" key={row.title}>
+                    <div>
+                      <p className="font-display text-[15px] font-semibold text-text-primary">{row.title}</p>
+                      <p className="mt-0.5 text-[14px] text-text-secondary">{row.place}</p>
+                    </div>
+                    {row.period ? <span className="font-mono text-[11.5px] text-text-muted">{row.period}</span> : null}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -738,17 +676,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
               </ul>
 
               <div className="mt-9 flex flex-wrap gap-3">
-                <Link
-                  href={contact.cv[locale]}
-                  className="btn-primary"
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Download size={18} />
-                  {dict.about.cvButton}
-                </Link>
-                <Link href={contact.linkedin} className="btn-secondary" target="_blank" rel="noopener noreferrer">
+                <Link href={contact.linkedin} className="btn-primary" target="_blank" rel="noopener noreferrer">
                   <LinkedInIcon size={18} />
                   LinkedIn
                 </Link>
@@ -761,14 +689,17 @@ export function LandingPage({ locale }: { locale: Locale }) {
 
             <div className="about-block">
               <p className="section-label">{dict.about.stackLabel}</p>
-              <div className="stack-grid mt-5 grid gap-3 sm:grid-cols-2">
-                {dict.stackGroups.map((group) => (
-                  <div className="stack-group" key={group.title}>
-                    <h3 className="font-display text-sm font-semibold uppercase tracking-[0.04em] text-text-primary">
-                      {group.title}
-                    </h3>
+              <div className="stack-grid mt-5 grid gap-3">
+                {dict.stackLevels.map((level) => (
+                  <div className="stack-group" key={level.title}>
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <h3 className="font-display text-sm font-semibold uppercase tracking-[0.04em] text-text-primary">
+                        {level.title}
+                      </h3>
+                      <span className="stack-level-note">{level.note}</span>
+                    </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {group.items.map((item) => (
+                      {level.items.map((item) => (
                         <span className="stack-chip" key={item}>
                           {item}
                         </span>
@@ -788,25 +719,25 @@ export function LandingPage({ locale }: { locale: Locale }) {
         </div>
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="section-heading max-w-3xl">
-            <p className="section-label">{dict.reasons.label}</p>
+            <p className="section-label">{dict.practices.label}</p>
             <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              {dict.reasons.heading}
+              {dict.practices.heading}
             </h2>
           </div>
 
           <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {dict.reasons.items.map((reason) => {
-              const Icon = reason.icon;
+            {dict.practices.items.map((practice) => {
+              const Icon = practice.icon;
               return (
-                <div className="reason-item" key={reason.title}>
+                <div className="reason-item" key={practice.title}>
                   <div className="flex items-center justify-between border-b border-border pb-5">
-                    <span className="count-number font-display text-5xl font-semibold text-accent" data-value={reason.number}>
-                      00
+                    <span className="count-number font-display text-5xl font-semibold text-accent" data-value={practice.number}>
+                      {String(practice.number).padStart(2, '0')}
                     </span>
                     <Icon className="text-text-muted" size={25} />
                   </div>
-                  <h3 className="mt-7 font-display text-2xl font-semibold text-text-primary">{reason.title}</h3>
-                  <p className="mt-4 text-[17px] leading-[1.7] text-text-secondary">{reason.text}</p>
+                  <h3 className="mt-7 font-display text-2xl font-semibold text-text-primary">{practice.title}</h3>
+                  <p className="mt-4 text-[17px] leading-[1.7] text-text-secondary">{practice.text}</p>
                 </div>
               );
             })}

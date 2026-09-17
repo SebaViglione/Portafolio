@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ArcePage } from '@/components/ArcePage';
+import { CaseStudyPage } from '@/components/CaseStudyPage';
 
 export const metadata: Metadata = {
   title: 'Arce: monitoreo de licitaciones con IA local | Sebastián Viglione',
@@ -28,5 +28,5 @@ export const metadata: Metadata = {
 };
 
 export default function Arce() {
-  return <ArcePage locale="es" />;
+  return <CaseStudyPage locale="es" slug="arce" />;
 }

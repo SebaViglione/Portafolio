@@ -2,10 +2,6 @@ export const contact = {
   email: 'sebaviglione10@gmail.com',
   linkedin: 'https://linkedin.com/in/sebaviglione',
   github: 'https://github.com/SebaViglione',
-  cv: {
-    es: '/assets/cv/CV_Sebastian_Viglione.pdf',
-    en: '/assets/cv/CV_Sebastian_Viglione_EN.pdf',
-  },
 };
 
 export const arceMedia = {
