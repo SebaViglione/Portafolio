@@ -209,7 +209,7 @@ const es = {
         period: '12/2024 – actualidad',
         place: 'Montevideo, UY',
         bullets: [
-          'Diseñé y construí Depósitos CPS, el sistema de stock de la empresa: kardex inmutable, costeo promedio ponderado y RPCs transaccionales en PostgreSQL, con ~160 aserciones de test sobre el núcleo SQL y 32 migraciones aplicadas por CI.',
+          'Diseñé y construí Depósitos CPS, el sistema de stock de la empresa: kardex inmutable, costeo promedio ponderado y RPCs transaccionales en PostgreSQL, con tests de integración sobre el núcleo SQL y migraciones versionadas aplicadas por CI en cada push.',
           'Desarrollé el motor de cálculo del cotizador de aberturas: reverse engineering de 2.641 recetas de fábrica que bajó el error de material de 2,44× a ~1%, con 68+ tests automáticos.',
           'Automaticé el monitoreo de licitaciones públicas con n8n, Puppeteer e IA local: ~10 horas semanales de revisión manual eliminadas para el equipo comercial.',
           'Opero la infraestructura de esos sistemas en el VPS de la empresa: Supabase self-hosted, Docker y Coolify, con deploy automático en cada push, migraciones por CI y backups diarios.',
@@ -735,16 +735,15 @@ const es = {
     results: [
       { value: '100%', label: 'de los saldos trazables: cada número es la suma de comprobantes con usuario y fecha.' },
       { value: '0', label: 'stock negativo posible, por restricción de la base, incluso con operaciones concurrentes.' },
-      { value: '~160', label: 'aserciones sobre el núcleo SQL, corriendo en una transacción que se revierte.' },
-      { value: '32', label: 'migraciones versionadas, aplicadas por CI sobre una base limpia antes de cada deploy.' },
+      { value: 'En producción', label: 'lo usan logística, jefes de obra y dirección de Grupo CPS, en el servidor de la empresa.' },
     ],
     qualityLabel: 'calidad e ingeniería',
     qualityHeading: 'El núcleo se prueba donde vive: en SQL.',
     quality: [
-      { metric: 'Suite de tests del núcleo SQL', value: '1.500+ líneas · ~160 aserciones' },
+      { metric: 'Tests del núcleo SQL', value: 'Suite de integración que recorre el circuito completo, en una transacción que se revierte' },
       { metric: 'Qué cubre', value: 'Numeración, costeo PPP, recepciones parciales, rendiciones, herramientas por serie, RLS y roles' },
       { metric: 'Stock negativo', value: 'Imposible por diseño, incluso en concurrencia' },
-      { metric: 'Esquema versionado', value: '32 migraciones, aplicadas automáticamente por CI' },
+      { metric: 'Esquema versionado', value: 'Migraciones aplicadas por CI sobre una base limpia antes de cada deploy' },
     ],
     qualityNote:
       'La suite corre dentro de una transacción que se revierte al final: prueba el núcleo real contra la base real, sin ensuciarla. Si la regla vive en PostgreSQL, el test también.',
@@ -980,7 +979,7 @@ const en: typeof es = {
         period: '12/2024 – present',
         place: 'Montevideo, UY',
         bullets: [
-          'Designed and built Depósitos CPS, the company’s stock system: immutable ledger, weighted-average costing and transactional RPCs in PostgreSQL, with ~160 test assertions on the SQL core and 32 migrations applied by CI.',
+          'Designed and built Depósitos CPS, the company’s stock system: immutable ledger, weighted-average costing and transactional RPCs in PostgreSQL, with integration tests on the SQL core and versioned migrations applied by CI on every push.',
           'Developed the pricing engine of the joinery quoter: reverse engineering of 2,641 factory recipes that brought the material error down from 2.44× to ~1%, with 68+ automated tests.',
           'Automated public tender monitoring with n8n, Puppeteer and local AI: ~10 hours of manual review per week removed for the sales team.',
           'Operate the infrastructure behind those systems on the company VPS: self-hosted Supabase, Docker and Coolify, with automatic deploys on every push, CI-applied migrations and daily backups.',
@@ -1505,16 +1504,15 @@ const en: typeof es = {
     results: [
       { value: '100%', label: 'of balances traceable: every number is the sum of vouchers with user and date.' },
       { value: '0', label: 'negative stock possible, enforced by a database constraint, even under concurrent operations.' },
-      { value: '~160', label: 'assertions on the SQL core, running inside a transaction that rolls back.' },
-      { value: '32', label: 'versioned migrations, applied by CI on a clean database before every deploy.' },
+      { value: 'In production', label: 'used by logistics, site managers and management at Grupo CPS, on the company’s own server.' },
     ],
     qualityLabel: 'quality & engineering',
     qualityHeading: 'The core is tested where it lives: in SQL.',
     quality: [
-      { metric: 'SQL core test suite', value: '1,500+ lines · ~160 assertions' },
+      { metric: 'SQL core tests', value: 'Integration suite that walks the full circuit, inside a transaction that rolls back' },
       { metric: 'What it covers', value: 'Numbering, weighted-average costing, partial receptions, reconciliations, serial-numbered tools, RLS and roles' },
       { metric: 'Negative stock', value: 'Impossible by design, even under concurrency' },
-      { metric: 'Versioned schema', value: '32 migrations, applied automatically by CI' },
+      { metric: 'Versioned schema', value: 'Migrations applied by CI on a clean database before every deploy' },
     ],
     qualityNote:
       'The suite runs inside a transaction that rolls back at the end: it tests the real core against the real database without dirtying it. If the rule lives in PostgreSQL, so does the test.',

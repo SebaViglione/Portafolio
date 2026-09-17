@@ -368,7 +368,7 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
         {/* 05 · Resultado medible */}
         <section className="case-block mt-20">
           <SectionHeading label={c.resultsLabel} heading={c.resultsHeading} />
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className={`mt-10 grid gap-4 sm:grid-cols-2 ${c.results.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
             {c.results.map((result) => (
               <div className="arce-stat" key={result.label}>
                 <span className="font-display text-3xl font-bold text-accent md:text-4xl">{result.value}</span>
