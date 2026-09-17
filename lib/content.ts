@@ -155,7 +155,7 @@ const es = {
       l3pre: 'para operaciones',
       highlight: 'reales.',
     },
-    copy: 'Stock, costeo, compras, cotización e integraciones. Tres sistemas en producción en Grupo CPS, construidos de punta a punta: modelo de datos y reglas de negocio en PostgreSQL, API e interfaz en TypeScript y Node.js, deploy en servidor propio.',
+    copy: 'Trabajo en Grupo CPS, donde armé los tres sistemas que están acá abajo: stock, cotización de aberturas y monitoreo de licitaciones. Los hice solo, desde el modelo de datos hasta el deploy, y la empresa los usa todos los días.',
     ctaWork: 'Ver proyectos',
     ctaGithub: 'GitHub',
     ctaLinkedin: 'LinkedIn',
@@ -174,9 +174,9 @@ const es = {
     stack: ['typescript', 'node.js', 'next.js / react', 'postgresql', 'sql', 'supabase'],
     terminalTitle: 'cómo trabajo',
     values: [
-      { title: 'Reglas en la base', text: 'la lógica de negocio vive en PostgreSQL, no en qué botones muestra la interfaz.' },
-      { title: 'Medir antes de afirmar', text: 'un número validado contra el sistema real vale más que una corazonada.' },
-      { title: 'Nada se borra', text: 'kardex y pedidos son inmutables: corregir es asentar, no editar.' },
+      { title: 'Reglas en la base', text: 'las validaciones importantes viven en PostgreSQL, no en la interfaz.' },
+      { title: 'Números verificados', text: 'antes de dar un cálculo por bueno lo comparo contra el sistema real.' },
+      { title: 'Historial completo', text: 'los movimientos no se editan ni se borran, se registran.' },
     ],
     projectsLabel: 'en producción · grupo cps',
     portraitName: 'Sebastián Viglione',
@@ -187,9 +187,9 @@ const es = {
     label: 'sobre mí',
     heading: 'Sistemas internos, de la base de datos al deploy.',
     intro:
-      'Trabajo como Developer & Systems Technician en Grupo CPS, una empresa de construcción y aberturas de aluminio. Ahí diseñé y construí los tres sistemas de esta página, solo y de punta a punta: modelo de datos, reglas de negocio, API, interfaz y deploy en el servidor de la empresa.',
+      'Trabajo como Developer & Systems Technician en Grupo CPS, una empresa de construcción y aberturas de aluminio. Los tres sistemas de esta página los hice ahí, solo: modelo de datos, reglas de negocio, API, interfaz y deploy en el servidor de la empresa.',
     body:
-      'Lo que más me interesa es el backend: modelar bien el dominio, poner las reglas donde no se puedan saltear y medir antes de dar un número por bueno. Estudio Ingeniería en Sistemas en la Universidad de Montevideo y tengo inglés C1.',
+      'Lo que más me gusta es la parte de backend: entender bien el dominio y modelarlo, y que las reglas queden donde nadie las pueda saltear. Estudio Ingeniería en Sistemas en la Universidad de Montevideo y tengo inglés C1.',
     facts: [
       { label: 'Estudiante de Ingeniería en Sistemas · Universidad de Montevideo', icon: GraduationCap },
       { label: 'Developer & Systems Technician · Grupo CPS', icon: Briefcase },
@@ -201,7 +201,7 @@ const es = {
 
   experience: {
     label: 'experiencia',
-    heading: 'Qué hice y qué resultó.',
+    heading: 'Dónde trabajé y qué hice.',
     items: [
       {
         role: 'Developer & Systems Technician',
@@ -227,12 +227,12 @@ const es = {
   stackLevels: [
     {
       title: 'Trabajo a diario',
-      note: 'Lo que puedo defender línea por línea.',
+      note: 'Lo que uso todos los días.',
       items: ['TypeScript', 'Node.js', 'Next.js / React', 'PostgreSQL', 'SQL', 'Supabase'],
     },
     {
       title: 'Usado en producción',
-      note: 'Aplicado en sistemas reales; no es el día a día.',
+      note: 'Lo usé en proyectos en producción, pero no todos los días.',
       items: ['Python', 'n8n', 'Docker', 'Linux', 'Ollama', 'Puppeteer', 'Jest', 'Three.js', 'Tailwind', 'Coolify'],
     },
     {
@@ -243,7 +243,7 @@ const es = {
   ],
 
   work: {
-    heading: 'Tres sistemas en producción, construidos de punta a punta.',
+    heading: 'Tres sistemas en producción, hechos de cero.',
     monoLabel: '[ proyectos ] — en producción ahora',
     statusChip: 'todo operativo',
     sitesLine: 'También hice cuatro sitios institucionales:',
@@ -336,30 +336,30 @@ const es = {
 
   practices: {
     label: 'cómo trabajo',
-    heading: 'Decisiones que se repiten en todo lo que construyo.',
+    heading: 'Cosas que hago siempre, en cualquier proyecto.',
     items: [
       {
         number: 1,
-        title: 'Las reglas viven en la base',
-        text: 'Restricciones, transacciones y RLS en PostgreSQL. Ocultar un botón es ergonomía; la barrera real está en la base de datos.',
+        title: 'Las reglas van en la base',
+        text: 'Restricciones, transacciones y RLS en PostgreSQL. Si una regla solo existe en la interfaz, cualquiera que hable directo con la API se la saltea.',
         icon: Database,
       },
       {
         number: 2,
-        title: 'Medir antes de afirmar',
-        text: 'Antes de dar un número por bueno, lo comparo contra el sistema real. Una corazonada no es un resultado.',
+        title: 'Verifico los números',
+        text: 'Cuando un cálculo importa, lo comparo contra el sistema que ya usa la empresa antes de darlo por bueno.',
         icon: Ruler,
       },
       {
         number: 3,
-        title: 'Testeo donde vive la lógica',
-        text: 'Si la regla está en SQL, el test corre en SQL dentro de una transacción que se revierte. Si el motor es puro, se prueba sin base de datos.',
+        title: 'Testeo donde está la lógica',
+        text: 'Si la regla vive en SQL, el test corre en SQL. Si el motor de cálculo es puro, se prueba sin base de datos.',
         icon: FlaskConical,
       },
       {
         number: 4,
         title: 'Deploy reproducible',
-        text: 'Docker, migraciones versionadas aplicadas por CI y backups diarios. Si la verificación no sale en verde, producción no se toca.',
+        text: 'Docker, migraciones versionadas aplicadas por CI y backups diarios. Si la verificación falla, no se despliega.',
         icon: Server,
       },
     ],
@@ -372,7 +372,7 @@ const es = {
       l1: '¿Hablamos?',
       l2: '',
     },
-    copy: 'Escribime si querés hablar de una posición o de alguno de estos proyectos. Respondo por mail o por LinkedIn.',
+    copy: 'Si querés hablar de una posición o preguntarme por alguno de estos proyectos, escribime. Respondo por mail o LinkedIn.',
     mail: 'Mail',
     social: 'También en:',
     formName: 'Tu nombre',
@@ -491,7 +491,7 @@ const es = {
       'La empresa ya calculaba todo esto con precisión en su software de fábrica, WinMaker, que guarda una "receta" por cada tipo de ventana: 2.641 archivos en un formato cerrado, imposible de usar directo en una web. Mi primer cálculo simple contaba 2,44 veces menos aluminio del que la ventana usa en realidad.',
     ],
     constraintsLabel: '02 · restricciones',
-    constraintsHeading: 'Con qué había que convivir.',
+    constraintsHeading: 'Lo que había que tener en cuenta.',
     constraints: [
       { title: 'Sin acceso al software de fábrica desde la web', text: 'WinMaker es un sistema de escritorio con formato propio. No expone API ni se puede consultar en vivo: lo que necesitara de él tenía que extraerse una vez y quedar en mi modelo.' },
       { title: 'Costos internos que no pueden salir', text: 'El cliente tiene que ver un precio final, nunca el costo, el margen ni el precio por metro cuadrado. Cualquier diseño donde el navegador calcule quedaba descartado de entrada.' },
@@ -512,7 +512,7 @@ const es = {
     afterLabel: 'Aluminio que usa de verdad',
     afterValue: '~7,7 m',
     decisionsLabel: '03 · decisiones técnicas y por qué',
-    decisionsHeading: 'Cada decisión no trivial, con su razón.',
+    decisionsHeading: 'Por qué está armado así.',
     decisions: [
       { title: 'Motor de cálculo puro, sin I/O', text: 'Todo el pricing son funciones puras, testeables sin base de datos. Por eso tiene 68+ tests Jest y se pudo validar contra la fábrica sin levantar ningún servicio.' },
       { title: 'Geometría separada del costeo', text: 'Las recetas cambian cuánto material se cuenta; el costeo (costo por metro, costo por m², herrajes, margen, IVA) no se tocó. Traer los números de la fábrica no rompió nada de lo que ya funcionaba.' },
@@ -522,7 +522,7 @@ const es = {
       { title: 'Fallback explícito, nunca silencioso', text: 'Lo que no tiene receta cargada cotiza por estimación con el modelo genérico y queda marcado como tal. Un semáforo por receta muestra qué falta para cotizar con costo real.' },
     ],
     discardedLabel: '04 · qué se descartó',
-    discardedHeading: 'Alternativas consideradas y por qué no.',
+    discardedHeading: 'Lo que descarté en el camino.',
     discarded: [
       { title: 'Fórmula área × precio por m²', text: 'Rápida, pero contaba 2,44 veces menos aluminio del real. Un factor de ajuste a dedo habría escondido el error en vez de corregirlo.' },
       { title: 'Portar WinMaker entero a la web', text: 'Preciso, pero inviable: 2.641 recetas en un formato cerrado y un motor de fabricación completo, para lo que tenía que ser un cotizador de entrada.' },
@@ -550,7 +550,7 @@ const es = {
       },
       {
         title: 'Semáforo de costo real',
-        text: 'Un "estado de carga" muestra qué le falta a cada receta para cotizar con costo real: rojo si la receta no tiene perfiles cargados o algún perfil está sin costo, amarillo si falta mano de obra, verde cuando el costo está completo. Nada cotiza bien por casualidad.',
+        text: 'Un "estado de carga" muestra qué le falta a cada receta para cotizar con costo real: rojo si la receta no tiene perfiles cargados o algún perfil está sin costo, amarillo si falta mano de obra, verde cuando el costo está completo.',
       },
       {
         title: 'Resolución con fallback',
@@ -592,9 +592,9 @@ const es = {
       { title: 'Moneda con red de seguridad', text: 'Los costos conviven en dólares y pesos con una convención explícita de conversión. Si la tasa falta, el sistema degrada a un factor neutro definido en vez de romper a mitad del cálculo.' },
     ],
     resultsLabel: '05 · resultado medible',
-    resultsHeading: 'Medir antes de afirmar.',
+    resultsHeading: 'Lo que se puede medir.',
     results: [
-      { value: '2,44× → ~1%', label: 'error de material frente al sistema de fábrica, resuelto de forma estructural y no con un coeficiente.' },
+      { value: '2,44× → ~1%', label: 'de error en el cálculo de aluminio frente al sistema de fábrica, corregido en la geometría y no con un factor de ajuste.' },
       { value: '2.641', label: 'recetas reales de fábrica analizadas por reverse engineering.' },
       { value: '68+', label: 'tests automáticos: unitarios, de integración y el "modo sombra" contra WinMaker.' },
       { value: 'En producción', label: 'en cotizador.grupocps.com.uy, la puerta de entrada de los clientes de Grupo CPS.' },
@@ -610,7 +610,7 @@ const es = {
       { metric: 'Calidad de código', value: 'TypeScript estricto, sin errores de tipo' },
     ],
     qualityNote:
-      'El "modo sombra": una herramienta que compara, ventana por ventana, lo que calcula mi sistema contra el desglose real de piezas del software de fábrica. Sirve para medir cuánto me desvío antes de dar un precio por bueno. La diferencia entre "creo que está bien" y "lo medí".',
+      'El "modo sombra": una herramienta que compara, ventana por ventana, lo que calcula mi sistema contra el desglose real de piezas del software de fábrica. Sirve para medir cuánto me desvío antes de dar un precio por bueno.',
     shotsLabel: 'demo',
     shotsHeading: 'El cotizador en acción.',
     learningsLabel: 'aprendizajes',
@@ -621,7 +621,7 @@ const es = {
       'El sistema completo incluye a quien lo mantiene: el panel interno y su semáforo de carga hacen que los técnicos, no el programador, sean los dueños de los datos.',
     ],
     ctaHeading: '¿Querés hablar de este proyecto?',
-    ctaText: 'El código es privado, pero las decisiones técnicas se pueden discutir. Escribime si querés hablar de esto o de una posición.',
+    ctaText: 'El código es privado, pero puedo contar en detalle cómo está hecho. Escribime si te interesa esto o querés hablar de una posición.',
     ctaContact: 'Contacto',
     ctaMore: 'Ver más proyectos',
     gallery: [
@@ -660,7 +660,7 @@ const es = {
       'Y había un problema más fino: las herramientas. Una amoladora no es "3 amoladoras": es esta amoladora, con su número de serie, que está en tal obra, volvió rota o se perdió. Y alguien tiene que responder por ella.',
     ],
     constraintsLabel: '02 · restricciones',
-    constraintsHeading: 'Con qué había que convivir.',
+    constraintsHeading: 'Lo que había que tener en cuenta.',
     constraints: [
       { title: 'Varios depósitos y obras operando a la vez', text: 'Movimientos concurrentes desde distintos lugares. El saldo no puede depender de que dos personas no carguen al mismo tiempo.' },
       { title: 'Usuarios no técnicos, con roles distintos', text: 'Logística opera; jefes de obra y dirección consultan y piden. Cada uno tenía que ver y poder hacer solo lo suyo, sin que eso dependiera de la buena voluntad.' },
@@ -675,7 +675,7 @@ const es = {
       'Sobre esa base, el costeo usa precio promedio ponderado congelado en cada movimiento: las transferencias no alteran el promedio y las devoluciones reingresan al costo del vale original. Por eso el "stock valorizado" del dashboard es un número defendible, no una estimación.',
     ],
     decisionsLabel: '03 · decisiones técnicas y por qué',
-    decisionsHeading: 'Cada decisión no trivial, con su razón.',
+    decisionsHeading: 'Por qué está armado así.',
     decisions: [
       { title: 'Kardex append-only', text: 'Los movimientos solo se insertan; corregir es contra-asentar. Con esa sola decisión salieron gratis la auditoría, las anulaciones, el kardex por período y la valorización: todo es una consulta sobre la misma tabla.' },
       { title: 'El saldo lo mantiene la base, no la app', text: 'Un trigger actualiza el saldo por depósito en cada asiento y una restricción lo impide bajar de cero. Dos operaciones simultáneas sobre el mismo artículo no pueden dejar stock negativo, sin locks en la aplicación.' },
@@ -685,11 +685,11 @@ const es = {
       { title: 'Herramientas como unidades, no como cantidades', text: 'Cada herramienta tiene número de serie y ciclo de vida propio: disponible → en obra → en reparación → rota o perdida. Las rotas o perdidas se imputan a la obra que las tenía.' },
     ],
     discardedLabel: '04 · qué se descartó',
-    discardedHeading: 'Alternativas consideradas y por qué no.',
+    discardedHeading: 'Lo que descarté en el camino.',
     discarded: [
       { title: 'Editar cantidades directamente', text: 'Es lo que hacían las planillas. Sin la historia detrás del número, no hay forma de explicar un faltante, anular sin borrar ni valorizar el stock.' },
       { title: 'Reglas de negocio en la capa de aplicación', text: 'Cualquier cliente que hable con la API podría saltárselas, y cada regla habría que repetirla en cada pantalla. En PostgreSQL hay una sola puerta y no tiene atajo.' },
-      { title: 'Supabase en la nube', text: 'Más cómodo, pero los datos de la empresa saldrían de su servidor. El control y el costo pesaron más que la comodidad; el precio fue hacerme cargo de la operación.' },
+      { title: 'Supabase en la nube', text: 'Más cómodo, pero los datos de la empresa saldrían de su servidor. Pesó más tener el control y no pagar un plan; a cambio, la operación la llevo yo.' },
       { title: 'Un sistema solo de materiales', text: 'Sin herramientas por número de serie, la mitad del problema (quién tiene qué, en qué obra, y quién responde) seguía viviendo en mensajes.' },
     ],
     solutionLabel: 'qué se construyó',
@@ -728,10 +728,10 @@ const es = {
       { title: 'Roles con lo mínimo necesario', text: 'El rol admin opera y administra; el rol consulta (jefes de obra, dirección) lee todo pero solo escribe sus propios pedidos de compra y su dashboard. Y nadie puede auto-promoverse de rol.' },
       { title: 'Usuarios cerrados por defecto', text: 'El registro público está deshabilitado y los perfiles nacen inactivos, sin acceso a datos, hasta que un admin los activa desde la app.' },
       { title: 'Quién hizo qué, siempre', text: 'Emitir, recibir, cancelar, rendir: cada acción queda registrada con usuario y fecha, visible en todas las pantallas para todos los usuarios.' },
-      { title: 'Anular no es borrar', text: 'Las anulaciones generan el asiento inverso y la historia queda completa. No existe la corrección silenciosa.' },
+      { title: 'Anular no es borrar', text: 'Las anulaciones generan el asiento inverso y la historia queda completa. Nada se corrige en silencio.' },
     ],
     resultsLabel: '05 · resultado medible',
-    resultsHeading: 'Lo que se puede verificar.',
+    resultsHeading: 'En números.',
     results: [
       { value: '100%', label: 'de los saldos trazables: cada número es la suma de comprobantes con usuario y fecha.' },
       { value: '0', label: 'stock negativo posible, por restricción de la base, incluso con operaciones concurrentes.' },
@@ -752,13 +752,13 @@ const es = {
     shotsHeading: 'El sistema por dentro.',
     learningsLabel: 'aprendizajes',
     learnings: [
-      'Un sistema de stock es un sistema de confianza: si la gente no le cree al número, vuelve a la planilla. La trazabilidad total es lo que sostiene esa confianza.',
+      'Si la gente no le cree al número, vuelve a la planilla. Por eso todo está pensado para que cada saldo se pueda explicar con sus comprobantes.',
       'Modelar movimientos en vez de cantidades simplificó todo lo demás: kardex, auditoría, anulaciones y valorización salieron del mismo diseño.',
       'Poner las reglas de negocio en la base de datos, y testearlas ahí, hace que la seguridad no dependa de qué botones muestra la interfaz.',
       'El circuito físico también es software: la orden de compra en PDF con lugar para firmas importa tanto como la tabla que la genera.',
     ],
     ctaHeading: '¿Querés hablar de este proyecto?',
-    ctaText: 'El código es interno de la empresa, pero el diseño se puede discutir en detalle. Escribime si querés hablar de esto o de una posición.',
+    ctaText: 'El código es interno de la empresa, pero puedo contar cómo está diseñado. Escribime si te interesa esto o querés hablar de una posición.',
     ctaContact: 'Contacto',
     ctaMore: 'Ver más proyectos',
     gallery: [
@@ -793,7 +793,7 @@ const es = {
       'La información llegaba como texto no estructurado, difícil de comparar y filtrar. Cuando un llamado relevante aparecía y nadie lo veía a tiempo, era una oportunidad perdida: una licitación no se puede presentar fuera de plazo.',
     ],
     constraintsLabel: '02 · restricciones',
-    constraintsHeading: 'Con qué había que convivir.',
+    constraintsHeading: 'Lo que había que tener en cuenta.',
     constraints: [
       { title: 'Datos no estructurados, en cualquier formato', text: 'Los pliegos llegan como PDF, DOC, DOCX, XLS o ZIP, a veces enormes. Todo tenía que convertirse a texto antes de poder evaluarlo.' },
       { title: 'Sin depender de una API de IA paga', text: 'Analizar cada pliego con un servicio externo no cerraba ni en costo ni en control de datos. La evaluación tenía que correr en hardware propio.' },
@@ -803,8 +803,8 @@ const es = {
     insightLabel: 'la decisión clave',
     insightHeading: 'Correr la IA en local y orquestar con n8n, para que el criterio cambie sin reescribir el sistema.',
     insight: [
-      'La parte de IA es la más visible pero la más chica. La decisión que ordenó el proyecto fue separar tres cosas: el pipeline de datos (que trae, limpia y deduplica cada llamado), el criterio de relevancia (un prompt de rubro que se cambia desde configuración) y la orquestación (un workflow en n8n que se edita sin tocar código).',
-      'Con eso, el modelo puede cambiar, el rubro puede cambiar y la frecuencia puede cambiar, y ninguno de los tres cambios exige redeployar nada. El equipo comercial ve un dashboard; todo lo demás corre solo cada 15 minutos.',
+      'La parte de IA es la más visible pero la más chica. Lo que ordenó el proyecto fue separar tres cosas: el pipeline de datos (que trae, limpia y deduplica cada llamado), el criterio de relevancia (un prompt de rubro que se cambia desde configuración) y la orquestación (un workflow en n8n que se edita sin tocar código).',
+      'Así, cambiar el modelo, el rubro o la frecuencia no exige redeployar nada. El equipo comercial ve un dashboard; el resto corre solo cada 15 minutos.',
     ],
     beforeLabel: 'Revisión manual del portal',
     beforeValue: '2 hs/día',
@@ -822,7 +822,7 @@ const es = {
       { title: 'Todo en Docker', text: 'El sistema corre containerizado sobre Linux: reproducible, aislado y desplegable en un servidor propio sin dependencias frágiles.' },
     ],
     discardedLabel: '04 · qué se descartó',
-    discardedHeading: 'Alternativas consideradas y por qué no.',
+    discardedHeading: 'Lo que descarté en el camino.',
     discarded: [
       { title: 'API de OpenAI u otra nube', text: 'Costo por consulta, límites de uso y pliegos con datos de la empresa saliendo de la infraestructura. Para un proceso que corre cada 15 minutos, no cerraba.' },
       { title: 'Un cron con scripts sueltos', text: 'Funciona hasta que hay que cambiar una fuente, una frecuencia o agregar un paso. En n8n eso se hace sobre el workflow, con el historial de cada ejecución a la vista.' },
@@ -859,7 +859,7 @@ const es = {
     archNote:
       'Todo el flujo está orquestado en n8n: ajustar fuentes, reglas o frecuencia se hace sobre el workflow, sin reescribir el sistema.',
     resultsLabel: '05 · resultado medible',
-    resultsHeading: 'Lo que cambió para el equipo.',
+    resultsHeading: 'Qué cambió para el equipo.',
     results: [
       { value: '~10 hs', label: 'de búsqueda manual ahorradas cada semana (antes: 5 días × 2 hs revisando a mano).' },
       { value: '15 min', label: 'entre publicación y detección: ningún llamado nuevo espera más que eso.' },
@@ -881,7 +881,7 @@ const es = {
       'Guardar el feedback humano junto al análisis convierte cada error de la IA en un caso para mejorar el prompt.',
     ],
     ctaHeading: '¿Querés hablar de este proyecto?',
-    ctaText: 'El código es público. Escribime si querés discutir el diseño o hablar de una posición.',
+    ctaText: 'El código es público. Si querés discutir el diseño o hablar de una posición, escribime.',
     ctaContact: 'Contacto',
     ctaMore: 'Ver más proyectos',
     gallery: [
@@ -926,7 +926,7 @@ const en: typeof es = {
       l3pre: 'for real',
       highlight: 'operations.',
     },
-    copy: 'Stock, costing, purchasing, quoting and integrations. Three systems in production at Grupo CPS, built end to end: data model and business rules in PostgreSQL, API and interface in TypeScript and Node.js, deployed on the company’s own server.',
+    copy: 'I work at Grupo CPS, where I built the three systems below: stock, joinery quoting and tender monitoring. I did them on my own, from the data model to the deploy, and the company uses them every day.',
     ctaWork: 'View projects',
     ctaGithub: 'GitHub',
     ctaLinkedin: 'LinkedIn',
@@ -945,9 +945,9 @@ const en: typeof es = {
     stack: ['typescript', 'node.js', 'next.js / react', 'postgresql', 'sql', 'supabase'],
     terminalTitle: 'how I work',
     values: [
-      { title: 'Rules in the database', text: 'business logic lives in PostgreSQL, not in which buttons the UI shows.' },
-      { title: 'Measure before claiming', text: 'a number validated against the real system beats a hunch.' },
-      { title: 'Nothing gets deleted', text: 'ledgers and orders are immutable: correcting means posting, not editing.' },
+      { title: 'Rules in the database', text: 'the validations that matter live in PostgreSQL, not in the UI.' },
+      { title: 'Verified numbers', text: 'before I call a calculation good, I check it against the real system.' },
+      { title: 'Full history', text: 'movements are never edited or deleted, only recorded.' },
     ],
     projectsLabel: 'in production · grupo cps',
     portraitName: 'Sebastián Viglione',
@@ -958,9 +958,9 @@ const en: typeof es = {
     label: 'about me',
     heading: 'Internal systems, from the database to the deploy.',
     intro:
-      'I work as a Developer & Systems Technician at Grupo CPS, a construction and aluminum joinery company. There I designed and built the three systems on this page, alone and end to end: data model, business rules, API, interface and deployment on the company’s server.',
+      'I work as a Developer & Systems Technician at Grupo CPS, a construction and aluminum joinery company. The three systems on this page were built there, by me alone: data model, business rules, API, interface and deployment on the company’s server.',
     body:
-      'What interests me most is the backend: modeling the domain well, putting the rules where they cannot be bypassed, and measuring before calling a number good. I am studying Systems Engineering at Universidad de Montevideo and I speak English at C1 level.',
+      'The part I enjoy most is the backend: understanding the domain well enough to model it, and keeping the rules where nobody can skip them. I am studying Systems Engineering at Universidad de Montevideo and my English is C1.',
     facts: [
       { label: 'Systems Engineering student · Universidad de Montevideo', icon: GraduationCap },
       { label: 'Developer & Systems Technician · Grupo CPS', icon: Briefcase },
@@ -972,7 +972,7 @@ const en: typeof es = {
 
   experience: {
     label: 'experience',
-    heading: 'What I did and what came of it.',
+    heading: 'Where I worked and what I did.',
     items: [
       {
         role: 'Developer & Systems Technician',
@@ -998,12 +998,12 @@ const en: typeof es = {
   stackLevels: [
     {
       title: 'Daily',
-      note: 'What I can defend line by line.',
+      note: 'What I use every day.',
       items: ['TypeScript', 'Node.js', 'Next.js / React', 'PostgreSQL', 'SQL', 'Supabase'],
     },
     {
       title: 'Used in production',
-      note: 'Applied in real systems; not the day-to-day.',
+      note: 'Used in production projects, but not every day.',
       items: ['Python', 'n8n', 'Docker', 'Linux', 'Ollama', 'Puppeteer', 'Jest', 'Three.js', 'Tailwind', 'Coolify'],
     },
     {
@@ -1014,7 +1014,7 @@ const en: typeof es = {
   ],
 
   work: {
-    heading: 'Three systems in production, built end to end.',
+    heading: 'Three systems in production, built from scratch.',
     monoLabel: '[ projects ] — in production now',
     statusChip: 'all systems running',
     sitesLine: 'I also built four institutional websites:',
@@ -1107,30 +1107,30 @@ const en: typeof es = {
 
   practices: {
     label: 'how I work',
-    heading: 'Decisions that repeat in everything I build.',
+    heading: 'Things I do on every project.',
     items: [
       {
         number: 1,
-        title: 'Rules live in the database',
-        text: 'Constraints, transactions and RLS in PostgreSQL. Hiding a button is ergonomics; the real barrier is in the database.',
+        title: 'Rules go in the database',
+        text: 'Constraints, transactions and RLS in PostgreSQL. If a rule only exists in the UI, anyone talking straight to the API can skip it.',
         icon: Database,
       },
       {
         number: 2,
-        title: 'Measure before claiming',
-        text: 'Before calling a number good, I compare it against the real system. A hunch is not a result.',
+        title: 'I check the numbers',
+        text: 'When a calculation matters, I compare it against the system the company already uses before calling it good.',
         icon: Ruler,
       },
       {
         number: 3,
-        title: 'Test where the logic lives',
-        text: 'If the rule is in SQL, the test runs in SQL inside a transaction that rolls back. If the engine is pure, it is tested with no database at all.',
+        title: 'Tests where the logic is',
+        text: 'If the rule lives in SQL, the test runs in SQL. If the pricing engine is pure, it is tested without a database.',
         icon: FlaskConical,
       },
       {
         number: 4,
         title: 'Reproducible deploys',
-        text: 'Docker, versioned migrations applied by CI and daily backups. If verification is not green, production is not touched.',
+        text: 'Docker, versioned migrations applied by CI and daily backups. If verification fails, nothing gets deployed.',
         icon: Server,
       },
     ],
@@ -1143,7 +1143,7 @@ const en: typeof es = {
       l1: 'Get in touch.',
       l2: '',
     },
-    copy: 'Write to me if you want to talk about a role or about any of these projects. I reply by email or LinkedIn.',
+    copy: 'If you want to talk about a role or ask about any of these projects, write to me. I reply by email or LinkedIn.',
     mail: 'Mail',
     social: 'Also on:',
     formName: 'Your name',
@@ -1261,7 +1261,7 @@ const en: typeof es = {
       'The company already calculated all of this precisely in its factory software, WinMaker, which stores one “recipe” per window type: 2,641 files in a closed format, impossible to use directly on a website. My first simple calculation counted 2.44× less aluminum than the window actually uses.',
     ],
     constraintsLabel: '02 · constraints',
-    constraintsHeading: 'What I had to live with.',
+    constraintsHeading: 'What I had to work around.',
     constraints: [
       { title: 'No access to the factory software from the web', text: 'WinMaker is a desktop system with its own format. It exposes no API and cannot be queried live: whatever I needed from it had to be extracted once and live in my model.' },
       { title: 'Internal costs that can never leak', text: 'The client must see a final price, never the cost, the margin or the price per square meter. Any design where the browser does the math was out from the start.' },
@@ -1282,7 +1282,7 @@ const en: typeof es = {
     afterLabel: 'Aluminum it really uses',
     afterValue: '~7.7 m',
     decisionsLabel: '03 · technical decisions and why',
-    decisionsHeading: 'Every non-trivial decision, with its reason.',
+    decisionsHeading: 'Why it is built this way.',
     decisions: [
       { title: 'Pure pricing engine, no I/O', text: 'All the pricing is pure functions, testable with no database. That is why it has 68+ Jest tests and could be validated against the factory without spinning up any service.' },
       { title: 'Geometry separated from costing', text: 'Recipes change how much material is counted; the costing (cost per meter, cost per m², hardware, margin, VAT) was untouched. Bringing in the factory numbers broke nothing that already worked.' },
@@ -1292,7 +1292,7 @@ const en: typeof es = {
       { title: 'Explicit fallback, never silent', text: 'Whatever has no recipe loaded quotes by estimation with the generic model and is flagged as such. A per-recipe traffic light shows what is missing to quote with real cost.' },
     ],
     discardedLabel: '04 · what was discarded',
-    discardedHeading: 'Alternatives considered and why not.',
+    discardedHeading: 'What I ruled out along the way.',
     discarded: [
       { title: 'Area × price per m² formula', text: 'Fast, but it counted 2.44× less aluminum than real. A hand-tuned correction factor would have hidden the error instead of fixing it.' },
       { title: 'Porting all of WinMaker to the web', text: 'Precise, but unfeasible: 2,641 recipes in a closed format and a full manufacturing engine, for what had to be an entry-level quoter.' },
@@ -1320,7 +1320,7 @@ const en: typeof es = {
       },
       {
         title: 'Real-cost traffic light',
-        text: 'A “load status” view shows what each recipe is missing to quote with real cost: red if the recipe has no profiles loaded or any profile is missing its cost, yellow if labor is missing, green when the cost is complete. Nothing quotes right by accident.',
+        text: 'A “load status” view shows what each recipe is missing to quote with real cost: red if the recipe has no profiles loaded or any profile is missing its cost, yellow if labor is missing, green when the cost is complete.',
       },
       {
         title: 'Resolution with fallback',
@@ -1362,9 +1362,9 @@ const en: typeof es = {
       { title: 'Currency with a safety net', text: 'Costs coexist in dollars and pesos with an explicit conversion convention. If the rate is missing, the system degrades to a defined neutral factor instead of breaking mid-calculation.' },
     ],
     resultsLabel: '05 · measurable result',
-    resultsHeading: 'Measure before you claim.',
+    resultsHeading: 'What can be measured.',
     results: [
-      { value: '2.44× → ~1%', label: 'material error against the factory system, solved structurally and not with a coefficient.' },
+      { value: '2.44× → ~1%', label: 'error in the aluminum calculation against the factory system, fixed in the geometry rather than with a correction factor.' },
       { value: '2,641', label: 'real factory recipes analyzed by reverse engineering.' },
       { value: '68+', label: 'automated tests: unit, integration and the “shadow mode” against WinMaker.' },
       { value: 'In production', label: 'at cotizador.grupocps.com.uy, the front door for Grupo CPS clients.' },
@@ -1380,7 +1380,7 @@ const en: typeof es = {
       { metric: 'Code quality', value: 'Strict TypeScript, no type errors' },
     ],
     qualityNote:
-      'The “shadow mode”: a tool that compares, window by window, what my system calculates against the real parts breakdown from the factory software. It measures how far off I am before calling a price good. The difference between “I think it’s right” and “I measured it”.',
+      'The “shadow mode”: a tool that compares, window by window, what my system calculates against the real parts breakdown from the factory software. It measures how far off I am before calling a price good.',
     shotsLabel: 'demo',
     shotsHeading: 'The quoter in action.',
     learningsLabel: 'takeaways',
@@ -1391,7 +1391,7 @@ const en: typeof es = {
       'A complete system includes whoever maintains it: the internal panel and its load-status traffic light make the technicians, not the programmer, the owners of the data.',
     ],
     ctaHeading: 'Want to talk about this project?',
-    ctaText: 'The code is private, but the technical decisions are open for discussion. Write to me if you want to talk about this or about a role.',
+    ctaText: 'The code is private, but I can walk you through how it is built. Write to me if this interests you or you want to talk about a role.',
     ctaContact: 'Contact',
     ctaMore: 'More projects',
     gallery: [
@@ -1430,7 +1430,7 @@ const en: typeof es = {
       'And there was a subtler problem: tools. An angle grinder is not “3 angle grinders”: it is this grinder, with its serial number, which is at that site, came back broken or got lost. And someone has to answer for it.',
     ],
     constraintsLabel: '02 · constraints',
-    constraintsHeading: 'What I had to live with.',
+    constraintsHeading: 'What I had to work around.',
     constraints: [
       { title: 'Several warehouses and sites operating at once', text: 'Concurrent movements from different places. The balance cannot depend on two people not posting at the same time.' },
       { title: 'Non-technical users, with different roles', text: 'Logistics operates; site managers and management query and request. Each one had to see and do only their part, without that depending on goodwill.' },
@@ -1445,7 +1445,7 @@ const en: typeof es = {
       'On that foundation, costing uses a weighted average price frozen into each movement: transfers do not alter the average, and returns re-enter at the cost frozen in the original voucher. That is why the stock valuation on the dashboard is a defensible number, not an estimate.',
     ],
     decisionsLabel: '03 · technical decisions and why',
-    decisionsHeading: 'Every non-trivial decision, with its reason.',
+    decisionsHeading: 'Why it is built this way.',
     decisions: [
       { title: 'Append-only ledger', text: 'Movements are insert-only; correcting means posting a reversing entry. That single decision made auditing, voiding, period ledgers and valuation free: they are all queries over the same table.' },
       { title: 'The balance is kept by the database, not the app', text: 'A trigger updates the balance per warehouse on every entry and a constraint stops it from going below zero. Two simultaneous operations on the same item cannot leave negative stock, with no locks in the application.' },
@@ -1455,11 +1455,11 @@ const en: typeof es = {
       { title: 'Tools as units, not quantities', text: 'Each tool has a serial number and its own life cycle: available → on site → under repair → broken or lost. Broken or lost ones are charged to the site that had them.' },
     ],
     discardedLabel: '04 · what was discarded',
-    discardedHeading: 'Alternatives considered and why not.',
+    discardedHeading: 'What I ruled out along the way.',
     discarded: [
       { title: 'Editing quantities directly', text: 'That is what the spreadsheets did. Without the history behind the number, there is no way to explain a shortage, void without deleting, or value the stock.' },
       { title: 'Business rules in the application layer', text: 'Any client talking to the API could skip them, and every rule would have to be repeated on every screen. In PostgreSQL there is one door and it has no shortcut.' },
-      { title: 'Cloud-hosted Supabase', text: 'More convenient, but the company’s data would leave its server. Control and cost outweighed convenience; the price was taking on operations myself.' },
+      { title: 'Cloud-hosted Supabase', text: 'More convenient, but the company’s data would leave its server. Keeping control and not paying for a plan mattered more; in exchange, I run the operations myself.' },
       { title: 'A materials-only system', text: 'Without serial-numbered tools, half the problem (who has what, at which site, and who answers for it) would still live in messages.' },
     ],
     solutionLabel: 'what was built',
@@ -1498,10 +1498,10 @@ const en: typeof es = {
       { title: 'Roles with the bare minimum', text: 'The admin role operates and administers; the viewer role (site managers, management) reads everything and can only create its own purchase requests and customize its dashboard. And nobody can promote their own role.' },
       { title: 'Users closed by default', text: 'Public sign-up is disabled and profiles are born inactive, with no access to data, until an admin activates them from the app.' },
       { title: 'Who did what, always', text: 'Issuing, receiving, canceling, reconciling: every action is recorded with user and date, visible on every screen for every user.' },
-      { title: 'Voiding is not deleting', text: 'Voiding posts the reversing entry and the history stays complete. There is no such thing as a silent correction.' },
+      { title: 'Voiding is not deleting', text: 'Voiding posts the reversing entry and the history stays complete. Nothing gets corrected quietly.' },
     ],
     resultsLabel: '05 · measurable result',
-    resultsHeading: 'What can be verified.',
+    resultsHeading: 'In numbers.',
     results: [
       { value: '100%', label: 'of balances traceable: every number is the sum of vouchers with user and date.' },
       { value: '0', label: 'negative stock possible, enforced by a database constraint, even under concurrent operations.' },
@@ -1522,13 +1522,13 @@ const en: typeof es = {
     shotsHeading: 'The system from the inside.',
     learningsLabel: 'takeaways',
     learnings: [
-      'A stock system is a trust system: if people do not believe the number, they go back to the spreadsheet. Total traceability is what sustains that trust.',
+      'If people do not believe the number, they go back to the spreadsheet. That is why everything is built so every balance can be explained by its vouchers.',
       'Modeling movements instead of quantities simplified everything else: ledger views, auditing, voiding and valuation all fell out of the same design.',
       'Putting business rules in the database, and testing them there, means security does not depend on which buttons the interface shows.',
       'The physical circuit is software too: the purchase order PDF with signature lines matters as much as the table that generates it.',
     ],
     ctaHeading: 'Want to talk about this project?',
-    ctaText: 'The code is internal to the company, but the design can be discussed in detail. Write to me if you want to talk about this or about a role.',
+    ctaText: 'The code is internal to the company, but I can explain how it is designed. Write to me if this interests you or you want to talk about a role.',
     ctaContact: 'Contact',
     ctaMore: 'More projects',
     gallery: [
@@ -1563,7 +1563,7 @@ const en: typeof es = {
       'The information came as unstructured text, hard to compare and filter. When a relevant tender showed up and nobody saw it in time, it was a missed opportunity: a tender cannot be submitted after the deadline.',
     ],
     constraintsLabel: '02 · constraints',
-    constraintsHeading: 'What I had to live with.',
+    constraintsHeading: 'What I had to work around.',
     constraints: [
       { title: 'Unstructured data, in any format', text: 'Tender documents arrive as PDF, DOC, DOCX, XLS or ZIP, sometimes huge. Everything had to be converted to text before it could be evaluated.' },
       { title: 'No dependence on a paid AI API', text: 'Analyzing every document with an external service did not add up in cost or in data control. The evaluation had to run on our own hardware.' },
@@ -1573,8 +1573,8 @@ const en: typeof es = {
     insightLabel: 'the key decision',
     insightHeading: 'Run the AI locally and orchestrate with n8n, so the criterion can change without rewriting the system.',
     insight: [
-      'The AI part is the most visible but the smallest. The decision that organized the project was separating three things: the data pipeline (which fetches, cleans and deduplicates every tender), the relevance criterion (a field-specific prompt changed from configuration) and the orchestration (an n8n workflow edited without touching code).',
-      'With that, the model can change, the field can change and the frequency can change, and none of those three changes requires a redeploy. The sales team sees a dashboard; everything else runs on its own every 15 minutes.',
+      'The AI part is the most visible but the smallest. What organized the project was separating three things: the data pipeline (which fetches, cleans and deduplicates every tender), the relevance criterion (a field-specific prompt changed from configuration) and the orchestration (an n8n workflow edited without touching code).',
+      'So changing the model, the field or the frequency needs no redeploy. The sales team sees a dashboard; the rest runs on its own every 15 minutes.',
     ],
     beforeLabel: 'Manual review of the portal',
     beforeValue: '2 hrs/day',
@@ -1592,7 +1592,7 @@ const en: typeof es = {
       { title: 'Everything in Docker', text: 'The system runs containerized on Linux: reproducible, isolated and deployable on a private server with no fragile dependencies.' },
     ],
     discardedLabel: '04 · what was discarded',
-    discardedHeading: 'Alternatives considered and why not.',
+    discardedHeading: 'What I ruled out along the way.',
     discarded: [
       { title: 'OpenAI or another cloud API', text: 'Per-query cost, usage limits and company documents leaving the infrastructure. For a process that runs every 15 minutes, it did not add up.' },
       { title: 'A cron job with loose scripts', text: 'It works until a source, a frequency or a step has to change. In n8n that is done on the workflow, with the history of every run in plain sight.' },
@@ -1651,7 +1651,7 @@ const en: typeof es = {
       'Storing human feedback next to the analysis turns every AI mistake into a case for improving the prompt.',
     ],
     ctaHeading: 'Want to talk about this project?',
-    ctaText: 'The code is public. Write to me if you want to discuss the design or talk about a role.',
+    ctaText: 'The code is public. If you want to discuss the design or talk about a role, write to me.',
     ctaContact: 'Contact',
     ctaMore: 'More projects',
     gallery: [
