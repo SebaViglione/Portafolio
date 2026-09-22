@@ -162,7 +162,6 @@ const layout: ViewLayout[] = [
       n('c3', 'datos', 40, 420, 240),
       n('c4', 'datos', 40, 590, 240),
       n('c5', 'datos', 40, 760, 240),
-      n('c6', 'datos', 40, 930, 240),
       n('receta', 'panel', 490, 140, 300),
       n('pw', 'panel', 490, 430, 300),
       n('sem', 'gate', 490, 590, 300),
@@ -176,7 +175,7 @@ const layout: ViewLayout[] = [
       n('pedidos', 'fabrica', 1065, 930, 240),
     ],
     groups: [
-      { id: 'gc', nodes: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'] },
+      { id: 'gc', nodes: ['c1', 'c2', 'c3', 'c4', 'c5'] },
       { id: 'gr', nodes: ['receta', 'pw', 'sem', 'web'] },
       { id: 'gk', nodes: ['k1', 'k2', 'k3', 'k4', 'k5', 'k6'] },
     ],
@@ -186,7 +185,6 @@ const layout: ViewLayout[] = [
       e('c3', 'receta'),
       e('c4', 'receta'),
       e('c5', 'web', { dashed: true }),
-      e('c6', 'web', { dashed: true }),
       e('k1', 'receta'),
       e('k2', 'receta'),
       e('k4', 'web', { dashed: true }),
@@ -561,7 +559,6 @@ const es: ProjectText = {
         c3: { label: 'Cámaras DVH · mosquiteros', sub: 'cámara por metro · tela por rollo', desc: 'Cámaras de DVH por metro lineal y rollos de tela mosquitera con ancho y precio, para cotizar la tela con orientación óptima.' },
         c4: { label: 'Mano de obra', sub: 'estaciones y horas: propias, por línea o por tipología', desc: 'Horas por estación de taller. Se cargan por receta o como globales por línea o tipología; el semáforo exige que haya alguna.' },
         c5: { label: 'Vidrios y servicios', sub: 'precio por m² · laminados estándar · servicios', desc: 'Lista de vidrios con precio por m² y moneda, y servicios (pulido, templado…) con subopciones. Van directo al cotizador.' },
-        c6: { label: 'Uniones', sub: 'perfil de unión para aberturas compuestas', desc: 'Perfiles de unión entre módulos de una abertura compuesta, costeados por tira.' },
         receta: {
           label: 'Receta = línea × tipología',
           sub: '• perfiles con cortes (largo, cantidad) • accesorios y herrajes por hoja o paño • horas por estación • variantes por guías, hojas y divisiones • alternativas y valores por defecto',
@@ -980,7 +977,6 @@ const en: ProjectText = {
         c3: { label: 'IGU spacers · insect screens', sub: 'spacer per meter · mesh per roll', desc: 'IGU spacers per linear meter and insect-mesh rolls with width and price, to quote the mesh with optimal orientation.' },
         c4: { label: 'Labor', sub: 'stations and hours: own, per line or per window type', desc: 'Hours per shop station. Loaded per recipe or as globals per line or window type; the traffic light requires some.' },
         c5: { label: 'Glass and services', sub: 'price per m² · standard laminates · services', desc: 'Glass list with price per m² and currency, and services (polishing, tempering…) with sub-options. They go straight to the quoter.' },
-        c6: { label: 'Couplers', sub: 'coupling profile for composite windows', desc: 'Coupling profiles between modules of a composite window, costed per stock length.' },
         receta: {
           label: 'Recipe = line × window type',
           sub: '• profiles with cuts (length, quantity) • accessories and hardware per sash or pane • hours per station • variants by tracks, sashes and divisions • alternatives and defaults',
