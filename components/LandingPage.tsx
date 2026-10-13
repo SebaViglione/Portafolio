@@ -11,16 +11,15 @@ import Lenis from 'lenis';
 import { ArrowDown, ArrowRight, ExternalLink, Languages, Mail, Send } from 'lucide-react';
 import { GitHubIcon, LinkedInIcon } from '@/components/BrandIcons';
 import { CustomCursor } from '@/components/CustomCursor';
+import { BackgroundGrid } from '@/components/BackgroundGrid';
+import { ProjectShowcase } from '@/components/ProjectShowcase';
 import BlurText from '@/components/ui/BlurText';
-import DotGrid from '@/components/ui/DotGrid';
+import SpotlightCard from '@/components/ui/SpotlightCard';
 import SplitText from '@/components/ui/SplitText';
 import TextType from '@/components/ui/TextType';
 import { BorderBeam } from '@/components/ui/border-beam';
-import { GlowingEffect } from '@/components/ui/glowing-effect';
-import { Marquee } from '@/components/ui/marquee';
-import { AnimatedSpan } from '@/components/ui/terminal';
 import { contact } from '@/lib/site';
-import { getDictionary, localizedHref, type Locale, type Project } from '@/lib/content';
+import { getDictionary, localizedHref, type Locale } from '@/lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -50,9 +49,6 @@ function HeroTitle({ title }: { title: ReturnType<typeof getDictionary>['hero'][
     </h1>
   );
 }
-
-// Borde iluminado de los tiles del bento (GlowingEffect): sigue al puntero, solo en desktop.
-const GLOW = { disabled: false, glow: true, spread: 36, proximity: 64, inactiveZone: 0.01, borderWidth: 1, movementDuration: 1.6 };
 
 function SectionTitle({ text }: { text: string }) {
   return (
@@ -110,44 +106,10 @@ function LocalTime() {
   return <span className="tabular-nums">{time ?? '--:--'}</span>;
 }
 
-function SysMedia({ project, priority = false }: { project: Project; priority?: boolean }) {
-  return (
-    <div className="sys-media relative aspect-[16/9] overflow-hidden border-b border-border bg-bg-secondary md:aspect-auto md:h-full md:min-h-[300px] md:border-b-0 md:border-r">
-      {project.video ? (
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          aria-label={project.name}
-        >
-          <source src={project.video} type="video/webm" />
-        </video>
-      ) : project.image ? (
-        <Image
-          src={project.image}
-          alt={project.name}
-          fill
-          priority={priority}
-          sizes="(min-width: 768px) 50vw, 92vw"
-          className="object-cover object-top"
-        />
-      ) : (
-        <div className="placeholder-pattern absolute inset-0" />
-      )}
-      <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/35 to-transparent" aria-hidden="true" />
-    </div>
-  );
-}
-
 export function LandingPage({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale);
   const tools = dict.work.tools;
   const sites = dict.work.sites;
-  const stackHalf = Math.ceil(dict.bento.stack.length / 2);
-  const stackRows = [dict.bento.stack.slice(0, stackHalf), dict.bento.stack.slice(stackHalf)];
   const switchHref = locale === 'es' ? '/en' : '/';
 
   const rootRef = useRef<HTMLElement>(null);
@@ -197,37 +159,22 @@ export function LandingPage({ locale }: { locale: Locale }) {
       const heroWords = gsap.utils.toArray<HTMLElement>('.hero-title .word');
 
       gsap.set(heroWords, { yPercent: -90, opacity: 0, rotateX: -28 });
-      gsap.set('.bento-tile', { y: 26, opacity: 0 });
-      gsap.set('.hero-kicker, .hero-copy, .hero-actions', { y: 18, opacity: 0 });
+      gsap.set('.hero-kicker, .hero-copy, .hero-actions, .hero-mobile-portrait', { y: 18, opacity: 0 });
+      gsap.set('.hero-portrait', { y: 24, opacity: 0, scale: 0.97 });
+      gsap.set('.hero-area', { y: 16, opacity: 0 });
 
       const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
       intro
         .from('.site-nav', { y: -22, opacity: 0, duration: 0.6 })
-        .to('.tile-intro', { y: 0, opacity: 1, duration: 0.6, clearProps: 'transform' }, '-=0.25')
+        .to('.hero-mobile-portrait', { y: 0, opacity: 1, duration: 0.45 }, '-=0.3')
         .to('.hero-kicker', { y: 0, opacity: 1, duration: 0.45 }, '-=0.3')
         .to(heroWords, { yPercent: 0, opacity: 1, rotateX: 0, duration: 0.68, stagger: 0.06 }, '-=0.25')
-        .to('.hero-copy', { y: 0, opacity: 1, duration: 0.55 }, '-=0.3')
+        .to('.hero-portrait', { y: 0, opacity: 1, scale: 1, duration: 0.8, clearProps: 'transform' }, '-=0.7')
+        .to('.hero-copy', { y: 0, opacity: 1, duration: 0.55 }, '-=0.45')
         .to('.hero-actions', { y: 0, opacity: 1, duration: 0.5 }, '-=0.3')
-        .to(
-          '.bento-tile:not(.tile-intro)',
-          { y: 0, opacity: 1, duration: 0.6, stagger: 0.09, clearProps: 'transform' },
-          '-=0.55',
-        );
+        .to('.hero-area', { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, clearProps: 'transform' }, '-=0.25');
 
-      gsap.from('.sys-row', {
-        y: 20,
-        opacity: 0,
-        duration: 0.55,
-        stagger: 0.09,
-        clearProps: 'transform,opacity',
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.sys-table',
-          start: 'top 78%',
-        },
-      });
-
-      gsap.from('.xp-item, .edu-block', {
+      gsap.from('.xp-role, .xp-area, .edu-block', {
         y: 24,
         opacity: 0,
         duration: 0.65,
@@ -264,46 +211,6 @@ export function LandingPage({ locale }: { locale: Locale }) {
         },
       });
 
-      gsap.from('.reason-item', {
-        x: -34,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.14,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '#porque',
-          start: 'top 65%',
-        },
-      });
-
-      gsap.utils.toArray<HTMLElement>('.count-number').forEach((number) => {
-        const value = Number(number.dataset.value || '0');
-        const counter = { value: 0 };
-        gsap.to(counter, {
-          value,
-          duration: 1.1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: number,
-            start: 'top 82%',
-          },
-          onUpdate: () => {
-            number.textContent = String(Math.round(counter.value)).padStart(2, '0');
-          },
-        });
-      });
-
-      gsap.to('.seba-watermark', {
-        yPercent: -10,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '#porque',
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
-        },
-      });
-
       gsap.from('.contact-block', {
         y: 28,
         opacity: 0,
@@ -323,7 +230,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
 
   return (
     <MotionConfig reducedMotion="user">
-    <main ref={rootRef} className="min-h-screen overflow-hidden bg-bg-primary text-text-primary">
+    <main ref={rootRef} className="min-h-screen overflow-x-clip bg-bg-primary text-text-primary">
       <CustomCursor />
 
       <motion.header
@@ -416,11 +323,30 @@ export function LandingPage({ locale }: { locale: Locale }) {
         </AnimatePresence>
       </motion.header>
 
-      <section id="inicio" className="relative pt-20">
-        <div className="mx-auto w-full max-w-7xl px-5 pb-6 pt-6 md:px-8 md:pt-10">
-          <div className="grid gap-4 lg:grid-cols-12">
-            <div className="bento-tile tile-intro relative flex flex-col justify-center overflow-hidden p-7 md:p-12 lg:col-span-8">
-              <GlowingEffect {...GLOW} />
+      <section id="inicio" className="hero-section relative flex flex-col justify-center overflow-hidden pt-20">
+        <BackgroundGrid />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg-primary to-transparent" aria-hidden="true" />
+
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-14 pt-10 md:px-8 md:pt-16 lg:pb-16">
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div>
+              <div className="hero-mobile-portrait mb-7 flex items-center gap-4 lg:hidden">
+                <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-border bg-bg-secondary">
+                  <Image
+                    src="/assets/img/profile.webp"
+                    alt={dict.hero.portraitAlt}
+                    fill
+                    priority
+                    sizes="64px"
+                    className="object-cover object-top"
+                  />
+                </span>
+                <span>
+                  <span className="block text-[15px] font-semibold text-text-primary">{dict.hero.portraitName}</span>
+                  <span className="block font-mono text-[11px] text-accent">{dict.hero.portraitRole}</span>
+                </span>
+              </div>
+
               <div className="hero-kicker inline-flex items-center gap-3 font-mono text-[13px] font-medium text-text-secondary">
                 <span className="pulse-dot" />
                 {dict.hero.status}
@@ -430,11 +356,11 @@ export function LandingPage({ locale }: { locale: Locale }) {
                 <HeroTitle title={dict.hero.title} />
               </div>
 
-              <p className="hero-copy mt-6 max-w-xl text-[17px] leading-[1.7] text-text-secondary md:text-lg">
+              <p className="hero-copy mt-7 max-w-2xl text-[17px] leading-[1.7] text-text-secondary md:text-lg">
                 {dict.hero.copy}
               </p>
 
-              <div className="hero-actions mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <div className="hero-actions mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Link href="#trabajos" className="btn-primary">
                   {dict.hero.ctaWork}
                   <ArrowDown size={18} />
@@ -450,126 +376,47 @@ export function LandingPage({ locale }: { locale: Locale }) {
               </div>
             </div>
 
-            <div className="bento-tile relative min-h-[420px] overflow-hidden sm:min-h-[480px] lg:col-span-4 lg:row-span-2 lg:min-h-0">
-              <div className="absolute inset-0" aria-hidden="true">
-                <DotGrid
-                  dotSize={3}
-                  gap={22}
-                  baseColor="#2B3038"
-                  activeColor="#B8FF2C"
-                  proximity={110}
-                  shockStrength={2}
-                  glow={0.3}
-                  swell={0.5}
-                  clickShock={false}
-                />
-              </div>
-              <div className="absolute inset-x-0 bottom-11 top-0">
+            <figure className="hero-portrait relative hidden overflow-hidden rounded-2xl border border-border bg-bg-secondary/70 lg:block">
+              <div className="relative aspect-[4/5]">
                 <Image
                   src="/assets/img/profile.webp"
                   alt={dict.hero.portraitAlt}
                   fill
                   priority
-                  sizes="(min-width: 1024px) 400px, 92vw"
+                  sizes="360px"
                   className="object-contain object-bottom saturate-[0.85]"
                 />
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-bg-secondary/95" aria-hidden="true" />
               </div>
-              <div
-                className="absolute inset-x-0 bottom-11 h-28 bg-gradient-to-b from-transparent to-bg-secondary/90"
-                aria-hidden="true"
-              />
-              <div className="absolute inset-x-0 bottom-0 flex h-11 items-center justify-between border-t border-border bg-bg-primary px-4">
-                <span className="text-[13px] font-semibold text-text-primary">{dict.bento.portraitName}</span>
-                <span className="font-mono text-[11px] text-accent">{dict.bento.portraitRole}</span>
-              </div>
-            </div>
+              <figcaption className="flex items-center justify-between gap-3 border-t border-border bg-bg-primary px-4 py-3">
+                <span className="text-[13px] font-semibold text-text-primary">{dict.hero.portraitName}</span>
+                <span className="text-right font-mono text-[10.5px] text-accent">{dict.hero.portraitRole}</span>
+              </figcaption>
+              <BorderBeam size={120} duration={10} borderWidth={1.5} />
+            </figure>
+          </div>
 
-            <div className="bento-tile relative p-6 lg:col-span-3">
-              <GlowingEffect {...GLOW} />
-              <span className="tile-label">{dict.bento.estadoLabel}</span>
-              <div className="mt-4 grid gap-3">
-                {dict.bento.estado.map((row) => (
-                  <div className="estado-row" key={row.label}>
-                    <span className="font-mono text-[11.5px] text-text-muted">{row.label}</span>
-                    {row.live ? (
-                      <span className="inline-flex items-center gap-2 text-[13px] font-semibold text-accent">
-                        <span className="pulse-dot" />
-                        {row.value}
-                      </span>
-                    ) : (
-                      <span className="text-right text-[13px] text-text-primary">{row.value}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bento-tile relative overflow-hidden p-6 lg:col-span-5">
-              <GlowingEffect {...GLOW} />
-              <span className="tile-label">{dict.bento.stackLabel}</span>
-              <ul className="sr-only">
-                {dict.bento.stack.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-              <div className="stack-marquee -mx-6 mt-4" aria-hidden="true">
-                {[stackRows[0], stackRows[1]].map((row, index) => (
-                  <Marquee key={index} pauseOnHover reverse={index === 1} repeat={3} className="py-1 [--duration:32s] [--gap:0.5rem]">
-                    {row.map((item) => (
-                      <span className="chip-mono" key={item}>
-                        {item}
-                      </span>
-                    ))}
-                  </Marquee>
-                ))}
-              </div>
-            </div>
-
-            <div className="bento-tile relative overflow-hidden lg:col-span-6">
-              <GlowingEffect {...GLOW} />
-              <div className="term-bar">
-                <span className="term-dot" />
-                <span className="term-dot" />
-                <span className="term-dot is-accent" />
-                <span className="ml-2 font-mono text-[11px] text-text-muted">{dict.bento.terminalTitle}</span>
-              </div>
-              <div className="grid gap-3.5 p-6">
-                {dict.bento.values.map((value, index) => (
-                  <AnimatedSpan
-                    startOnView
-                    delay={index * 380}
-                    className="flex gap-3 text-[15px] leading-relaxed tracking-normal text-text-secondary"
-                    key={value.title}
-                  >
-                    <span className="select-none font-mono text-accent" aria-hidden="true">
-                      &gt;
+          <div className="mt-14 border-t border-border pt-8">
+            <p className="tile-label">{dict.hero.areasLabel}</p>
+            <ul className="mt-5 grid gap-6 md:grid-cols-3 md:gap-8">
+              {dict.hero.areas.map((area) => {
+                const Icon = area.icon;
+                return (
+                  <li className="hero-area flex gap-4" key={area.title}>
+                    <span className="area-icon">
+                      <Icon size={19} />
                     </span>
                     <span>
-                      <span className="font-semibold text-text-primary">{value.title}</span> — {value.text}
-                      {index === dict.bento.values.length - 1 ? <span className="term-cursor ml-1.5" /> : null}
+                      <span className="flex flex-wrap items-center gap-2">
+                        <span className="font-display text-[16px] font-semibold text-text-primary">{area.title}</span>
+                        {area.tag ? <span className="area-tag">{area.tag}</span> : null}
+                      </span>
+                      <span className="mt-1 block text-[14.5px] leading-[1.55] text-text-secondary">{area.text}</span>
                     </span>
-                  </AnimatedSpan>
-                ))}
-              </div>
-            </div>
-
-            <div className="bento-tile relative flex flex-col p-6 lg:col-span-6">
-              <GlowingEffect {...GLOW} />
-              <span className="tile-label">{dict.bento.projectsLabel}</span>
-              <div className="mt-4 grid flex-1 gap-2.5">
-                {tools.map((tool) => (
-                  <Link className="svc-item group" href={localizedHref(locale, tool.url)} key={tool.name}>
-                    <span className="font-mono text-[11px] text-accent">{tool.label}</span>
-                    <span className="font-display text-[15px] font-semibold text-text-primary">{tool.name}</span>
-                    <span className="hidden font-mono text-[11px] lowercase text-text-muted sm:inline">{tool.kind}</span>
-                    <ArrowRight
-                      className="ml-auto text-text-muted transition-transform duration-300 group-hover:translate-x-0.5"
-                      size={15}
-                    />
-                  </Link>
-                ))}
-              </div>
-            </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
       </section>
@@ -587,39 +434,14 @@ export function LandingPage({ locale }: { locale: Locale }) {
             </span>
           </div>
 
-          <div className="sys-table mt-10 overflow-hidden rounded-lg border border-border">
-            {tools.map((tool, index) => {
-              const href = localizedHref(locale, tool.url);
-              return (
-                <article className="sys-row" key={tool.name}>
-                  <Link className="grid md:grid-cols-2" href={href} data-cursor={dict.work.cursorLabel}>
-                    <SysMedia project={tool} priority={index === 0} />
-                    <div className="flex flex-col p-6 md:p-8">
-                      <p className="font-mono text-[11.5px] lowercase text-text-muted">
-                        {tool.kind}
-                        {tool.year ? ` · ${tool.year}` : ''}
-                      </p>
-                      <h3 className="mt-2.5 font-display text-2xl font-semibold leading-tight text-text-primary md:text-[1.7rem]">
-                        {tool.name}
-                      </h3>
-                      <p className="mt-3 max-w-xl text-[15px] leading-[1.65] text-text-secondary">
-                        {tool.description}
-                      </p>
-                      <p className="mt-4 font-mono text-[11.5px] lowercase text-text-muted">
-                        {tool.tags.join(' · ')}
-                      </p>
-                      <span className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold text-accent">
-                        {tool.cta}
-                        <ArrowRight size={16} />
-                      </span>
-                    </div>
-                  </Link>
-                </article>
-              );
-            })}
-          </div>
+          <ProjectShowcase
+            projects={tools}
+            locale={locale}
+            labels={dict.work.summaryLabels}
+            cursorLabel={dict.work.cursorLabel}
+          />
 
-          <p className="sites-line mt-8 text-[15px] leading-[1.7] text-text-muted">
+          <p className="sites-line mt-16 text-[15px] leading-[1.7] text-text-muted">
             {dict.work.sitesLine}{' '}
             {sites.map((site, index) => (
               <Fragment key={site.name}>
@@ -640,28 +462,64 @@ export function LandingPage({ locale }: { locale: Locale }) {
             <SectionTitle text={dict.experience.heading} />
           </div>
 
-          <div className="mt-14 grid gap-10 lg:grid-cols-[1.35fr_0.65fr] lg:gap-14">
-            <div className="grid gap-4">
-              {dict.experience.items.map((item) => (
-                <article className="xp-item" key={`${item.role}-${item.company}`}>
-                  <div>
-                    <p className="font-mono text-[12px] text-accent">{item.period}</p>
-                    <h3 className="mt-2 font-display text-xl font-semibold leading-tight text-text-primary">{item.role}</h3>
-                    <p className="mt-1 text-[15px] text-text-secondary">{item.company}</p>
-                    <p className="mt-1 font-mono text-[11.5px] text-text-muted">{item.place}</p>
-                  </div>
-                  <ul className="grid gap-3">
-                    {item.bullets.map((bullet) => (
-                      <li className="xp-bullet" key={bullet}>
-                        {bullet}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
+          <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12">
+            <div>
+              <div className="xp-role">
+                <p className="font-mono text-[12px] text-accent">{dict.experience.role.period}</p>
+                <h3 className="mt-2 font-display text-2xl font-semibold leading-tight text-text-primary md:text-[1.9rem]">
+                  {dict.experience.role.title}
+                </h3>
+                <p className="mt-1.5 text-[15px] text-text-secondary">
+                  {dict.experience.role.company}
+                  <span className="font-mono text-[12px] text-text-muted"> · {dict.experience.role.place}</span>
+                </p>
+                <p className="mt-4 max-w-2xl text-[14.5px] leading-[1.6] text-text-muted">{dict.experience.role.scope}</p>
+              </div>
+
+              <div className="mt-8 grid gap-4 md:grid-cols-2">
+                {dict.experience.areas.map((area) => {
+                  const Icon = area.icon;
+                  return (
+                    <SpotlightCard
+                      className={`xp-area decision-card${area.tag && area.links.length ? ' is-main' : ''}`}
+                      key={area.title}
+                      spotlightColor="#B8FF2C"
+                      intensity={0.1}
+                      spotlightSize={280}
+                      borderGlow={0.55}
+                      flare={false}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="area-icon">
+                          <Icon size={18} />
+                        </span>
+                        <h4 className="font-display text-lg font-semibold text-text-primary">{area.title}</h4>
+                        {area.tag ? <span className="area-tag ml-auto">{area.tag}</span> : null}
+                      </div>
+                      <ul className="mt-4 grid gap-2.5">
+                        {area.bullets.map((bullet) => (
+                          <li className="xp-bullet" key={bullet}>
+                            {bullet}
+                          </li>
+                        ))}
+                      </ul>
+                      {area.links.length ? (
+                        <div className="mt-5 flex flex-wrap gap-2">
+                          {area.links.map((link) => (
+                            <Link className="area-link" href={localizedHref(locale, link.href)} key={link.href}>
+                              {link.label}
+                              <ArrowRight size={13} />
+                            </Link>
+                          ))}
+                        </div>
+                      ) : null}
+                    </SpotlightCard>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="edu-block rounded-lg border border-border bg-bg-card p-6 md:p-7">
+            <div className="edu-block h-fit rounded-lg border border-border bg-bg-card p-6 md:p-7">
               <p className="tile-label">{dict.experience.educationLabel}</p>
               <div className="mt-4">
                 {dict.experience.education.map((row) => (
@@ -739,36 +597,6 @@ export function LandingPage({ locale }: { locale: Locale }) {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="porque" className="relative overflow-hidden bg-bg-secondary py-24 md:py-32">
-        <div className="seba-watermark pointer-events-none absolute inset-x-0 top-8 text-center font-display text-[24vw] font-bold leading-none text-[#1A1E26] md:top-0" aria-hidden="true">
-          SEBA
-        </div>
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 md:px-8">
-          <div className="section-heading max-w-3xl">
-            <p className="section-label">{dict.practices.label}</p>
-            <SectionTitle text={dict.practices.heading} />
-          </div>
-
-          <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {dict.practices.items.map((practice) => {
-              const Icon = practice.icon;
-              return (
-                <div className="reason-item" key={practice.title}>
-                  <div className="flex items-center justify-between border-b border-border pb-5">
-                    <span className="count-number font-display text-5xl font-semibold text-accent" data-value={practice.number}>
-                      {String(practice.number).padStart(2, '0')}
-                    </span>
-                    <Icon className="text-text-muted" size={25} />
-                  </div>
-                  <h3 className="mt-7 font-display text-2xl font-semibold text-text-primary">{practice.title}</h3>
-                  <p className="mt-4 text-[17px] leading-[1.7] text-text-secondary">{practice.text}</p>
-                </div>
-              );
-            })}
           </div>
         </div>
       </section>

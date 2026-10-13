@@ -3,18 +3,18 @@ import {
   Briefcase,
   BriefcaseBusiness,
   Clock3,
-  Database,
-  FlaskConical,
+  CodeXml,
+  Globe,
   GraduationCap,
   Languages,
   MapPin,
   MessageSquareText,
   MonitorSmartphone,
   RefreshCw,
-  Ruler,
   Server,
   UserRound,
   WalletCards,
+  Wrench,
 } from 'lucide-react';
 import { arceMedia } from './site';
 
@@ -34,6 +34,7 @@ export type Project = {
   image?: string;
   video?: string;
   tags: string[];
+  summary?: { problem: string; decision: string; result: string };
 };
 
 export type CaseStudyItem = { title: string; text: string };
@@ -149,50 +150,37 @@ const es = {
   hero: {
     status: 'abierto a posiciones de desarrollo · montevideo, uy',
     title: {
-      sr: 'Desarrollador backend. Construyo sistemas de gestión para operaciones reales.',
+      sr: 'Desarrollador backend. A cargo de los sistemas de Grupo CPS.',
       l1: 'Desarrollador backend.',
-      l2: 'Sistemas de gestión',
-      l3pre: 'para operaciones',
-      highlight: 'reales.',
+      l2: 'A cargo de los sistemas',
+      l3pre: 'de',
+      highlight: 'Grupo CPS.',
     },
-    copy: 'Trabajo en Grupo CPS, donde armé los tres sistemas que están acá abajo: stock, cotización de aberturas y monitoreo de licitaciones. Los hice solo, desde el modelo de datos hasta el deploy, y la empresa los usa todos los días.',
+    copy: 'Soy el único responsable de sistemas de una empresa de construcción y aberturas. Diseño, construyo y opero el software que la empresa usa todos los días (cotización, stock y licitaciones), conectado a sus tableros de Monday.',
     ctaWork: 'Ver proyectos',
     ctaGithub: 'GitHub',
     ctaLinkedin: 'LinkedIn',
     portraitAlt: 'Sebastián Viglione',
-  },
-
-  bento: {
-    estadoLabel: 'estado',
-    estado: [
-      { label: 'estado', value: 'abierto a posiciones', live: true },
-      { label: 'base', value: 'Montevideo, UY', live: false },
-      { label: 'idiomas', value: 'español · inglés C1', live: false },
-      { label: 'formación', value: 'Ing. en Sistemas · UM', live: false },
-    ],
-    stackLabel: 'stack a diario',
-    stack: ['typescript', 'node.js', 'next.js / react', 'postgresql', 'sql', 'supabase'],
-    terminalTitle: 'cómo trabajo',
-    values: [
-      { title: 'Reglas en la base', text: 'las validaciones importantes viven en PostgreSQL, no en la interfaz.' },
-      { title: 'Números verificados', text: 'antes de dar un cálculo por bueno lo comparo contra el sistema real.' },
-      { title: 'Historial completo', text: 'los movimientos no se editan ni se borran, se registran.' },
-    ],
-    projectsLabel: 'en producción · grupo cps',
     portraitName: 'Sebastián Viglione',
-    portraitRole: 'backend · grupo cps',
+    portraitRole: 'líder de desarrollo y sistemas · grupo cps',
+    areasLabel: 'Qué tengo a cargo',
+    areas: [
+      { title: 'Desarrollo de software', tag: 'principal', text: 'Tres sistemas propios en producción, conectados a Monday.', icon: CodeXml },
+      { title: 'Infraestructura', tag: '', text: 'Servidor de la empresa, deploys automáticos y backups diarios.', icon: Server },
+      { title: 'Soporte IT', tag: 'secundario', text: 'Computadoras, equipos y usuarios de la oficina.', icon: Wrench },
+    ],
   },
 
   about: {
     label: 'sobre mí',
-    heading: 'Sistemas internos, de la base de datos al deploy.',
+    heading: 'De la UTU a liderar los sistemas de una empresa.',
     intro:
-      'Trabajo como Developer & Systems Technician en Grupo CPS, una empresa de construcción y aberturas de aluminio. Los tres sistemas de esta página los hice ahí, solo: modelo de datos, reglas de negocio, API, interfaz y deploy en el servidor de la empresa.',
+      'Hice el Bachillerato Tecnológico en Informática en la UTU y hoy estudio Ingeniería en Sistemas en la Universidad de Montevideo, en paralelo con el trabajo. Entré a Grupo CPS en diciembre de 2024 y hoy tengo a cargo toda el área de sistemas.',
     body:
-      'Lo que más me gusta es la parte de backend: entender bien el dominio y modelarlo, y que las reglas queden donde nadie las pueda saltear. Estudio Ingeniería en Sistemas en la Universidad de Montevideo y tengo inglés C1.',
+      'Lo que más disfruto es el backend: entender un dominio hasta poder modelarlo, poner las reglas donde nadie las pueda saltear y comparar los resultados contra la realidad antes de darlos por buenos. Trabajo en español y en inglés (C1).',
     facts: [
       { label: 'Estudiante de Ingeniería en Sistemas · Universidad de Montevideo', icon: GraduationCap },
-      { label: 'Developer & Systems Technician · Grupo CPS', icon: Briefcase },
+      { label: 'Líder de Desarrollo y Sistemas · Grupo CPS', icon: Briefcase },
       { label: 'Español nativo · Inglés C1 (CAE)', icon: Languages },
       { label: 'Montevideo, Uruguay', icon: MapPin },
     ],
@@ -201,19 +189,57 @@ const es = {
 
   experience: {
     label: 'experiencia',
-    heading: 'Dónde trabajé y qué hice.',
-    items: [
+    heading: 'Dónde trabajo y qué hago.',
+    role: {
+      title: 'Líder de Desarrollo y Sistemas',
+      company: 'Grupo CPS',
+      period: '12/2024 – hoy',
+      place: 'Montevideo, UY',
+      scope:
+        'Único responsable del área de sistemas: desarrollo de software (lo principal), infraestructura, sitios de la empresa y soporte IT a la oficina.',
+    },
+    areas: [
       {
-        role: 'Developer & Systems Technician',
-        company: 'Grupo CPS',
-        period: '12/2024 – actualidad',
-        place: 'Montevideo, UY',
+        title: 'Desarrollo de software',
+        tag: 'principal',
+        icon: CodeXml,
         bullets: [
-          'Diseñé y construí Depósitos CPS, el sistema de stock de la empresa: kardex inmutable, costeo promedio ponderado y RPCs transaccionales en PostgreSQL, con tests de integración sobre el núcleo SQL y migraciones versionadas aplicadas por CI en cada push.',
-          'Desarrollé el cotizador de aberturas, web y app móvil sin conexión: un motor de cálculo puro calibrado con reverse engineering de 2.641 recetas de fábrica, que bajó el error de material de 2,44× a ~1% y se validó con pedidos que la fábrica valoró en su propio software.',
-          'Automaticé el monitoreo de licitaciones públicas con n8n, Puppeteer e IA local: ~10 horas semanales de revisión manual eliminadas para el equipo comercial.',
-          'Opero la infraestructura de esos sistemas en el VPS de la empresa: Supabase self-hosted, Docker y Coolify, con deploy automático en cada push, migraciones por CI y backups diarios.',
+          'Diseño, construyo y mantengo los sistemas internos de punta a punta: modelo de datos, reglas de negocio, API, interfaz y deploy.',
+          'Hoy hay tres en producción, usados por clientes, el equipo comercial, logística, obra y dirección.',
+          'Los conecto con los tableros de Monday de la empresa para que la producción y las tareas avancen sin cargar los datos dos veces.',
         ],
+        links: [
+          { label: 'Cotizador', href: '/cotizador' },
+          { label: 'Depósitos', href: '/stock' },
+          { label: 'Arce', href: '/arce' },
+        ],
+      },
+      {
+        title: 'Infraestructura',
+        tag: '',
+        icon: Server,
+        bullets: [
+          'Opero el servidor de la empresa: Supabase self-hosted, Docker y Coolify.',
+          'Deploy automático en cada push, migraciones aplicadas por CI y backups diarios.',
+        ],
+        links: [],
+      },
+      {
+        title: 'Sitios de la empresa',
+        tag: '',
+        icon: Globe,
+        bullets: [
+          'Mantengo grupocps.com.uy, en español e inglés.',
+          'Armé un template para los sitios de los desarrollos inmobiliarios; el primero es Edificio Galicia.',
+        ],
+        links: [],
+      },
+      {
+        title: 'Soporte IT',
+        tag: 'secundario',
+        icon: Wrench,
+        bullets: ['Mantenimiento de las computadoras y equipos de la oficina.', 'Soporte a los usuarios en el día a día.'],
+        links: [],
       },
     ],
     educationLabel: 'formación',
@@ -248,6 +274,7 @@ const es = {
     statusChip: 'todo operativo',
     sitesLine: 'También hice sitios para clientes de acá y de afuera:',
     cursorLabel: 'VER',
+    summaryLabels: { problem: 'problema', decision: 'decisión', result: 'resultado' },
     tools: [
       {
         name: 'Cotizador de Aberturas',
@@ -260,6 +287,11 @@ const es = {
         cta: 'Ver case study',
         image: '/assets/projects/cotizador/imagen_hero.png',
         tags: ['Next.js', 'TypeScript', 'Three.js', 'Supabase', 'Pricing engine'],
+        summary: {
+          problem: 'El precio de una abertura no sale del m²: depende de cuánto aluminio y vidrio lleva de verdad.',
+          decision: 'Extraer la geometría de 2.641 recetas del software de fábrica, sin portarlo entero.',
+          result: 'Error de material de 2,44× a ~1%, validado con pedidos que valoró la fábrica.',
+        },
       },
       {
         name: 'Depósitos CPS',
@@ -272,6 +304,11 @@ const es = {
         cta: 'Ver case study',
         image: '/assets/projects/depositos_cps/dashboard_inicial.png',
         tags: ['Next.js', 'Supabase', 'PostgreSQL', 'RLS'],
+        summary: {
+          problem: 'El stock de depósitos y obras vivía en planillas, mensajes y memoria.',
+          decision: 'Un kardex inmutable con las reglas en PostgreSQL: el stock no se edita, se registra.',
+          result: '100% de los saldos trazables y stock negativo imposible, incluso con operaciones simultáneas.',
+        },
       },
       {
         name: 'Arce Licitaciones',
@@ -284,6 +321,11 @@ const es = {
         cta: 'Ver case study',
         video: '/assets/projects/arce_dashboard_demo.webm',
         tags: ['n8n', 'PostgreSQL', 'IA local'],
+        summary: {
+          problem: 'El equipo comercial revisaba el portal de licitaciones a mano, 2 horas por día.',
+          decision: 'n8n consulta el portal cada 15 minutos y una IA local filtra y analiza cada llamado.',
+          result: '~10 horas por semana de revisión manual ahorradas al equipo comercial.',
+        },
       },
     ] as Project[],
     sites: [
@@ -343,37 +385,6 @@ const es = {
         tags: ['Python', 'Three.js', 'Planos a 3D'],
       },
     ] as Project[],
-  },
-
-  practices: {
-    label: 'cómo trabajo',
-    heading: 'Cosas que hago siempre, en cualquier proyecto.',
-    items: [
-      {
-        number: 1,
-        title: 'Las reglas van en la base',
-        text: 'Restricciones, transacciones y RLS en PostgreSQL. Si una regla solo existe en la interfaz, cualquiera que hable directo con la API se la saltea.',
-        icon: Database,
-      },
-      {
-        number: 2,
-        title: 'Verifico los números',
-        text: 'Cuando un cálculo importa, lo comparo contra el sistema que ya usa la empresa antes de darlo por bueno.',
-        icon: Ruler,
-      },
-      {
-        number: 3,
-        title: 'Testeo donde está la lógica',
-        text: 'Si la regla vive en SQL, el test corre en SQL. Si el motor de cálculo es puro, se prueba sin base de datos.',
-        icon: FlaskConical,
-      },
-      {
-        number: 4,
-        title: 'Deploy reproducible',
-        text: 'Docker, migraciones versionadas aplicadas por CI y backups diarios. Si la verificación falla, no se despliega.',
-        icon: Server,
-      },
-    ],
   },
 
   contact: {
@@ -933,50 +944,37 @@ const en: typeof es = {
   hero: {
     status: 'open to developer roles · montevideo, uy',
     title: {
-      sr: 'Backend developer. I build management systems for real operations.',
+      sr: 'Backend developer. In charge of the systems at Grupo CPS.',
       l1: 'Backend developer.',
-      l2: 'Management systems',
-      l3pre: 'for real',
-      highlight: 'operations.',
+      l2: 'In charge of the systems',
+      l3pre: 'at',
+      highlight: 'Grupo CPS.',
     },
-    copy: 'I work at Grupo CPS, where I built the three systems below: stock, joinery quoting and tender monitoring. I did them on my own, from the data model to the deploy, and the company uses them every day.',
+    copy: 'I am the sole person in charge of systems at a construction and aluminum joinery company. I design, build and run the software the company uses every day (quoting, stock and public tenders), connected to its Monday boards.',
     ctaWork: 'View projects',
     ctaGithub: 'GitHub',
     ctaLinkedin: 'LinkedIn',
     portraitAlt: 'Sebastián Viglione',
-  },
-
-  bento: {
-    estadoLabel: 'status',
-    estado: [
-      { label: 'status', value: 'open to roles', live: true },
-      { label: 'based in', value: 'Montevideo, UY', live: false },
-      { label: 'languages', value: 'Spanish · English C1', live: false },
-      { label: 'education', value: 'Systems Eng. · UM', live: false },
-    ],
-    stackLabel: 'daily stack',
-    stack: ['typescript', 'node.js', 'next.js / react', 'postgresql', 'sql', 'supabase'],
-    terminalTitle: 'how I work',
-    values: [
-      { title: 'Rules in the database', text: 'the validations that matter live in PostgreSQL, not in the UI.' },
-      { title: 'Verified numbers', text: 'before I call a calculation good, I check it against the real system.' },
-      { title: 'Full history', text: 'movements are never edited or deleted, only recorded.' },
-    ],
-    projectsLabel: 'in production · grupo cps',
     portraitName: 'Sebastián Viglione',
-    portraitRole: 'backend · grupo cps',
+    portraitRole: 'software & systems lead · grupo cps',
+    areasLabel: 'What I am in charge of',
+    areas: [
+      { title: 'Software development', tag: 'main focus', text: 'Three systems of my own in production, connected to Monday.', icon: CodeXml },
+      { title: 'Infrastructure', tag: '', text: 'The company server, automatic deploys and daily backups.', icon: Server },
+      { title: 'IT support', tag: 'secondary', text: 'Office computers, equipment and users.', icon: Wrench },
+    ],
   },
 
   about: {
     label: 'about me',
-    heading: 'Internal systems, from the database to the deploy.',
+    heading: 'From a technical high school to leading a company’s systems.',
     intro:
-      'I work as a Developer & Systems Technician at Grupo CPS, a construction and aluminum joinery company. The three systems on this page were built there, by me alone: data model, business rules, API, interface and deployment on the company’s server.',
+      'I did the Technological Baccalaureate in Informatics at UTU and I am now studying Systems Engineering at Universidad de Montevideo, alongside work. I joined Grupo CPS in December 2024 and today I am in charge of the whole systems area.',
     body:
-      'The part I enjoy most is the backend: understanding the domain well enough to model it, and keeping the rules where nobody can skip them. I am studying Systems Engineering at Universidad de Montevideo and my English is C1.',
+      'The part I enjoy most is the backend: understanding a domain well enough to model it, putting the rules where nobody can skip them, and checking results against reality before calling them good. I work in Spanish and English (C1).',
     facts: [
       { label: 'Systems Engineering student · Universidad de Montevideo', icon: GraduationCap },
-      { label: 'Developer & Systems Technician · Grupo CPS', icon: Briefcase },
+      { label: 'Software & Systems Lead · Grupo CPS', icon: Briefcase },
       { label: 'Native Spanish · C1 English (CAE)', icon: Languages },
       { label: 'Montevideo, Uruguay', icon: MapPin },
     ],
@@ -985,19 +983,57 @@ const en: typeof es = {
 
   experience: {
     label: 'experience',
-    heading: 'Where I worked and what I did.',
-    items: [
+    heading: 'Where I work and what I do.',
+    role: {
+      title: 'Software & Systems Lead',
+      company: 'Grupo CPS',
+      period: '12/2024 – present',
+      place: 'Montevideo, UY',
+      scope:
+        'Sole owner of the company’s systems area: software development (the main focus), infrastructure, company websites and office IT support.',
+    },
+    areas: [
       {
-        role: 'Developer & Systems Technician',
-        company: 'Grupo CPS',
-        period: '12/2024 – present',
-        place: 'Montevideo, UY',
+        title: 'Software development',
+        tag: 'main focus',
+        icon: CodeXml,
         bullets: [
-          'Designed and built Depósitos CPS, the company’s stock system: immutable ledger, weighted-average costing and transactional RPCs in PostgreSQL, with integration tests on the SQL core and versioned migrations applied by CI on every push.',
-          'Built the joinery quoter, web and offline mobile app: a pure pricing engine calibrated by reverse engineering 2,641 factory recipes, which brought the material error down from 2.44× to ~1% and was validated with orders the factory priced in its own software.',
-          'Automated public tender monitoring with n8n, Puppeteer and local AI: ~10 hours of manual review per week removed for the sales team.',
-          'Operate the infrastructure behind those systems on the company VPS: self-hosted Supabase, Docker and Coolify, with automatic deploys on every push, CI-applied migrations and daily backups.',
+          'I design, build and maintain the internal systems end to end: data model, business rules, API, interface and deploy.',
+          'Three are in production today, used by clients, the sales team, logistics, construction sites and management.',
+          'I connect them to the company’s Monday boards so production and tasks move forward without entering data twice.',
         ],
+        links: [
+          { label: 'Quoter', href: '/cotizador' },
+          { label: 'Depósitos', href: '/stock' },
+          { label: 'Arce', href: '/arce' },
+        ],
+      },
+      {
+        title: 'Infrastructure',
+        tag: '',
+        icon: Server,
+        bullets: [
+          'I run the company server: self-hosted Supabase, Docker and Coolify.',
+          'Automatic deploys on every push, migrations applied by CI and daily backups.',
+        ],
+        links: [],
+      },
+      {
+        title: 'Company websites',
+        tag: '',
+        icon: Globe,
+        bullets: [
+          'I maintain grupocps.com.uy, in Spanish and English.',
+          'I built a template for the real estate development sites; the first one is Edificio Galicia.',
+        ],
+        links: [],
+      },
+      {
+        title: 'IT support',
+        tag: 'secondary',
+        icon: Wrench,
+        bullets: ['Maintenance of the office computers and equipment.', 'Day-to-day support for the users.'],
+        links: [],
       },
     ],
     educationLabel: 'education',
@@ -1032,6 +1068,7 @@ const en: typeof es = {
     statusChip: 'all systems running',
     sitesLine: 'I also built sites for clients here and abroad:',
     cursorLabel: 'VIEW',
+    summaryLabels: { problem: 'problem', decision: 'decision', result: 'result' },
     tools: [
       {
         name: 'Aluminum Joinery Quoter',
@@ -1044,6 +1081,11 @@ const en: typeof es = {
         cta: 'View case study',
         image: '/assets/projects/cotizador/imagen_hero.png',
         tags: ['Next.js', 'TypeScript', 'Three.js', 'Supabase', 'Pricing engine'],
+        summary: {
+          problem: 'The price of a window does not come from square meters: it depends on how much aluminum and glass it really takes.',
+          decision: 'Pull the geometry out of 2,641 factory-software recipes, without porting the whole thing.',
+          result: 'Material error from 2.44× down to ~1%, validated with orders the factory priced.',
+        },
       },
       {
         name: 'Depósitos CPS',
@@ -1056,6 +1098,11 @@ const en: typeof es = {
         cta: 'View case study',
         image: '/assets/projects/depositos_cps/dashboard_inicial.png',
         tags: ['Next.js', 'Supabase', 'PostgreSQL', 'RLS'],
+        summary: {
+          problem: 'Stock across warehouses and sites lived in spreadsheets, messages and memory.',
+          decision: 'An immutable ledger with the rules in PostgreSQL: stock is never edited, only recorded.',
+          result: '100% traceable balances and negative stock made impossible, even with concurrent operations.',
+        },
       },
       {
         name: 'Arce Licitaciones',
@@ -1068,6 +1115,11 @@ const en: typeof es = {
         cta: 'View case study',
         video: '/assets/projects/arce_dashboard_demo.webm',
         tags: ['n8n', 'PostgreSQL', 'Local AI'],
+        summary: {
+          problem: 'The sales team checked the public tender portal by hand, 2 hours a day.',
+          decision: 'n8n polls the portal every 15 minutes and a local AI filters and analyzes each call.',
+          result: '~10 hours of manual review saved per week for the sales team.',
+        },
       },
     ] as Project[],
     sites: [
@@ -1127,37 +1179,6 @@ const en: typeof es = {
         tags: ['Python', 'Three.js', 'Plans to 3D'],
       },
     ] as Project[],
-  },
-
-  practices: {
-    label: 'how I work',
-    heading: 'Things I do on every project.',
-    items: [
-      {
-        number: 1,
-        title: 'Rules go in the database',
-        text: 'Constraints, transactions and RLS in PostgreSQL. If a rule only exists in the UI, anyone talking straight to the API can skip it.',
-        icon: Database,
-      },
-      {
-        number: 2,
-        title: 'I check the numbers',
-        text: 'When a calculation matters, I compare it against the system the company already uses before calling it good.',
-        icon: Ruler,
-      },
-      {
-        number: 3,
-        title: 'Tests where the logic is',
-        text: 'If the rule lives in SQL, the test runs in SQL. If the pricing engine is pure, it is tested without a database.',
-        icon: FlaskConical,
-      },
-      {
-        number: 4,
-        title: 'Reproducible deploys',
-        text: 'Docker, versioned migrations applied by CI and daily backups. If verification fails, nothing gets deployed.',
-        icon: Server,
-      },
-    ],
   },
 
   contact: {

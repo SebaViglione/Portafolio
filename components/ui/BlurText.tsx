@@ -57,17 +57,19 @@ const BlurText: React.FC<BlurTextProps> = ({
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!ref.current) return;
+    // Adaptado: se guarda el elemento, porque con reduced-motion el ref pasa a null al re-renderizar.
+    const element = ref.current;
+    if (!element) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setInView(true);
-          observer.unobserve(ref.current as Element);
+          observer.unobserve(element);
         }
       },
       { threshold, rootMargin }
     );
-    observer.observe(ref.current);
+    observer.observe(element);
     return () => observer.disconnect();
   }, [threshold, rootMargin]);
 

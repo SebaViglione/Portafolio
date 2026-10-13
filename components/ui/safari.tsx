@@ -1,5 +1,5 @@
 // Safari de Magic UI, adaptado al sitio: chrome oscuro con los tokens del tema y alt real en la imagen.
-import type { HTMLAttributes } from "react"
+import { useId, type HTMLAttributes } from "react"
 
 const SAFARI_WIDTH = 1203
 const SAFARI_HEIGHT = 753
@@ -34,6 +34,12 @@ export function Safari({
   style,
   ...props
 }: SafariProps) {
+  // Adaptado: IDs del SVG únicos por instancia (con varios navegadores en la misma
+  // página, todos apuntaban a la máscara del primero, aunque estuviera oculto).
+  const uid = useId().replace(/:/g, "")
+  const punchId = `safari-punch-${uid}`
+  const clipId = `safari-clip-${uid}`
+  const roundedId = `safari-rounded-${uid}`
   const hasVideo = !!videoSrc
   const hasMedia = hasVideo || !!imageSrc
 
@@ -96,7 +102,7 @@ export function Safari({
         style={{ transform: "translateZ(0)" }}
       >
         <defs>
-          <mask id="safariPunch" maskUnits="userSpaceOnUse">
+          <mask id={punchId} maskUnits="userSpaceOnUse">
             <rect
               x="0"
               y="0"
@@ -110,11 +116,11 @@ export function Safari({
             />
           </mask>
 
-          <clipPath id="path0">
+          <clipPath id={clipId}>
             <rect width={SAFARI_WIDTH} height={SAFARI_HEIGHT} fill="white" />
           </clipPath>
 
-          <clipPath id="roundedBottom">
+          <clipPath id={roundedId}>
             <path
               d="M1 52H1201V741C1201 747.075 1196.08 752 1190 752H12C5.92486 752 1 747.075 1 741V52Z"
               fill="white"
@@ -123,8 +129,8 @@ export function Safari({
         </defs>
 
         <g
-          clipPath="url(#path0)"
-          mask={hasMedia ? "url(#safariPunch)" : undefined}
+          clipPath={`url(#${clipId})`}
+          mask={hasMedia ? `url(#${punchId})` : undefined}
         >
           <path
             d="M0 52H1202V741C1202 747.627 1196.63 753 1190 753H12C5.37258 753 0 747.627 0 741V52Z"
