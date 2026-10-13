@@ -8,6 +8,7 @@ const layout: ViewLayout[] = [
     nodes: [
       n('cliente', 'persona', 40, 270, 180),
       n('web', 'web', 390, 250, 220),
+      n('movil', 'web', 390, 560, 220),
       n('servidor', 'servidor', 790, 250, 230),
       n('fabrica', 'fabrica', 1220, 250, 220),
       n('bd', 'datos', 790, 590, 230),
@@ -15,13 +16,15 @@ const layout: ViewLayout[] = [
       n('tecnico', 'persona', 1620, 610, 170),
     ],
     groups: [
-      { id: 'g1', nodes: ['cliente', 'web'] },
+      { id: 'g1', nodes: ['cliente', 'web', 'movil'] },
       { id: 'g2', nodes: ['servidor', 'bd'] },
       { id: 'g3', nodes: ['fabrica', 'panel', 'tecnico'] },
     ],
     edges: [
       e('cliente', 'web'),
+      e('cliente', 'movil'),
       e('web', 'servidor'),
+      e('movil', 'servidor', { dashed: true }),
       e('servidor', 'web'),
       e('servidor', 'bd'),
       e('bd', 'servidor'),
@@ -34,6 +37,7 @@ const layout: ViewLayout[] = [
     tour: [
       { nodes: ['cliente', 'web'], edges: ['cliente>web'] },
       { nodes: ['web', 'servidor'], edges: ['web>servidor', 'servidor>web'] },
+      { nodes: ['cliente', 'movil', 'servidor'], edges: ['cliente>movil', 'movil>servidor'] },
       { nodes: ['servidor', 'bd'], edges: ['servidor>bd', 'bd>servidor'] },
       { nodes: ['tecnico', 'panel', 'bd'], edges: ['tecnico>panel', 'panel>bd'] },
       { nodes: ['servidor', 'fabrica', 'panel'], edges: ['servidor>fabrica', 'panel>fabrica'] },
@@ -295,6 +299,16 @@ const es: ProjectText = {
             'No calcula precios: todo se lo pide al servidor.',
           ],
         },
+        movil: {
+          label: 'App móvil',
+          sub: 'en desarrollo · cotiza sin conexión con el mismo motor',
+          desc: 'Una app Expo / React Native que usa el mismo motor de cálculo que la web. Descarga un paquete de precios de venta y cotiza sin señal.',
+          bullets: [
+            'El paquete trae solo precios de venta: nunca costos ni margen.',
+            'Los pedidos quedan en cola y se envían solos cuando vuelve la conexión.',
+            'Una verificación de paridad asegura que el precio offline coincide con el de la web.',
+          ],
+        },
         servidor: {
           label: 'Servidor',
           sub: 'motor de cálculo · validaciones · semáforo · PDF · .PTO',
@@ -343,7 +357,9 @@ const es: ProjectText = {
       },
       edges: {
         'cliente>web': 'arma y envía',
+        'cliente>movil': 'en obra, sin señal',
         'web>servidor': 'cotizar · enviar',
+        'movil>servidor': 'precios · cola de envío',
         'servidor>web': 'precio · link · PDF',
         'servidor>bd': 'guarda la cotización',
         'bd>servidor': 'recetas, precios, parámetros',
@@ -357,6 +373,7 @@ const es: ProjectText = {
       tour: [
         'El cliente entra a la web, arma la ventana paso a paso y la envía como pedido, sola o en un carrito con otras.',
         'La web no calcula nada: le pide al servidor, que devuelve el precio, el link de resumen y el PDF.',
+        'La app móvil, todavía en desarrollo, usa el mismo motor: baja los precios de venta, cotiza sin señal y manda los pedidos cuando vuelve la conexión.',
         'El servidor despieza la ventana con la receta de esa línea y tipología, que lee de la base junto con precios y parámetros, y guarda la cotización.',
         'Todo lo que el motor lee lo cargó el técnico en el panel interno: perfiles y precios por color, accesorios, horas y productos WinMaker.',
         'Cuando entra un pedido, la fábrica recibe un aviso; desde el panel se ve el despiece y se baja el .PTO que WinMaker abre para producir.',
@@ -716,6 +733,16 @@ const en: ProjectText = {
             'Calculates no prices: it asks the server for everything.',
           ],
         },
+        movil: {
+          label: 'Mobile app',
+          sub: 'in development · quotes offline with the same engine',
+          desc: 'An Expo / React Native app that uses the same pricing engine as the web. It downloads a pack of sale prices and quotes with no signal.',
+          bullets: [
+            'The pack only carries sale prices: never costs or margin.',
+            'Orders wait in a queue and send themselves when the connection comes back.',
+            'A parity check makes sure the offline price matches the web’s.',
+          ],
+        },
         servidor: {
           label: 'Server',
           sub: 'pricing engine · validations · traffic light · PDF · .PTO',
@@ -761,6 +788,8 @@ const en: ProjectText = {
       },
       edges: {
         'cliente>web': 'builds and submits',
+        'cliente>movil': 'on site, no signal',
+        'movil>servidor': 'prices · send queue',
         'web>servidor': 'quote · submit',
         'servidor>web': 'price · link · PDF',
         'servidor>bd': 'stores the quote',
@@ -775,6 +804,7 @@ const en: ProjectText = {
       tour: [
         'The client enters the web, builds the window step by step and submits it as an order, alone or in a cart with others.',
         'The web calculates nothing: it asks the server, which returns the price, the summary link and the PDF.',
+        'The mobile app, still in development, uses the same engine: it downloads the sale prices, quotes with no signal and sends the orders when the connection comes back.',
         'The server breaks the window down with the recipe for that line and window type, read from the database along with prices and parameters, and stores the quote.',
         'Everything the engine reads was loaded by the technician in the internal panel: profiles and prices per color, accessories, hours and WinMaker products.',
         'When an order comes in, the factory gets a notification; from the panel they see the breakdown and download the .PTO that WinMaker opens to produce it.',
