@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Sebastián Viglione — Desarrollador backend | Montevideo',
     description:
-      'Sistemas de gestión para operaciones reales: stock, costeo, compras, cotización e integraciones. Tres sistemas en producción, construidos de punta a punta.',
+      'Sistemas de gestión para operaciones reales: stock, costeo, compras, cotización e integraciones. A cargo de los sistemas de Grupo CPS, construidos de punta a punta.',
     url: 'https://sebaviglione.com',
     siteName: 'sebaviglione.com',
     images: [
@@ -62,7 +62,7 @@ const jsonLd = {
       name: 'Sebastián Viglione',
       url: 'https://sebaviglione.com',
       image: 'https://sebaviglione.com/assets/img/profile.webp',
-      jobTitle: 'Backend Developer',
+      jobTitle: 'Software & Systems Lead',
       worksFor: { '@type': 'Organization', name: 'Grupo CPS' },
       alumniOf: { '@type': 'CollegeOrUniversity', name: 'Universidad de Montevideo' },
       knowsAbout: [

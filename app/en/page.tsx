@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Sebastián Viglione — Backend Developer | Montevideo',
     description:
-      'Management systems for real operations: stock, costing, purchasing, quoting and integrations. Three systems in production, built end to end.',
+      'Management systems for real operations: stock, costing, purchasing, quoting and integrations. In charge of the systems at Grupo CPS, built end to end.',
     url: 'https://sebaviglione.com/en',
     siteName: 'sebaviglione.com',
     locale: 'en_US',

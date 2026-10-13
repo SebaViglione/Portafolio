@@ -4,7 +4,7 @@ import { CaseStudyPage } from '@/components/CaseStudyPage';
 export const metadata: Metadata = {
   title: 'Arce: tender monitoring with local AI | Sebastián Viglione',
   description:
-    'Arce case study: a system that monitors, structures and analyzes public tenders with n8n, Node.js, PostgreSQL and local AI (Ollama).',
+    'Arce case study: a system that monitors, structures and analyzes public tenders with TypeScript, Node.js, PostgreSQL and local AI (Ollama).',
   alternates: {
     canonical: '/en/arce',
     languages: { es: '/arce', en: '/en/arce' },
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Arce: tender monitoring with local AI',
     description:
-      'A system that monitors, structures and analyzes public tenders with n8n, Node.js, PostgreSQL and local AI. Technical case study.',
+      'A system that monitors, structures and analyzes public tenders with TypeScript, Node.js, PostgreSQL and local AI. Technical case study.',
     url: 'https://sebaviglione.com/en/arce',
     siteName: 'sebaviglione.com',
     locale: 'en_US',
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Arce: tender monitoring with local AI',
-    description: 'Technical case study: n8n, Node.js, PostgreSQL and local AI (Ollama).',
+    description: 'Technical case study: TypeScript, Node.js, PostgreSQL and local AI (Ollama).',
     images: ['/assets/og/arce.png'],
   },
 };
