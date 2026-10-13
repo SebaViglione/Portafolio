@@ -274,7 +274,7 @@ export function ServicesPage({ locale }: { locale: Locale }) {
             </h2>
           </div>
 
-          <div className="sites-strip mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="sites-strip mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {dict.work.sites.map((site) => (
               <Link
                 className="site-mini group overflow-hidden rounded-md border border-border bg-bg-card"
@@ -290,7 +290,7 @@ export function ServicesPage({ locale }: { locale: Locale }) {
                       src={site.image}
                       alt={site.name}
                       fill
-                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 46vw, 92vw"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 46vw, 92vw"
                       className="object-cover object-top"
                     />
                   ) : (
