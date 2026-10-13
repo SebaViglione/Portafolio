@@ -11,6 +11,10 @@ import { ArrowLeft, ArrowRight, Languages, Lock, MoveRight, PlayCircle, Workflow
 import { GitHubIcon } from '@/components/BrandIcons';
 import { BackgroundGrid } from '@/components/BackgroundGrid';
 import { CustomCursor } from '@/components/CustomCursor';
+import CountUp from '@/components/ui/CountUp';
+import SpotlightCard from '@/components/ui/SpotlightCard';
+import { Safari } from '@/components/ui/safari';
+import { TracingBeam } from '@/components/ui/tracing-beam';
 import { getDictionary, localizedHref, type CaseStudy, type CaseStudyItem, type CaseStudySlug, type Locale } from '@/lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -28,14 +32,34 @@ function CardGrid({ items, variant = 'default' }: { items: CaseStudyItem[]; vari
   return (
     <div className="decision-grid mt-12 grid gap-4 md:grid-cols-2">
       {items.map((item) => (
-        <article className={`decision-card${variant === 'discarded' ? ' is-discarded' : ''}`} key={item.title}>
+        <SpotlightCard
+          className={`decision-card${variant === 'discarded' ? ' is-discarded' : ''}`}
+          key={item.title}
+          spotlightColor={variant === 'discarded' ? '#8990A0' : '#B8FF2C'}
+          intensity={0.1}
+          spotlightSize={280}
+          borderGlow={0.55}
+          flare={false}
+        >
           <h3 className="font-display text-xl font-semibold text-text-primary">{item.title}</h3>
           <p className="mt-3 text-[15px] leading-[1.7] text-text-secondary">{item.text}</p>
-        </article>
+        </SpotlightCard>
       ))}
     </div>
   );
 }
+
+// Un resultado que es solo un número ("2.641", "2,641") cuenta hasta su valor; el resto
+// ("2,44× → ~1%", "En producción") se muestra tal cual. El separador de miles sale del texto.
+function ResultValue({ value }: { value: string }) {
+  if (!/^\d{1,3}(?:[.,]\d{3})+$|^\d+$/.test(value)) return <>{value}</>;
+  const separator = value.match(/[.,]/)?.[0] ?? '';
+  return <CountUp to={Number(value.replace(/[.,]/g, ''))} separator={separator} duration={1.4} />;
+}
+
+// Capturas de pantalla apaisadas van dentro del navegador de Magic UI; el resto, con borde simple.
+const isBrowserShot = (shot: { kind: string; width: number; height: number }) =>
+  shot.kind === 'image' && shot.width / shot.height >= 1.5;
 
 /**
  * Template único de los tres case studies. La estructura fija son cinco puntos
@@ -212,6 +236,7 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
       </section>
 
       <div className="mx-auto w-full max-w-5xl px-5 md:px-8">
+        <TracingBeam>
         <div className="case-block metric-badge mt-4">
           <span className="metric-badge-value font-display">{c.metricValue}</span>
           <p className="metric-badge-text">{c.metricText}</p>
@@ -371,7 +396,9 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
           <div className={`mt-10 grid gap-4 sm:grid-cols-2 ${c.results.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
             {c.results.map((result) => (
               <div className="arce-stat" key={result.label}>
-                <span className="font-display text-3xl font-bold text-accent md:text-4xl">{result.value}</span>
+                <span className="font-display text-3xl font-bold text-accent md:text-4xl">
+                  <ResultValue value={result.value} />
+                </span>
                 <p className="mt-3 text-[15px] leading-[1.5] text-text-secondary">{result.label}</p>
               </div>
             ))}
@@ -433,6 +460,10 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
                       aria-label={shot.alt}
                     />
                   </div>
+                ) : isBrowserShot(shot) ? (
+                  <a href={shot.src} target="_blank" rel="noopener noreferrer" className="block transition-opacity hover:opacity-90">
+                    <Safari imageSrc={shot.src} imageAlt={shot.alt} />
+                  </a>
                 ) : (
                   <a
                     href={shot.src}
@@ -494,6 +525,7 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
             ) : null}
           </div>
         </section>
+        </TracingBeam>
       </div>
     </main>
   );

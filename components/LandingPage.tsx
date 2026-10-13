@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -11,6 +11,14 @@ import Lenis from 'lenis';
 import { ArrowDown, ArrowRight, ExternalLink, Languages, Mail, Send } from 'lucide-react';
 import { GitHubIcon, LinkedInIcon } from '@/components/BrandIcons';
 import { CustomCursor } from '@/components/CustomCursor';
+import BlurText from '@/components/ui/BlurText';
+import DotGrid from '@/components/ui/DotGrid';
+import SplitText from '@/components/ui/SplitText';
+import TextType from '@/components/ui/TextType';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { GlowingEffect } from '@/components/ui/glowing-effect';
+import { Marquee } from '@/components/ui/marquee';
+import { AnimatedSpan } from '@/components/ui/terminal';
 import { contact } from '@/lib/site';
 import { getDictionary, localizedHref, type Locale, type Project } from '@/lib/content';
 
@@ -43,11 +51,32 @@ function HeroTitle({ title }: { title: ReturnType<typeof getDictionary>['hero'][
   );
 }
 
+// Borde iluminado de los tiles del bento (GlowingEffect): sigue al puntero, solo en desktop.
+const GLOW = { disabled: false, glow: true, spread: 36, proximity: 64, inactiveZone: 0.01, borderWidth: 1, movementDuration: 1.6 };
+
+function SectionTitle({ text }: { text: string }) {
+  return (
+    <SplitText
+      tag="h2"
+      text={text}
+      splitType="words"
+      textAlign="left"
+      delay={45}
+      duration={0.8}
+      ease="power3.out"
+      from={{ opacity: 0, y: 28 }}
+      to={{ opacity: 1, y: 0 }}
+      rootMargin="-60px"
+      className="mt-4 block font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl"
+    />
+  );
+}
+
 function ContactTitle({ title }: { title: ReturnType<typeof getDictionary>['contact']['title'] }) {
   return (
     <h2 className="contact-title font-display text-[2.5rem] font-bold leading-[1.02] tracking-normal text-text-primary sm:text-[3.4rem] xl:text-[4.3rem]">
-      <span className="contact-line block">{title.l1}</span>
-      {title.l2 ? <span className="contact-line block">{title.l2}</span> : null}
+      <BlurText as="span" text={title.l1} className="block" delay={90} threshold={0.4} />
+      {title.l2 ? <BlurText as="span" text={title.l2} className="block" delay={90} threshold={0.4} /> : null}
     </h2>
   );
 }
@@ -117,6 +146,8 @@ export function LandingPage({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale);
   const tools = dict.work.tools;
   const sites = dict.work.sites;
+  const stackHalf = Math.ceil(dict.bento.stack.length / 2);
+  const stackRows = [dict.bento.stack.slice(0, stackHalf), dict.bento.stack.slice(stackHalf)];
   const switchHref = locale === 'es' ? '/en' : '/';
 
   const rootRef = useRef<HTMLElement>(null);
@@ -166,7 +197,6 @@ export function LandingPage({ locale }: { locale: Locale }) {
       const heroWords = gsap.utils.toArray<HTMLElement>('.hero-title .word');
 
       gsap.set(heroWords, { yPercent: -90, opacity: 0, rotateX: -28 });
-      gsap.set('.contact-line', { y: 34, opacity: 0 });
       gsap.set('.bento-tile', { y: 26, opacity: 0 });
       gsap.set('.hero-kicker, .hero-copy, .hero-actions', { y: 18, opacity: 0 });
 
@@ -183,19 +213,6 @@ export function LandingPage({ locale }: { locale: Locale }) {
           { y: 0, opacity: 1, duration: 0.6, stagger: 0.09, clearProps: 'transform' },
           '-=0.55',
         );
-
-      gsap.utils.toArray<HTMLElement>('.section-heading').forEach((heading) => {
-        gsap.from(heading, {
-          y: 34,
-          opacity: 0,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: heading,
-            start: 'top 78%',
-          },
-        });
-      });
 
       gsap.from('.sys-row', {
         y: 20,
@@ -287,19 +304,6 @@ export function LandingPage({ locale }: { locale: Locale }) {
         },
       });
 
-      gsap.to('.contact-line', {
-        y: 0,
-        opacity: 1,
-        duration: 0.7,
-        stagger: 0.12,
-        ease: 'power3.out',
-        clearProps: 'transform',
-        scrollTrigger: {
-          trigger: '#contacto',
-          start: 'top 68%',
-        },
-      });
-
       gsap.from('.contact-block', {
         y: 28,
         opacity: 0,
@@ -318,6 +322,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
   const closeMenu = () => setMenuOpen(false);
 
   return (
+    <MotionConfig reducedMotion="user">
     <main ref={rootRef} className="min-h-screen overflow-hidden bg-bg-primary text-text-primary">
       <CustomCursor />
 
@@ -414,7 +419,8 @@ export function LandingPage({ locale }: { locale: Locale }) {
       <section id="inicio" className="relative pt-20">
         <div className="mx-auto w-full max-w-7xl px-5 pb-6 pt-6 md:px-8 md:pt-10">
           <div className="grid gap-4 lg:grid-cols-12">
-            <div className="bento-tile tile-intro flex flex-col justify-center overflow-hidden p-7 md:p-12 lg:col-span-8">
+            <div className="bento-tile tile-intro relative flex flex-col justify-center overflow-hidden p-7 md:p-12 lg:col-span-8">
+              <GlowingEffect {...GLOW} />
               <div className="hero-kicker inline-flex items-center gap-3 font-mono text-[13px] font-medium text-text-secondary">
                 <span className="pulse-dot" />
                 {dict.hero.status}
@@ -445,7 +451,19 @@ export function LandingPage({ locale }: { locale: Locale }) {
             </div>
 
             <div className="bento-tile relative min-h-[420px] overflow-hidden sm:min-h-[480px] lg:col-span-4 lg:row-span-2 lg:min-h-0">
-              <div className="tile-grid-bg absolute inset-0" aria-hidden="true" />
+              <div className="absolute inset-0" aria-hidden="true">
+                <DotGrid
+                  dotSize={3}
+                  gap={22}
+                  baseColor="#2B3038"
+                  activeColor="#B8FF2C"
+                  proximity={110}
+                  shockStrength={2}
+                  glow={0.3}
+                  swell={0.5}
+                  clickShock={false}
+                />
+              </div>
               <div className="absolute inset-x-0 bottom-11 top-0">
                 <Image
                   src="/assets/img/profile.webp"
@@ -466,7 +484,8 @@ export function LandingPage({ locale }: { locale: Locale }) {
               </div>
             </div>
 
-            <div className="bento-tile p-6 lg:col-span-3">
+            <div className="bento-tile relative p-6 lg:col-span-3">
+              <GlowingEffect {...GLOW} />
               <span className="tile-label">{dict.bento.estadoLabel}</span>
               <div className="mt-4 grid gap-3">
                 {dict.bento.estado.map((row) => (
@@ -485,18 +504,29 @@ export function LandingPage({ locale }: { locale: Locale }) {
               </div>
             </div>
 
-            <div className="bento-tile p-6 lg:col-span-5">
+            <div className="bento-tile relative overflow-hidden p-6 lg:col-span-5">
+              <GlowingEffect {...GLOW} />
               <span className="tile-label">{dict.bento.stackLabel}</span>
-              <div className="mt-4 flex flex-wrap gap-2">
+              <ul className="sr-only">
                 {dict.bento.stack.map((item) => (
-                  <span className="chip-mono" key={item}>
-                    {item}
-                  </span>
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <div className="stack-marquee -mx-6 mt-4" aria-hidden="true">
+                {[stackRows[0], stackRows[1]].map((row, index) => (
+                  <Marquee key={index} pauseOnHover reverse={index === 1} repeat={3} className="py-1 [--duration:32s] [--gap:0.5rem]">
+                    {row.map((item) => (
+                      <span className="chip-mono" key={item}>
+                        {item}
+                      </span>
+                    ))}
+                  </Marquee>
                 ))}
               </div>
             </div>
 
-            <div className="bento-tile overflow-hidden lg:col-span-6">
+            <div className="bento-tile relative overflow-hidden lg:col-span-6">
+              <GlowingEffect {...GLOW} />
               <div className="term-bar">
                 <span className="term-dot" />
                 <span className="term-dot" />
@@ -505,7 +535,12 @@ export function LandingPage({ locale }: { locale: Locale }) {
               </div>
               <div className="grid gap-3.5 p-6">
                 {dict.bento.values.map((value, index) => (
-                  <p className="flex gap-3 text-[15px] leading-relaxed text-text-secondary" key={value.title}>
+                  <AnimatedSpan
+                    startOnView
+                    delay={index * 380}
+                    className="flex gap-3 text-[15px] leading-relaxed tracking-normal text-text-secondary"
+                    key={value.title}
+                  >
                     <span className="select-none font-mono text-accent" aria-hidden="true">
                       &gt;
                     </span>
@@ -513,12 +548,13 @@ export function LandingPage({ locale }: { locale: Locale }) {
                       <span className="font-semibold text-text-primary">{value.title}</span> — {value.text}
                       {index === dict.bento.values.length - 1 ? <span className="term-cursor ml-1.5" /> : null}
                     </span>
-                  </p>
+                  </AnimatedSpan>
                 ))}
               </div>
             </div>
 
-            <div className="bento-tile flex flex-col p-6 lg:col-span-6">
+            <div className="bento-tile relative flex flex-col p-6 lg:col-span-6">
+              <GlowingEffect {...GLOW} />
               <span className="tile-label">{dict.bento.projectsLabel}</span>
               <div className="mt-4 grid flex-1 gap-2.5">
                 {tools.map((tool) => (
@@ -543,9 +579,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
           <div className="section-heading flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-3xl">
               <p className="font-mono text-[13px] font-medium text-accent">{dict.work.monoLabel}</p>
-              <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-                {dict.work.heading}
-              </h2>
+              <SectionTitle text={dict.work.heading} />
             </div>
             <span className="inline-flex items-center gap-2.5 rounded-md border border-border px-3.5 py-2.5 font-mono text-xs text-text-secondary">
               <span className="pulse-dot" />
@@ -603,9 +637,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
         <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="section-heading max-w-3xl">
             <p className="section-label">{dict.experience.label}</p>
-            <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              {dict.experience.heading}
-            </h2>
+            <SectionTitle text={dict.experience.heading} />
           </div>
 
           <div className="mt-14 grid gap-10 lg:grid-cols-[1.35fr_0.65fr] lg:gap-14">
@@ -651,9 +683,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
         <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="section-heading max-w-3xl">
             <p className="section-label">{dict.about.label}</p>
-            <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              {dict.about.heading}
-            </h2>
+            <SectionTitle text={dict.about.heading} />
           </div>
 
           <div className="mt-14 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
@@ -720,9 +750,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 md:px-8">
           <div className="section-heading max-w-3xl">
             <p className="section-label">{dict.practices.label}</p>
-            <h2 className="mt-4 font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              {dict.practices.heading}
-            </h2>
+            <SectionTitle text={dict.practices.heading} />
           </div>
 
           <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
@@ -786,9 +814,10 @@ export function LandingPage({ locale }: { locale: Locale }) {
             data-netlify="true"
             netlify-honeypot="bot-field"
             action={localizedHref(locale, '/gracias')}
-            className="contact-block contact-form rounded-md border border-border bg-bg-card p-5 md:p-7"
+            className="contact-block contact-form relative rounded-md border border-border bg-bg-card p-5 md:p-7"
             onSubmit={() => setIsSubmitting(true)}
           >
+            <BorderBeam size={140} duration={9} borderWidth={1.5} />
             <input type="hidden" name="form-name" value="contact" />
             <p className="hidden">
               <label>
@@ -842,9 +871,19 @@ export function LandingPage({ locale }: { locale: Locale }) {
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-5 text-sm text-text-muted md:flex-row md:items-center md:px-8">
           <span>sebaviglione.com · {new Date().getFullYear()}</span>
           <span className="hidden h-px flex-1 bg-border md:block" />
-          <span className="typewriter">{dict.footer.tagline}</span>
+          <TextType
+            as="span"
+            className="font-mono text-[13px] text-text-muted"
+            text={dict.footer.tagline}
+            loop={false}
+            typingSpeed={38}
+            startOnVisible
+            cursorCharacter="_"
+            cursorClassName="text-accent"
+          />
         </div>
       </footer>
     </main>
+    </MotionConfig>
   );
 }
