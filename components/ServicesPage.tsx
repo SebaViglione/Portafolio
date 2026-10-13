@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
@@ -8,8 +7,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
-import { ArrowLeft, ArrowRight, ExternalLink, Languages, Mail } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Languages, Mail } from 'lucide-react';
 import { BackgroundGrid } from '@/components/BackgroundGrid';
+import { SiteCard } from '@/components/SiteCard';
 import { CustomCursor } from '@/components/CustomCursor';
 import { contact } from '@/lib/site';
 import { getDictionary, localizedHref, type Locale } from '@/lib/content';
@@ -276,42 +276,7 @@ export function ServicesPage({ locale }: { locale: Locale }) {
 
           <div className="sites-strip mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {dict.work.sites.map((site) => (
-              <Link
-                className="site-mini group overflow-hidden rounded-md border border-border bg-bg-card"
-                href={site.url}
-                key={site.name}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cursor={dict.work.cursorLabel}
-              >
-                <div className="relative aspect-[16/10] overflow-hidden border-b border-border bg-bg-secondary">
-                  {site.image ? (
-                    <Image
-                      src={site.image}
-                      alt={site.name}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 46vw, 92vw"
-                      className="object-cover object-top"
-                    />
-                  ) : (
-                    <div className="placeholder-pattern absolute inset-0" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/30 to-transparent" aria-hidden="true" />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <span className="block font-display text-[16px] font-semibold text-text-primary">{site.name}</span>
-                      <span className="mt-0.5 block font-mono text-[11px] text-text-muted">{site.domain}</span>
-                    </div>
-                    <ExternalLink
-                      className="ml-auto shrink-0 text-text-muted transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                      size={15}
-                    />
-                  </div>
-                  <p className="mt-3 text-[14px] leading-[1.6] text-text-secondary">{site.description}</p>
-                </div>
-              </Link>
+              <SiteCard site={site} cursorLabel={dict.work.cursorLabel} key={site.name} />
             ))}
           </div>
         </div>

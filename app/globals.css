@@ -2236,15 +2236,3 @@ button {
   font-size: 0.82rem;
   line-height: 1.5;
 }
-
-.sites-line a {
-  color: #F5F7FA;
-  text-decoration: underline;
-  text-decoration-color: rgba(184, 255, 44, 0.45);
-  text-underline-offset: 3px;
-  transition: text-decoration-color 180ms ease;
-}
-
-.sites-line a:hover {
-  text-decoration-color: #B8FF2C;
-}

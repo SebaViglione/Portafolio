@@ -13,6 +13,7 @@ import { GitHubIcon, LinkedInIcon } from '@/components/BrandIcons';
 import { CustomCursor } from '@/components/CustomCursor';
 import { BackgroundGrid } from '@/components/BackgroundGrid';
 import { ProjectShowcase } from '@/components/ProjectShowcase';
+import { SiteCard } from '@/components/SiteCard';
 import BlurText from '@/components/ui/BlurText';
 import SpotlightCard from '@/components/ui/SpotlightCard';
 import SplitText from '@/components/ui/SplitText';
@@ -441,17 +442,22 @@ export function LandingPage({ locale }: { locale: Locale }) {
             cursorLabel={dict.work.cursorLabel}
           />
 
-          <p className="sites-line mt-16 text-[15px] leading-[1.7] text-text-muted">
-            {dict.work.sitesLine}{' '}
-            {sites.map((site, index) => (
-              <Fragment key={site.name}>
-                <Link href={site.url} target="_blank" rel="noopener noreferrer">
-                  {site.name}
-                </Link>
-                {index < sites.length - 1 ? ' · ' : '.'}
-              </Fragment>
-            ))}
-          </p>
+          <div className="sites-block mt-24 border-t border-border pt-14">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div className="max-w-2xl">
+                <p className="section-label">{dict.work.sitesLabel}</p>
+                <h3 className="mt-3 font-display text-2xl font-semibold leading-tight text-text-primary md:text-3xl">
+                  {dict.work.sitesHeading}
+                </h3>
+                <p className="mt-3 text-[15px] leading-[1.65] text-text-secondary">{dict.work.sitesNote}</p>
+              </div>
+            </div>
+            <div className="sites-strip mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {sites.map((site) => (
+                <SiteCard site={site} cursorLabel={dict.work.cursorLabel} key={site.name} />
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
