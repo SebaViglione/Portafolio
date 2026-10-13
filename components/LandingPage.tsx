@@ -391,7 +391,7 @@ export function LandingPage({ locale }: { locale: Locale }) {
               </div>
               <figcaption className="flex items-center justify-between gap-3 border-t border-border bg-bg-primary px-4 py-3">
                 <span className="text-[13px] font-semibold text-text-primary">{dict.hero.portraitName}</span>
-                <span className="text-right font-mono text-[10.5px] text-accent">{dict.hero.portraitRole}</span>
+                <span className="text-right font-mono text-[11px] text-accent">{dict.hero.portraitRole}</span>
               </figcaption>
               <BorderBeam size={120} duration={10} borderWidth={1.5} />
             </figure>

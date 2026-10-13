@@ -134,7 +134,7 @@ export function ServicesPage({ locale }: { locale: Locale }) {
 
       <header className="case-topbar fixed inset-x-0 top-0 z-50 border-b border-border/70 supports-[backdrop-filter]:backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 md:px-8">
-          <Link href={home} className="inline-flex items-center gap-2 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary">
+          <Link href={home} className="tap-target inline-flex items-center gap-2 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary">
             <ArrowLeft size={18} className="flex-none" />
             <span className="sm:hidden">{page.back}</span>
             <span className="hidden sm:inline">{page.backFull}</span>
@@ -142,13 +142,13 @@ export function ServicesPage({ locale }: { locale: Locale }) {
           <div className="flex items-center gap-5">
             <Link
               href={switchHref}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary"
+              className="tap-target inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary"
               aria-label={dict.nav.switchAria}
             >
               <Languages size={16} />
               {dict.nav.switchLabel}
             </Link>
-            <Link href={home} className="font-display text-base font-semibold text-text-primary" aria-label="Seba Viglione">
+            <Link href={home} className="tap-target inline-flex items-center font-display text-base font-semibold text-text-primary" aria-label="Seba Viglione">
               Seba Viglione
             </Link>
           </div>
@@ -205,7 +205,7 @@ export function ServicesPage({ locale }: { locale: Locale }) {
                   </div>
                   <h3 className="font-display text-2xl font-semibold text-text-primary">{service.title}</h3>
                   <p className="mt-4 max-w-xl text-[17px] leading-[1.7] text-text-secondary">{service.text}</p>
-                  <Link href="#contacto" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-accent">
+                  <Link href="#contacto" className="tap-target mt-7 inline-flex items-center gap-2 text-sm font-semibold text-accent">
                     {dict.services.more} <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={17} />
                   </Link>
                 </motion.article>
@@ -260,7 +260,7 @@ export function ServicesPage({ locale }: { locale: Locale }) {
                 <span className="font-display text-[15px] font-semibold text-text-primary">{tool.name}</span>
                 <span className="hidden max-w-xl text-[14px] text-text-secondary lg:inline">{tool.description}</span>
                 <span className="ml-auto inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-accent">
-                  {page.systemsCta}
+                  <span className="hidden sm:inline">{page.systemsCta}</span>
                   <ArrowRight className="transition-transform duration-300 group-hover:translate-x-0.5" size={15} />
                 </span>
               </Link>

@@ -478,8 +478,8 @@ const es = {
     heading: 'Software a medida para empresas.',
     intro:
       'Sitios web, sistemas de gestión, automatización e IA aplicada para empresas que quieren ordenar su operación. Del sitio web al sistema interno que ahorra horas de trabajo manual, sin equipos grandes ni procesos eternos.',
-    systemsLabel: 'sistemas en producción',
-    systemsHeading: 'Lo que ya está funcionando.',
+    systemsLabel: 'sistemas que construí',
+    systemsHeading: 'Lo que ya construí.',
     systemsCta: 'Ver case study',
     sitesLabel: 'sitios web',
     sitesHeading: 'Cinco sitios en línea, para clientes de acá y de afuera.',
@@ -1268,8 +1268,8 @@ const en: typeof es = {
     heading: 'Custom software for companies.',
     intro:
       'Websites, management software, automation and applied AI for companies that want to organize their operations. From the website to the internal system that saves hours of manual work, with no big teams and no endless processes.',
-    systemsLabel: 'systems in production',
-    systemsHeading: 'What is already running.',
+    systemsLabel: 'systems I built',
+    systemsHeading: 'What I have already built.',
     systemsCta: 'View case study',
     sitesLabel: 'websites',
     sitesHeading: 'Five sites live, for clients here and abroad.',

@@ -95,6 +95,11 @@ export default function CountUp({
 
       const durationTimeoutId = setTimeout(
         () => {
+          // Adaptado: el resorte tarda mucho en asentarse (se veía "2.579" en vez de "2.641");
+          // al cumplirse la duración se fija el valor exacto.
+          const target = direction === 'down' ? from : to;
+          springValue.jump(target);
+          if (ref.current) ref.current.textContent = formatValue(target);
           if (typeof onEnd === 'function') {
             onEnd();
           }
@@ -107,7 +112,7 @@ export default function CountUp({
         clearTimeout(durationTimeoutId);
       };
     }
-  }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
+  }, [isInView, startWhen, motionValue, springValue, formatValue, direction, from, to, delay, onStart, onEnd, duration]);
 
   useEffect(() => {
     const unsubscribe = springValue.on('change', (latest: number) => {

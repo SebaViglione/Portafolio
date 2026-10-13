@@ -150,7 +150,7 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
 
       <header className="case-topbar fixed inset-x-0 top-0 z-50 border-b border-border/70 supports-[backdrop-filter]:backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-5 md:px-8">
-          <Link href={`${home}#trabajos`} className="inline-flex items-center gap-2 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary">
+          <Link href={`${home}#trabajos`} className="tap-target inline-flex items-center gap-2 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary">
             <ArrowLeft size={18} className="flex-none" />
             <span className="sm:hidden">{c.back}</span>
             <span className="hidden sm:inline">{c.backFull}</span>
@@ -158,13 +158,13 @@ export function CaseStudyPage({ locale, slug }: { locale: Locale; slug: CaseStud
           <div className="flex items-center gap-5">
             <Link
               href={switchHref}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary"
+              className="tap-target inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-text-primary"
               aria-label={dict.nav.switchAria}
             >
               <Languages size={16} />
               {dict.nav.switchLabel}
             </Link>
-            <Link href={home} className="font-display text-base font-semibold text-text-primary" aria-label="Seba Viglione">
+            <Link href={home} className="tap-target inline-flex items-center font-display text-base font-semibold text-text-primary" aria-label="Seba Viglione">
               Seba Viglione
             </Link>
           </div>

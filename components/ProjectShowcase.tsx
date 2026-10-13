@@ -100,7 +100,7 @@ export function ProjectShowcase({
 
               <p className="mt-6 font-mono text-[11.5px] lowercase text-text-muted">{project.tags.join(' · ')}</p>
               <Link
-                className="mt-6 inline-flex w-fit items-center gap-2 text-sm font-semibold text-accent"
+                className="tap-target mt-6 inline-flex w-fit items-center gap-2 text-sm font-semibold text-accent"
                 href={href}
                 data-cursor={cursorLabel}
               >

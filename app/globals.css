@@ -125,6 +125,18 @@ button {
   align-items: center;
 }
 
+/* Áreas táctiles de al menos 44 px en pantallas táctiles, sin cambiar el diseño en desktop. */
+@media (pointer: coarse) {
+  .tap-target,
+  .brand-link {
+    min-height: 44px;
+  }
+
+  .area-link {
+    min-height: 40px;
+  }
+}
+
 .brand-link::after {
   position: absolute;
   left: 0;
@@ -818,6 +830,19 @@ button {
   text-align: right;
 }
 
+/* En celular, la etiqueta arriba y el valor abajo: a dos columnas el valor se partía en 3 o 4 líneas. */
+@media (max-width: 639px) {
+  .quality-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .quality-row dd {
+    text-align: left;
+  }
+}
+
 .learn-item {
   position: relative;
   padding-left: 1.5rem;
@@ -1050,7 +1075,7 @@ button {
   padding: 2px 8px;
   color: #8990A0;
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 10.5px;
+  font-size: 11px;
   line-height: 1.5;
   text-transform: lowercase;
 }
@@ -1986,7 +2011,7 @@ button {
     width: 100%;
     border: none;
     background: transparent;
-    padding: 8px 0 4px;
+    padding: 12px 0 10px;
     cursor: grab;
     touch-action: none;
   }
