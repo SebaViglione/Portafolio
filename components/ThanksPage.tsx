@@ -13,10 +13,6 @@ export function ThanksPage({ locale }: { locale: Locale }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    document.documentElement.lang = dict.htmlLang;
-  }, [dict.htmlLang]);
-
-  useEffect(() => {
     const canvasElement = canvasRef.current;
     if (!canvasElement) return;
     const canvas = canvasElement;

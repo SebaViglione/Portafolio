@@ -119,10 +119,6 @@ export function LandingPage({ locale }: { locale: Locale }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    document.documentElement.lang = dict.htmlLang;
-  }, [dict.htmlLang]);
-
-  useEffect(() => {
     const lenis = new Lenis({
       duration: 1.15,
       easing: (time: number) => Math.min(1, 1.001 - Math.pow(2, -10 * time)),

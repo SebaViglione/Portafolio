@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import './globals.css';
+import type { Locale } from '@/lib/content';
+import '@/app/globals.css';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -20,36 +21,11 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
 });
 
-export const metadata: Metadata = {
+/** Metadata común a los dos idiomas; cada layout suma título, descripción y OG propios. */
+export const baseMetadata: Metadata = {
   metadataBase: new URL('https://sebaviglione.com'),
-  title: 'Sebastián Viglione — Desarrollador backend | Montevideo',
-  description:
-    'Desarrollador backend en Montevideo. Construyo sistemas de gestión para operaciones reales: stock, costeo, compras, cotización e integraciones, con PostgreSQL, TypeScript y Node.js.',
   icons: {
     icon: '/assets/icons/Favicon.ico',
-  },
-  openGraph: {
-    title: 'Sebastián Viglione — Desarrollador backend | Montevideo',
-    description:
-      'Sistemas de gestión para operaciones reales: stock, costeo, compras, cotización e integraciones. A cargo de los sistemas de Grupo CPS, construidos de punta a punta.',
-    url: 'https://sebaviglione.com',
-    siteName: 'sebaviglione.com',
-    images: [
-      {
-        url: '/assets/og/home-es.png',
-        width: 1200,
-        height: 630,
-        alt: 'Sebastián Viglione, desarrollador backend en Montevideo',
-      },
-    ],
-    locale: 'es_UY',
-    type: 'profile',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Sebastián Viglione — Desarrollador backend | Montevideo',
-    description: 'Sistemas de gestión para operaciones reales: stock, costeo, compras, cotización e integraciones.',
-    images: ['/assets/og/home-es.png'],
   },
 };
 
@@ -97,9 +73,13 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+/**
+ * Documento HTML de cada root layout. Hay uno por idioma (route groups `(es)` y `(en)`)
+ * para que `<html lang>` salga bien en el HTML estático, sin corregirlo en el cliente.
+ */
+export function RootDocument({ locale, children }: { locale: Locale; children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
       <body>
         <script
           type="application/ld+json"

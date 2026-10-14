@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ArrowLeft, ArrowRight, Languages } from 'lucide-react';
 import { CustomCursor } from '@/components/CustomCursor';
 import { SystemDiagram } from '@/components/SystemDiagram';
-import { getDictionary, localizedHref, type Locale } from '@/lib/content';
+import { localizedHref, type Locale } from '@/lib/content';
 import { diagramSlug, getSystemDiagram, type DiagramProject } from '@/lib/diagrams';
 
 gsap.registerPlugin(useGSAP);
@@ -17,7 +17,6 @@ gsap.registerPlugin(useGSAP);
  * volver al case study y el contacto viven dentro de la barra lateral.
  */
 export function SystemDiagramPage({ locale, project }: { locale: Locale; project: DiagramProject }) {
-  const dict = getDictionary(locale);
   const diagram = getSystemDiagram(project, locale);
   const { ui, header } = diagram;
   const home = locale === 'es' ? '/' : '/en';
@@ -25,10 +24,6 @@ export function SystemDiagramPage({ locale, project }: { locale: Locale; project
   const caseHref = localizedHref(locale, slug);
   const switchHref = localizedHref(locale === 'es' ? 'en' : 'es', `${slug}/diagrama`);
   const rootRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    document.documentElement.lang = dict.htmlLang;
-  }, [dict.htmlLang]);
 
   useGSAP(
     () => {
