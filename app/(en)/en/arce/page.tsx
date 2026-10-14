@@ -2,17 +2,17 @@ import type { Metadata } from 'next';
 import { CaseStudyPage } from '@/components/CaseStudyPage';
 
 export const metadata: Metadata = {
-  title: 'Arce: tender monitoring with local AI | Sebastián Viglione',
+  title: 'Arce: market intelligence on public procurement | Sebastián Viglione',
   description:
-    'Arce case study: a system that monitors, structures and analyzes public tenders with TypeScript, Node.js, PostgreSQL and local AI (Ollama).',
+    'Arce case study: statistics over the history of Uruguay’s public purchases (what to sell, at what price and against whom) with TypeScript, PostgreSQL and an AI that interprets them.',
   alternates: {
     canonical: '/en/arce',
     languages: { es: '/arce', en: '/en/arce' },
   },
   openGraph: {
-    title: 'Arce: tender monitoring with local AI',
+    title: 'Arce: market intelligence on public procurement',
     description:
-      'A system that monitors, structures and analyzes public tenders with TypeScript, Node.js, PostgreSQL and local AI. Technical case study.',
+      'What to sell to the State, at what price and against whom: statistics in PostgreSQL and an AI that interprets them without making up figures. Technical case study.',
     url: 'https://sebaviglione.com/en/arce',
     siteName: 'sebaviglione.com',
     locale: 'en_US',
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Arce: tender monitoring with local AI',
-    description: 'Technical case study: TypeScript, Node.js, PostgreSQL and local AI (Ollama).',
+    title: 'Arce: market intelligence on public procurement',
+    description: 'Technical case study: TypeScript, PostgreSQL, materialized views and AI (Ollama or Anthropic).',
     images: ['/assets/og/arce.png'],
   },
 };

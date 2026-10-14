@@ -6,5 +6,4 @@ export const contact = {
 
 export const arceMedia = {
   repo: 'https://github.com/SebaViglione/ARCE-LICITACIONES-IA',
-  video: '/assets/projects/arce_dashboard_demo.webm',
 };

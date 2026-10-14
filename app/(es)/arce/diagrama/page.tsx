@@ -4,14 +4,14 @@ import { SystemDiagramPage } from '@/components/SystemDiagramPage';
 export const metadata: Metadata = {
   title: 'Arce: diagrama interactivo del sistema | Sebastián Viglione',
   description:
-    'Cómo funciona Arce, en un diagrama que se puede mover: del portal de compras estatales al dashboard, el pipeline etapa por etapa, el análisis con IA y el feedback del equipo.',
+    'Cómo funciona Arce, en un diagrama que se puede mover: del portal de compras estatales al tablero, la ingesta del histórico, las estadísticas y el analista de IA.',
   alternates: {
     canonical: '/arce/diagrama',
     languages: { es: '/arce/diagrama', en: '/en/arce/diagrama' },
   },
   openGraph: {
     title: 'Arce: diagrama interactivo del sistema',
-    description: 'Cuatro vistas de Arce en un diagrama interactivo: pipeline, scraper, PostgreSQL, IA local y dashboard.',
+    description: 'Cuatro vistas de Arce en un diagrama interactivo: ingesta, PostgreSQL, estadísticas, analista de IA y tablero.',
     url: 'https://sebaviglione.com/arce/diagrama',
     siteName: 'sebaviglione.com',
     locale: 'es_UY',
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Arce: diagrama interactivo del sistema',
-    description: 'Cuatro vistas de Arce en un diagrama interactivo: pipeline, scraper, PostgreSQL, IA local y dashboard.',
+    description: 'Cuatro vistas de Arce en un diagrama interactivo: ingesta, PostgreSQL, estadísticas, analista de IA y tablero.',
     images: ['/assets/og/arce.png'],
   },
 };
